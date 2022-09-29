@@ -1,4 +1,4 @@
-# Backlog:
+ Backlog:
 
 - Le joueur peut déplacer son personnage dans une salle à l'aide du clavier,
 - Le joueur peut se déplacer dans une salle contenant des obstacles,
@@ -13,9 +13,9 @@
 - Le joueur peut passer au niveau suivant en tuant le boss du niveau courant,
 - Le joueur peut utiliser de l'équipement récupéré en tuant des ennemis,
 - Le joueur peut se repérer dans le niveau,
-- Le joueur peut récupérer des points de vie a certains endroits du nivean,
+- Le joueur peut récupérer des points de vie a certains endroits du niveau,
 - Lorsque le personnage n'a plus de points de vie, la partie se termine et doit tout recommencer,
-- Le joueur peut quitter sa partie et la reprendre où il l'a laissé,
+- Le joueur peut quitter sa partie et la reprendre où il l'a laissée,
 - Le joueur peut acheter des objets,
 
 ---
