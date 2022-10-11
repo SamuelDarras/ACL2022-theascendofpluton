@@ -1,5 +1,6 @@
 package fr.ul.theascendofpluton.view;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Camera;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
+import fr.ul.theascendofpluton.model.Enemy;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
 
@@ -38,6 +40,8 @@ public class GameView extends ScreenAdapter {
     MapObject pluton;
     PlayerControlListener c;
 
+    Enemy e;
+
     public GameView() {
         super();
         levelLoader = new LevelLoader();
@@ -48,8 +52,11 @@ public class GameView extends ScreenAdapter {
 
         world = new World(new Vector2(0f, 0f), true);
 
+        e = new Enemy(world, 5, 5);
+
         joueur = new Joueur(world);
-        joueur.register((float) pluton.getProperties().get("x")/levelLoader.getLevelWidth(), (float) pluton.getProperties().get("y")/levelLoader.getLevelHeight());
+        joueur.register((float) pluton.getProperties().get("x") / levelLoader.getLevelWidth(),
+                (float) pluton.getProperties().get("y") / levelLoader.getLevelHeight());
         Gdx.app.log("la", joueur.getPosition().toString());
 
         renderer = new Box2DDebugRenderer();
@@ -62,10 +69,10 @@ public class GameView extends ScreenAdapter {
     public void render(float delta) {
         update();
 
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		levelLoader.getRenderer().render();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        levelLoader.getRenderer().render();
         renderer.render(world, camera.combined);
     }
 
@@ -93,6 +100,7 @@ public class GameView extends ScreenAdapter {
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
         levelLoader.getRenderer().render();
         joueur.update();
+        e.update(joueur.getPosition().x, joueur.getPosition().y);
         camera.update();
     }
 }

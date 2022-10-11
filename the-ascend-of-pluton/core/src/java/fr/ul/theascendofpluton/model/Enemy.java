@@ -1,4 +1,4 @@
-package fr.ul.theascendofpluton;
+package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.physics.box2d.*;
 
