@@ -10,16 +10,48 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Joueur {
 
-    public boolean shouldGoRight = false;
-    public boolean shouldGoLeft = false;
-    public boolean shouldGoUp = false;
-    public boolean shouldGoDown = false;
+    private boolean shouldGoRight = false;
+    private boolean shouldGoLeft = false;
+    private boolean shouldGoUp = false;
+    private boolean shouldGoDown = false;
 
-    float l = 1f;
-    float h = 1f;
+    public boolean isShouldGoRight() {
+        return shouldGoRight;
+    }
 
-    World world;
-    Body body;
+    public void setShouldGoRight(boolean shouldGoRight) {
+        this.shouldGoRight = shouldGoRight;
+    }
+
+    public boolean isShouldGoLeft() {
+        return shouldGoLeft;
+    }
+
+    public void setShouldGoLeft(boolean shouldGoLeft) {
+        this.shouldGoLeft = shouldGoLeft;
+    }
+
+    public boolean isShouldGoUp() {
+        return shouldGoUp;
+    }
+
+    public void setShouldGoUp(boolean shouldGoUp) {
+        this.shouldGoUp = shouldGoUp;
+    }
+
+    public boolean isShouldGoDown() {
+        return shouldGoDown;
+    }
+
+    public void setShouldGoDown(boolean shouldGoDown) {
+        this.shouldGoDown = shouldGoDown;
+    }
+
+    private float l = 1f;
+    private float h = 1f;
+
+    private World world;
+    private Body body;
 
     private final float VELOCITY = 20f;
 

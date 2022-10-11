@@ -16,19 +16,19 @@ public class PlayerControlListener implements InputProcessor {
         boolean r = false;
 
         if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
-            joueur.shouldGoRight = true;
+            joueur.setShouldGoRight(true);
             r = true;
         }
         if (keycode == Input.Keys.Q || keycode == Input.Keys.LEFT) {
-            joueur.shouldGoLeft = true;
+            joueur.setShouldGoLeft(true);
             r = true;
         }
         if (keycode == Input.Keys.Z || keycode == Input.Keys.UP) {
-            joueur.shouldGoUp = true;
+            joueur.setShouldGoUp(true);
             r = true;
         }
         if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
-            joueur.shouldGoDown = true;
+            joueur.setShouldGoDown(true);
             r = true;
         }
 
@@ -39,19 +39,19 @@ public class PlayerControlListener implements InputProcessor {
     public boolean keyUp(int keycode) {
         boolean r = false;
         if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
-            joueur.shouldGoRight = false;
+            joueur.setShouldGoRight(false);
             r = true;
         }
         if (keycode == Input.Keys.Q || keycode == Input.Keys.LEFT) {
-            joueur.shouldGoLeft = false;
+            joueur.setShouldGoLeft(false);
             r = true;
         }
         if (keycode == Input.Keys.Z || keycode == Input.Keys.UP) {
-            joueur.shouldGoUp = false;
+            joueur.setShouldGoUp(false);
             r = true;
         }
         if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
-            joueur.shouldGoDown = false;
+            joueur.setShouldGoDown(false);
             r = true;
         }
         return r;
