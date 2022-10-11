@@ -26,6 +26,7 @@ import fr.ul.theascendofpluton.listener.PlayerControlListener;
 import fr.ul.theascendofpluton.model.Enemy;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.model.Obstacle;
 
 public class GameView extends ScreenAdapter {
     Viewport vp;
@@ -41,6 +42,7 @@ public class GameView extends ScreenAdapter {
     PlayerControlListener c;
 
     Enemy e;
+    Obstacle o;
 
     public GameView() {
         super();
@@ -53,6 +55,7 @@ public class GameView extends ScreenAdapter {
         world = new World(new Vector2(0f, 0f), true);
 
         e = new Enemy(world, 5, 5);
+        o = new Obstacle(world, 15, 5);
 
         joueur = new Joueur(world);
         joueur.register((float) pluton.getProperties().get("x") / levelLoader.getLevelWidth(),
