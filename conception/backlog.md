@@ -24,8 +24,10 @@
 
 - Le joueur peut déplacer son personnage dans une salle à l'aide du clavier,
 - Le joueur peut se déplacer dans une salle contenant des obstacles,
+  -- plutôt une partie de la première fonctionnalité
 - La disposition de la salle est générée à partir d'un fichier,
 - Des ennemis pourchassent le personnage,
+  avec quel objectif?
 
 # Backlog S1:
 
