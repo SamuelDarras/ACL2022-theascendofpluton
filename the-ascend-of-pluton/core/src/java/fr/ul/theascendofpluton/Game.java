@@ -22,9 +22,9 @@ public class Game extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private LevelLoader levelLoader;
 
-	
+
 	@Override
-	public void create () {
+	public void create() {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, (32 * 16) / 1.5f, (32 * 9) / 1.5f);
 		levelLoader = new LevelLoader();
@@ -33,24 +33,25 @@ public class Game extends ApplicationAdapter {
 		MapLayer mapLayerEntities = levelLoader.getEntities();
 		MapObject pluton = mapLayerEntities.getObjects().get("Pluton");
 
-		camera.position.set((float) pluton.getProperties().get("x"), (float)pluton.getProperties().get("y"), 0);
+		camera.position.set((float) pluton.getProperties().get("x"), (float) pluton.getProperties().get("y"), 0);
 	}
 
-	public void update(){
+	public void update() {
 		camera.update();
 		levelLoader.getRenderer().setView(camera);
 		levelLoader.getRenderer().render();
 	}
+
 	@Override
-	public void render () {
+	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update();
 
 	}
-	
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 	}
 }

@@ -65,6 +65,14 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        
+
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+        testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        testImplementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        testImplementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        testImplementation "com.badlogicgames.ashley:ashley:$ashleyVersion"
+        testImplementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     }
 }
+
