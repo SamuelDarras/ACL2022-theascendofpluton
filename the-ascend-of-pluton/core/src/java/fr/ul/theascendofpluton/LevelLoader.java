@@ -26,4 +26,12 @@ public class LevelLoader {
     public MapLayer getEntities(){
         return tiledMap.getLayers().get("entities");
     }
+
+    public int  getLevelWidth() {
+        return (int) tiledMap.getProperties().get("width");
+    }
+    
+    public int  getLevelHeight() {
+        return (int) tiledMap.getProperties().get("height");
+    }
 }
