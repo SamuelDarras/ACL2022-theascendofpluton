@@ -41,6 +41,6 @@
 - Les obstacles et les ennemis sont placés en fonction du fichier de salle,
 - La caméra suit le personnage à travers le niveau,
 - Le niveau possède des flaques d'acide qui infligent 3 dégâts au joueur si ce dernier marche dessus,
-- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) 
+- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis un interface ouvrete en appuyant sur le touche "P"
 
 Objectif : mise en place des systèmes de combat et d'achat.
