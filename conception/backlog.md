@@ -40,11 +40,7 @@
 - Le personnage peut gagner de l'argent en tuant des ennemis,
 - Les obstacles et les ennemis sont placés en fonction du fichier de salle,
 - La caméra suit le personnage à travers le niveau,
-<<<<<<< HEAD
 - Le niveau possède des flaques d'acide qui infligent 3 dégâts au joueur si ce dernier marche dessus,
 - Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis un interface ouvrete en appuyant sur le touche "P"
-=======
-- Le niveau possède des flaques d'acide qui infligent 3 dégâts au joueur et aux monstres si ces dernier marche dessus,
-- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie)
 
 Objectif : mise en place des systèmes de combat et d'achat.
