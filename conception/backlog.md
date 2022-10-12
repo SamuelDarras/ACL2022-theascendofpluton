@@ -45,7 +45,6 @@
 - Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis un interface ouvrete en appuyant sur le touche "P"
 =======
 - Le niveau possède des flaques d'acide qui infligent 3 dégâts au joueur et aux monstres si ces dernier marche dessus,
-- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) 
->>>>>>> 994cc752e4e6826e38e8ecfa14c9d24509e6fa00
+- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie)
 
 Objectif : mise en place des systèmes de combat et d'achat.
