@@ -27,6 +27,8 @@ import fr.ul.theascendofpluton.model.Enemy;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
 
+import java.util.Iterator;
+
 public class GameView extends ScreenAdapter {
     Viewport vp;
     OrthographicCamera camera;
@@ -49,45 +51,47 @@ public class GameView extends ScreenAdapter {
 
         MapLayer mapLayerEntities = levelLoader.getEntities();
         pluton = mapLayerEntities.getObjects().get("Pluton");
-
         world = new World(new Vector2(0f, 0f), true);
 
         e = new Enemy(world, 5, 5);
 
         joueur = new Joueur(world);
-        joueur.register((float) pluton.getProperties().get("x") / levelLoader.getLevelWidth(),
-                (float) pluton.getProperties().get("y") / levelLoader.getLevelHeight());
-        Gdx.app.log("la", joueur.getPosition().toString());
+        joueur.register((float) pluton.getProperties().get("x") ,
+                (float) pluton.getProperties().get("y"));
+
+        camera = new OrthographicCamera();
+        vp = new FitViewport( (32*16)/1.5f, (32*9)/1.5f, camera);
+        vp.apply();
 
         renderer = new Box2DDebugRenderer();
 
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
+
+        System.out.println(pluton.getProperties().get("x") + " " + pluton.getProperties().get("y"));
     }
 
     @Override
     public void render(float delta) {
-        update();
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update();
+
+        levelLoader.getRenderer().setView(camera);
         levelLoader.getRenderer().render();
         renderer.render(world, camera.combined);
     }
 
     @Override
     public void resize(int width, int height) {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, (32 * 16) / 1.5f, (32 * 9) / 1.5f);
+        camera.setToOrtho(false, levelLoader.getLevelWidth(), levelLoader.getLevelHeight());
         camera.position.set((float) pluton.getProperties().get("x"), (float) pluton.getProperties().get("y"), 0);
         camera.update();
 
         levelLoader.getRenderer().setView(camera);
 
-        vp = new ScalingViewport(Scaling.stretch, levelLoader.getLevelWidth(), levelLoader.getLevelHeight(), camera);
         vp.update(width, height, true);
-        vp.apply();
     }
 
     @Override
@@ -97,10 +101,12 @@ public class GameView extends ScreenAdapter {
     }
 
     private void update() {
+        camera.position.x = joueur.getPosition().x;
+        camera.position.y = joueur.getPosition().y;
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
-        levelLoader.getRenderer().render();
         joueur.update();
         e.update(joueur.getPosition().x, joueur.getPosition().y);
+
         camera.update();
     }
 }
