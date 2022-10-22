@@ -30,6 +30,9 @@ import fr.ul.theascendofpluton.LevelLoader;
 import java.util.Iterator;
 
 public class GameView extends ScreenAdapter {
+    private final float CAMERA_HEIGHT = (32*9)/1.5f;
+    private final float CAMERA_WIDTH = (32*16)/1.5f;
+
     Viewport vp;
     OrthographicCamera camera;
 
@@ -60,7 +63,10 @@ public class GameView extends ScreenAdapter {
                 (float) pluton.getProperties().get("y"));
 
         camera = new OrthographicCamera();
-        vp = new FitViewport( (32*16)/1.5f, (32*9)/1.5f, camera);
+        camera.position.x = joueur.getPosition().x;
+        camera.position.y = joueur.getPosition().y;
+
+        vp = new FitViewport(CAMERA_WIDTH, CAMERA_HEIGHT, camera);
         vp.apply();
 
         renderer = new Box2DDebugRenderer();
@@ -69,6 +75,7 @@ public class GameView extends ScreenAdapter {
         Gdx.input.setInputProcessor(c);
 
         System.out.println(pluton.getProperties().get("x") + " " + pluton.getProperties().get("y"));
+        System.out.println(camera.position);
     }
 
     @Override
@@ -101,8 +108,12 @@ public class GameView extends ScreenAdapter {
     }
 
     private void update() {
-        camera.position.x = joueur.getPosition().x;
-        camera.position.y = joueur.getPosition().y;
+        if (!(joueur.getPosition().x + CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - CAMERA_WIDTH/2 < 0))
+            camera.position.x = joueur.getPosition().x;
+
+        if (!(joueur.getPosition().y + CAMERA_HEIGHT/2 > levelLoader.getLevelHeight() * 32 || joueur.getPosition().y - CAMERA_HEIGHT/2 < 0))
+            camera.position.y = joueur.getPosition().y;
+
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
         joueur.update();
         e.update(joueur.getPosition().x, joueur.getPosition().y);
