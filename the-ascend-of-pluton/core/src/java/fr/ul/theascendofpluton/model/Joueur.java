@@ -52,14 +52,18 @@ public class Joueur {
 
     private World world;
     private Body body;
+    private float life;
 
     private final float VELOCITY = 20f;
+
+    public final String name = "player";
 
     public Joueur(World world) {
         this.world = world;
     }
 
-    public void register(float x, float y) {
+    public void register(float x, float y, float life) {
+        this.life = life;
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -68,7 +72,7 @@ public class Joueur {
 
         PolygonShape p = new PolygonShape();
         p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, .1f, .25f, p));
+        body.createFixture(createFixture(.5f, .1f, .25f, p)).setUserData("player");
         p.dispose();
 
         body.setUserData(this);
@@ -110,5 +114,10 @@ public class Joueur {
         fixtureDef.shape = s;
 
         return fixtureDef;
+    }
+
+    public void receiveDamage(float n){
+        this.life -= n;
+        System.out.println(this.life);
     }
 }

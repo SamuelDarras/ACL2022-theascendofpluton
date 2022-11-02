@@ -2,12 +2,19 @@ package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.physics.box2d.*;
 
-public class Enemy {
-    public BodyDef bodyDef;
-    public Body body;
+public class Zombie {
+    private BodyDef bodyDef;
+    private Body body;
+
+    public final String name = "zombie";
+    public float life;
+    public float damage;
 
     //x,y postion de l'ennemi dans le monde
-    public Enemy(World world, int x, int y){
+    public Zombie(World world, float x, float y, float life, float damage){
+        this.life = life;
+        this.damage = damage;
+
         bodyDef  = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
@@ -15,7 +22,7 @@ public class Enemy {
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(.5f,.5f);
+        shape.setAsBox(2f,2f);
 
         fixtureDef.shape = shape;
         fixtureDef.density = .5f;
@@ -23,7 +30,7 @@ public class Enemy {
         fixtureDef.friction = .5f;
 
         body.setFixedRotation(true);
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData("zombie");
         body.setUserData(this);
         shape.dispose();
     }
@@ -35,10 +42,10 @@ public class Enemy {
         float force_x = 0;
         float force_y = 0;
 
-        if (target_x < 0) force_x = 1f;
-        if (target_x > 0) force_x = -1f;
-        if (target_y < 0) force_y = 1f;
-        if (target_y > 0) force_y = -1f;
+        if (target_x < 0) force_x = 10f;
+        if (target_x > 0) force_x = -10f;
+        if (target_y < 0) force_y = 10f;
+        if (target_y > 0) force_y = -10f;
 
         body.setLinearVelocity(force_x, force_y);
     }

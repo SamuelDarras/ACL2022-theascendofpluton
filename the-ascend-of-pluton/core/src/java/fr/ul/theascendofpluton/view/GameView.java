@@ -1,33 +1,22 @@
 package fr.ul.theascendofpluton.view;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
-import fr.ul.theascendofpluton.model.Enemy;
+import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
-
-import java.util.Iterator;
 
 public class GameView extends ScreenAdapter {
     Viewport vp;
@@ -40,9 +29,12 @@ public class GameView extends ScreenAdapter {
 
     Joueur joueur;
     MapObject pluton;
-    PlayerControlListener c;
 
-    Enemy e;
+    PlayerControlListener c;
+    PlayerContactListener contactListener;
+
+    Zombie e;
+    MapObject zombies;
 
     public GameView() {
         super();
@@ -53,11 +45,10 @@ public class GameView extends ScreenAdapter {
         pluton = mapLayerEntities.getObjects().get("Pluton");
         world = new World(new Vector2(0f, 0f), true);
 
-        e = new Enemy(world, 5, 5);
-
         joueur = new Joueur(world);
         joueur.register((float) pluton.getProperties().get("x") ,
-                (float) pluton.getProperties().get("y"));
+                (float) pluton.getProperties().get("y"),
+                (float) pluton.getProperties().get("vie"));
 
         camera = new OrthographicCamera();
         vp = new FitViewport( (32*16)/1.5f, (32*9)/1.5f, camera);
@@ -68,7 +59,16 @@ public class GameView extends ScreenAdapter {
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
 
-        System.out.println(pluton.getProperties().get("x") + " " + pluton.getProperties().get("y"));
+        contactListener = new PlayerContactListener();
+        world.setContactListener(contactListener);
+
+        zombies = mapLayerEntities.getObjects().get("Zombies");
+        e = new Zombie(world, (float) zombies.getProperties().get("x"),
+                              (float) zombies.getProperties().get("y"),
+                              (float) zombies.getProperties().get("vie"),
+                              (float) zombies.getProperties().get("damage"));
+
+        //System.out.println(pluton.getProperties().get("x") + " " + pluton.getProperties().get("y"));
     }
 
     @Override
