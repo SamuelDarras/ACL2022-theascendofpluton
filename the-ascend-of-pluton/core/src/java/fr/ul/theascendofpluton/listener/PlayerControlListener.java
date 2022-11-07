@@ -31,6 +31,11 @@ public class PlayerControlListener implements InputProcessor {
             joueur.setShouldGoDown(true);
             r = true;
         }
+        
+        if (keycode == Input.Keys.SPACE) {
+            joueur.setShouldAttack(true);
+            r = true;
+        }
 
         return r;
     }

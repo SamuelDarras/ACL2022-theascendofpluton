@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 public class Joueur {
 
@@ -14,6 +15,15 @@ public class Joueur {
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
+    private boolean shouldAttack;
+
+    public boolean isShouldAttack() {
+        return shouldAttack;
+    }
+
+    public void setShouldAttack(boolean shouldAttack) {
+        this.shouldAttack = shouldAttack;
+    }
 
     public boolean isShouldGoRight() {
         return shouldGoRight;
@@ -47,6 +57,9 @@ public class Joueur {
         this.shouldGoDown = shouldGoDown;
     }
 
+    private float strength = 10f;
+    private float range = 5f;
+
     private float l = 1f;
     private float h = 1f;
 
@@ -75,7 +88,7 @@ public class Joueur {
     }
 
     public void update() {
-        boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp;
+        boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp || shouldAttack;
 
         if (shouldGoLeft) {
             body.applyLinearImpulse(-VELOCITY, 0f, getPosition().x, getPosition().y, true);
@@ -89,12 +102,26 @@ public class Joueur {
         if (shouldGoDown) {
             body.applyLinearImpulse(0f, -VELOCITY, getPosition().x, getPosition().y, true);
         }
+        if (shouldAttack) {
+            Array<Body> bodies = new Array<>();
+            world.getBodies(bodies);
+
+            for (Body body : bodies) {
+                if (body.getUserData() instanceof Zombie) {
+                    Zombie z = (Zombie) body.getUserData();
+                    if (z.getDistance(body.getPosition()) < range) {
+                        inflictDamage(z);
+                    }
+                }
+            }
+        }
 
         if (somthingDone) {
             body.setLinearVelocity(body.getLinearVelocity().nor().scl(VELOCITY));
         } else {
             body.setLinearVelocity(0f, 0f);
         }
+
     }
 
     public Vector2 getPosition() {
@@ -110,5 +137,9 @@ public class Joueur {
         fixtureDef.shape = s;
 
         return fixtureDef;
+    }
+
+    public void inflictDamage(Zombie target) {
+        target.receiveDamage(strength);
     }
 }
