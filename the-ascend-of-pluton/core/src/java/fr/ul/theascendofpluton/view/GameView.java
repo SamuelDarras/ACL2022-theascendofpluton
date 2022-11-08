@@ -47,7 +47,7 @@ public class GameView extends ScreenAdapter {
 
     public GameView() {
         super();
-        levelLoader = new LevelLoader();
+        levelLoader = new LevelLoader(this);
         levelLoader.load("pluton");
 
         mapObjectPluton = levelLoader.getPluton();
@@ -123,5 +123,10 @@ public class GameView extends ScreenAdapter {
         }
 
         camera.update();
+    }
+
+    public void setToDestroy(Zombie zombie) {
+        zombie.dispose();
+        this.zombies.remove(zombie);
     }
 }

@@ -58,10 +58,10 @@ public class Joueur {
     }
 
     private float strength = 10f;
-    private float range = 5f;
+    private float range = 10f;
 
-    private float l = 1f;
-    private float h = 1f;
+    private float l = 5f;
+    private float h = 6f;
 
     private World world;
     private Body body;
@@ -85,7 +85,7 @@ public class Joueur {
 
         PolygonShape p = new PolygonShape();
         p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, .1f, .25f, p)).setUserData("player");
+        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
         p.dispose();
 
         body.setUserData(this);
@@ -113,7 +113,7 @@ public class Joueur {
             for (Body body : bodies) {
                 if (body.getUserData() instanceof Zombie) {
                     Zombie z = (Zombie) body.getUserData();
-                    if (z.getDistance(body.getPosition()) < range) {
+                    if (z.getDistance(getPosition()) < range) {
                         inflictDamage(z);
                     }
                 }
