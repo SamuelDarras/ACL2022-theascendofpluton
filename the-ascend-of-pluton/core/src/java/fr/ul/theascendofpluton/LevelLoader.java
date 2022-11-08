@@ -1,5 +1,8 @@
 package fr.ul.theascendofpluton;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
@@ -17,9 +20,17 @@ public class LevelLoader {
     private TiledMapRenderer tiledMapRenderer;
 
     private GameView gv;
+    public HashMap<String, Sprite> spriteHashMap;
 
     public LevelLoader(GameView gv) {
         this.gv = gv;
+
+        Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
+        Sprite zombie = new Sprite(zomTexture, 13, 36, 32, 27);
+        zombie.setScale(.3f);
+
+        spriteHashMap = new HashMap<>();
+        spriteHashMap.put("zombie", zombie);
     }
 
     public void load(String level_name) {

@@ -58,7 +58,7 @@ public class Joueur {
     }
 
     private float strength = 10f;
-    private float range = 5f;
+    private float range = 12f;
 
     private float l = 5f;
     private float h = 6f;
@@ -95,16 +95,16 @@ public class Joueur {
         boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp || shouldAttack;
 
         if (shouldGoLeft) {
-            body.applyLinearImpulse(-VELOCITY, 0f, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(-VELOCITY, 0f).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoRight) {
-            body.applyLinearImpulse(VELOCITY, 0f, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(VELOCITY, 0f).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoUp) {
-            body.applyLinearImpulse(0f, VELOCITY, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(0f, VELOCITY).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoDown) {
-            body.applyLinearImpulse(0f, -VELOCITY, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(0f, -VELOCITY).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldAttack) {
             Array<Body> bodies = new Array<>();

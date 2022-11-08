@@ -30,7 +30,7 @@ public class Zombie {
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(2f,2f);
+        shape.setAsBox(4f,5f);
 
         fixtureDef.shape = shape;
         fixtureDef.density = .5f;
@@ -73,6 +73,10 @@ public class Zombie {
 
     public void dispose() {
         world.destroyBody(body);
+    }
+
+    public Vector2 getPosition() {
+        return body.getPosition();
     }
 
 }
