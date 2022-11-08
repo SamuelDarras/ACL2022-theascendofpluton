@@ -1,5 +1,6 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Zombie {
@@ -48,6 +49,13 @@ public class Zombie {
         if (target_y > 0) force_y = -10f;
 
         body.setLinearVelocity(force_x, force_y);
+    }
+
+    public void receiveDamage(float strength) {
+    }
+
+    public float getDistance(Vector2 position) {
+        return position.dst(body.getPosition());
     }
 
 }
