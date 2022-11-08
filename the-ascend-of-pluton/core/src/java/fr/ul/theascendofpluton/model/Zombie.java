@@ -2,12 +2,19 @@ package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.physics.box2d.*;
 
-public class Enemy {
+public class Zombie {
     public BodyDef bodyDef;
     public Body body;
 
+    public float life;
+
+    public float damage;
+
     //x,y postion de l'ennemi dans le monde
-    public Enemy(World world, int x, int y){
+    public Zombie(World world, float x, float y, float life, float damage){
+        this.life = life;
+        this.damage = damage;
+
         bodyDef  = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
