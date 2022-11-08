@@ -39,7 +39,6 @@ public class LevelLoader {
                 if (cell != null){
                     Array<PolygonMapObject> polygons = cell.getTile().getObjects().getByType(PolygonMapObject.class);
                     for (PolygonMapObject polygonMapObject : polygons){
-                        System.out.println(i +" " + j +" "+cell.getTile().getId()+" "+Arrays.toString(polygonMapObject.getPolygon().getTransformedVertices())+" "+Arrays.toString(polygonMapObject.getPolygon().getVertices()));
                         new Obstacle(world, i * mapLayer.getTileWidth(), j * mapLayer.getTileHeight(), polygonMapObject.getPolygon().getTransformedVertices());
                     }
                 }
