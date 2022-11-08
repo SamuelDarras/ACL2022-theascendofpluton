@@ -58,4 +58,7 @@ public class Zombie {
         return position.dst(body.getPosition());
     }
 
+    public Vector2 getPosition() {
+        return body.getPosition();
+    }
 }
