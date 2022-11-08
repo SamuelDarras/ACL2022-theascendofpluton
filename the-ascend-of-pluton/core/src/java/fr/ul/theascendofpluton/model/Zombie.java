@@ -51,7 +51,9 @@ public class Zombie {
         body.setLinearVelocity(force_x, force_y);
     }
 
-    public void receiveDamage(float strength) {
+    public void receiveDamage(float damage) {
+        life -= damage;
+        // System.out.println(life);
     }
 
     public float getDistance(Vector2 position) {

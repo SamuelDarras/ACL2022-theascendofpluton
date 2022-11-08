@@ -10,7 +10,6 @@ public class PlayerContactListener implements ContactListener {
     public void beginContact(Contact contact) {
         Fixture fixture_a;
         Fixture fixture_b = contact.getFixtureB();
-        System.out.println("oui");
         if(fixture_b.getUserData() != null && (fixture_b.getUserData().equals("player"))){
             fixture_a = contact.getFixtureB();
             fixture_b = contact.getFixtureA();

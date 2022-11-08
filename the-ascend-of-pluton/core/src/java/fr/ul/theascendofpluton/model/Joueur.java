@@ -15,7 +15,7 @@ public class Joueur {
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
-    private boolean shouldAttack;
+    private boolean shouldAttack = false;
 
     public boolean isShouldAttack() {
         return shouldAttack;
@@ -118,6 +118,7 @@ public class Joueur {
                     }
                 }
             }
+            shouldAttack = false;
         }
 
         if (somthingDone) {
@@ -149,6 +150,6 @@ public class Joueur {
 
     public void receiveDamage(float n){
         this.life -= n;
-        System.out.println(this.life);
+        // System.out.println(this.life);
     }
 }
