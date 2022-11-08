@@ -21,6 +21,7 @@ import fr.ul.theascendofpluton.listener.PlayerControlListener;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.model.Obstacle;
 
 public class GameView extends ScreenAdapter {
     private final float CAMERA_HEIGHT = (32*9)/1.5f;
@@ -42,6 +43,7 @@ public class GameView extends ScreenAdapter {
 
     MapObjects zombiesMo;
     Set<Zombie> zombies;
+    Obstacle o;
 
     public GameView() {
         super();
@@ -51,6 +53,8 @@ public class GameView extends ScreenAdapter {
         MapLayer mapLayerEntities = levelLoader.getEntities();
         pluton = mapLayerEntities.getObjects().get("Pluton");
         world = new World(new Vector2(0f, 0f), true);
+
+        o = new Obstacle(world, 15, 5);
 
         joueur = new Joueur(world);
         joueur.register((float) pluton.getProperties().get("x"),
