@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 
@@ -21,7 +20,9 @@ import fr.ul.theascendofpluton.listener.PlayerControlListener;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
+
 import fr.ul.theascendofpluton.model.Obstacle;
+import java.util.Iterator;
 
 public class GameView extends ScreenAdapter {
     private final float CAMERA_HEIGHT = (32*9)/1.5f;
@@ -36,8 +37,7 @@ public class GameView extends ScreenAdapter {
     LevelLoader levelLoader;
 
     Joueur joueur;
-    MapObject pluton;
-
+    MapObject mapObjectPluton;
     PlayerControlListener c;
     PlayerContactListener contactListener;
 
@@ -50,16 +50,16 @@ public class GameView extends ScreenAdapter {
         levelLoader = new LevelLoader();
         levelLoader.load("pluton");
 
-        MapLayer mapLayerEntities = levelLoader.getEntities();
-        pluton = mapLayerEntities.getObjects().get("Pluton");
+        mapObjectPluton = levelLoader.getPluton();
+        System.out.println(mapObjectPluton);
         world = new World(new Vector2(0f, 0f), true);
-
-        o = new Obstacle(world, 15, 5);
+        levelLoader.addObstacles(world);
+        zombies = levelLoader.addZombies(world);
 
         joueur = new Joueur(world);
-        joueur.register((float) pluton.getProperties().get("x"),
-                (float) pluton.getProperties().get("y"),
-                (float) pluton.getProperties().get("vie"));
+        joueur.register((float) mapObjectPluton.getProperties().get("x"),
+                (float) mapObjectPluton.getProperties().get("y"),
+                (float) mapObjectPluton.getProperties().get("vie"));
 
         camera = new OrthographicCamera();
         camera.position.x = joueur.getPosition().x;
@@ -73,24 +73,6 @@ public class GameView extends ScreenAdapter {
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
 
-        contactListener = new PlayerContactListener();
-        world.setContactListener(contactListener);
-
-        zombies = new HashSet<>();
-        zombiesMo = mapLayerEntities.getObjects();
-        for (MapObject zombie : zombiesMo) {
-            if (zombie.getName().equals("Zombie")) {
-                zombies.add(new Zombie(world, (float) zombie.getProperties().get("x"),
-                        (float) zombie.getProperties().get("y"),
-                        (float) zombie.getProperties().get("vie"),
-                        (float) zombie.getProperties().get("damage")));
-            }
-        }
-
-        // System.out.println(pluton.getProperties().get("x") + " " +
-        // pluton.getProperties().get("y"));
-        System.out.println(pluton.getProperties().get("x") + " " + pluton.getProperties().get("y"));
-        System.out.println(camera.position);
     }
 
     @Override
@@ -108,7 +90,12 @@ public class GameView extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, levelLoader.getLevelWidth(), levelLoader.getLevelHeight());
-        camera.position.set((float) pluton.getProperties().get("x"), (float) pluton.getProperties().get("y"), 0);
+        if(joueur == null){
+            camera.position.set((float) mapObjectPluton.getProperties().get("x"), (float) mapObjectPluton.getProperties().get("y"), 0);
+        }
+        else{
+            camera.position.set(joueur.getPosition().x,joueur.getPosition().y, 0);
+        }
         camera.update();
 
         levelLoader.getRenderer().setView(camera);

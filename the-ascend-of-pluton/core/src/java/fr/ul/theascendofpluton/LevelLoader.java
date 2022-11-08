@@ -1,11 +1,15 @@
 package fr.ul.theascendofpluton;
 
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapRenderer;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.*;
+import com.badlogic.gdx.maps.objects.PolygonMapObject;
+import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
+import fr.ul.theascendofpluton.model.Zombie;
+import fr.ul.theascendofpluton.model.Obstacle;
+
+import java.util.*;
 
 public class LevelLoader {
     private TiledMap tiledMap;
@@ -23,8 +27,39 @@ public class LevelLoader {
         return tiledMapRenderer;
     }
 
-    public MapLayer getEntities(){
-        return tiledMap.getLayers().get("entities");
+    public MapObject getPluton(){
+        return tiledMap.getLayers().get("Player").getObjects().get("Pluton");
+    }
+    private void addObstaclesFromLayer(TiledMapTileLayer mapLayer, TiledMapTileSet tiledMapTiles, World world){
+        System.out.println("toto");
+
+        for (int i = 0; i < mapLayer.getWidth(); i++) {
+            for(int j = 0; j < mapLayer.getHeight(); j++){
+                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
+                if (cell != null){
+                    Array<PolygonMapObject> polygons = cell.getTile().getObjects().getByType(PolygonMapObject.class);
+                    for (PolygonMapObject polygonMapObject : polygons){
+                        new Obstacle(world, i * mapLayer.getTileWidth(), j * mapLayer.getTileHeight(), polygonMapObject.getPolygon().getTransformedVertices());
+                    }
+                }
+            }
+        }
+    }
+    public void addObstacles(World world){
+        TiledMapTileSet t = tiledMap.getTileSets().getTileSet("pluton");
+        addObstaclesFromLayer((TiledMapTileLayer)tiledMap.getLayers().get("sol"), t, world);
+        addObstaclesFromLayer((TiledMapTileLayer)tiledMap.getLayers().get("vide"), t, world);
+    }
+
+    public Set<Zombie> addZombies(World world){
+        Set<Zombie> zombies = new HashSet<>();
+        MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
+        float vie = (float) mapLayerZombies.getProperties().get("vie");;
+        float damage = (float) mapLayerZombies.getProperties().get("damage");
+        for (MapObject mapObject : mapLayerZombies.getObjects()){
+            zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"), (float) mapObject.getProperties().get("y"), vie, damage));
+        }
+        return zombies;
     }
 
     public int  getLevelWidth() {
