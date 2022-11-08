@@ -1,5 +1,8 @@
 package fr.ul.theascendofpluton;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
@@ -9,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import fr.ul.theascendofpluton.model.AcidPuddle;
 import fr.ul.theascendofpluton.model.Zombie;
+import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.model.Obstacle;
 
 import java.util.*;
@@ -18,9 +22,21 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
 
-    public LevelLoader(){
+    private GameView gv;
+    public HashMap<String, Sprite> spriteHashMap;
+
+    public LevelLoader(GameView gv) {
+        this.gv = gv;
+
+        Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
+        Sprite zombie = new Sprite(zomTexture, 13, 36, 32, 27);
+        zombie.setScale(.3f);
+
+        spriteHashMap = new HashMap<>();
+        spriteHashMap.put("zombie", zombie);
     }
 
+    public void load(String level_name) {
     /**
      * Charge la TiledMap et créé le renderer
      * @param level_name
@@ -30,11 +46,11 @@ public class LevelLoader {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
-    public MapRenderer getRenderer(){
+    public MapRenderer getRenderer() {
         return tiledMapRenderer;
     }
 
-    public MapObject getPluton(){
+    public MapObject getPluton() {
         return tiledMap.getLayers().get("Player").getObjects().get("Pluton");
     }
 
@@ -45,7 +61,7 @@ public class LevelLoader {
     private Map<int[], Array<float[]>> getPolygonesFromLayer(TiledMapTileLayer mapLayer){
         Map<int [], Array<float[]>> map = new HashMap<>();
         for (int i = 0; i < mapLayer.getWidth(); i++) {
-            for(int j = 0; j < mapLayer.getHeight(); j++){
+            for (int j = 0; j < mapLayer.getHeight(); j++) {
                 TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
                 if (cell != null){
                     int[] coords = new int[]{i * mapLayer.getTileWidth(), j * mapLayer.getTileHeight()};
@@ -94,10 +110,12 @@ public class LevelLoader {
     public Set<Zombie> addZombies(World world){
         Set<Zombie> zombies = new HashSet<>();
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
-        float vie = (float) mapLayerZombies.getProperties().get("vie");;
+        float vie = (float) mapLayerZombies.getProperties().get("vie");
+        ;
         float damage = (float) mapLayerZombies.getProperties().get("damage");
-        for (MapObject mapObject : mapLayerZombies.getObjects()){
-            zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"), (float) mapObject.getProperties().get("y"), vie, damage));
+        for (MapObject mapObject : mapLayerZombies.getObjects()) {
+            zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"),
+                    (float) mapObject.getProperties().get("y"), vie, damage, gv));
         }
         return zombies;
     }

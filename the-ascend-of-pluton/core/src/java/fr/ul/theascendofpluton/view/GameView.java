@@ -7,6 +7,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -22,7 +25,6 @@ import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
 
 import fr.ul.theascendofpluton.model.Obstacle;
-import java.util.Iterator;
 
 public class GameView extends ScreenAdapter {
     private final float CAMERA_HEIGHT = (32*9)/1.5f;
@@ -30,6 +32,11 @@ public class GameView extends ScreenAdapter {
 
     Viewport vp;
     OrthographicCamera camera;
+
+    SpriteBatch batch;
+
+    Texture plutonTexture;
+    Sprite plutonSprite;
 
     Box2DDebugRenderer renderer;
     World world;
@@ -47,11 +54,10 @@ public class GameView extends ScreenAdapter {
 
     public GameView() {
         super();
-        levelLoader = new LevelLoader();
+        levelLoader = new LevelLoader(this);
         levelLoader.load("pluton");
 
         mapObjectPluton = levelLoader.getPluton();
-        System.out.println(mapObjectPluton);
         world = new World(new Vector2(0f, 0f), true);
         levelLoader.addObstacles(world);
         zombies = levelLoader.addZombies(world);
@@ -70,6 +76,11 @@ public class GameView extends ScreenAdapter {
 
         renderer = new Box2DDebugRenderer();
 
+        batch = new SpriteBatch();
+
+        plutonTexture = new Texture(Gdx.files.internal("pluton.png"));
+        plutonSprite = new Sprite(plutonTexture, 0, 0, 32, 32);
+
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
 
@@ -80,10 +91,24 @@ public class GameView extends ScreenAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         update();
+        batch.setProjectionMatrix(camera.combined);
 
         levelLoader.getRenderer().setView(camera);
         levelLoader.getRenderer().render();
+
+        batch.begin();
+            plutonSprite.draw(batch);
+
+            for (Zombie zombie : zombies) {
+                Sprite s = levelLoader.spriteHashMap.get("zombie");
+                s.setPosition(zombie.getPosition().x - s.getWidth()/2, zombie.getPosition().y - s.getHeight()/2);
+                s.draw(batch);
+                zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+            }
+        batch.end();
+
         renderer.render(world, camera.combined);
     }
 
@@ -110,6 +135,8 @@ public class GameView extends ScreenAdapter {
     }
 
     private void update() {
+        plutonSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
+
         if (!(joueur.getPosition().x + CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - CAMERA_WIDTH/2 < 0))
             camera.position.x = joueur.getPosition().x;
 
@@ -118,10 +145,12 @@ public class GameView extends ScreenAdapter {
 
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
         joueur.update();
-        for (Zombie zombie : zombies) {
-            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
-        }
 
         camera.update();
+    }
+
+    public void setToDestroy(Zombie zombie) {
+        zombie.dispose();
+        this.zombies.remove(zombie);
     }
 }

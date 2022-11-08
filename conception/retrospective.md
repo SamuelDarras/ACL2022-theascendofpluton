@@ -11,10 +11,14 @@ Finir toutes les taches dans les temps et meilleure réparation dans le temps du
 
 # Sprint 1
 ## Ce qui s'est bien passé
+Meilleure communication au sein de l'équipe durant ce sprint.
+Les tâches "commencée" sont finies.
 
 ## Ce qui s'est mal passé
+Le travail a mal été réparti dans la durée du sprint.
 
 ## Décision pour le prochain sprint 
+Meilleure réparation dans le temps du travail demandé
 
 # Sprint 2
 ## Ce qui s'est bien passé
