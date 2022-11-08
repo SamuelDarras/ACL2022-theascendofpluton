@@ -59,6 +59,7 @@ public class GameView extends ScreenAdapter {
 
         mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
+
         levelLoader.addObstacles(world);
         zombies = levelLoader.addZombies(world);
 
@@ -83,6 +84,9 @@ public class GameView extends ScreenAdapter {
 
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
+        contactListener = new PlayerContactListener();
+        world.setContactListener(contactListener);
+
 
     }
 

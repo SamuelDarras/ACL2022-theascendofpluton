@@ -36,7 +36,6 @@ public class LevelLoader {
         spriteHashMap.put("zombie", zombie);
     }
 
-    public void load(String level_name) {
     /**
      * Charge la TiledMap et créé le renderer
      * @param level_name
@@ -96,8 +95,7 @@ public class LevelLoader {
 
         mapPuddles.forEach((key, value)->{
             for(float[] verticies : value){
-                //new AcidPuddle();
-                new Obstacle(world, key[0], key[1], verticies);
+                new AcidPuddle(world, key[0], key[1], verticies, 5);
             }
         });
     }

@@ -12,7 +12,7 @@ public class AcidPuddle {
     }
 
     //x,y postion de l'acide dans le monde avec son nombre de dégâts infligé au entité
-    public AcidPuddle(World world, float x, float y,float damage){
+    public AcidPuddle(World world, float x, float y, float[] verticies, float damage){
         bodyDef  = new BodyDef();
         bodyDef.position.set(x, y);
         body = world.createBody(bodyDef);
@@ -20,7 +20,7 @@ public class AcidPuddle {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor = true;
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(4f,4f);
+        shape.set(verticies);
 
         fixtureDef.shape = shape;
 

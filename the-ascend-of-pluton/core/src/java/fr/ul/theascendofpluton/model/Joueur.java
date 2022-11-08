@@ -152,4 +152,8 @@ public class Joueur {
         this.life -= n;
         // System.out.println(this.life);
     }
+
+    public float getLife() {
+        return life;
+    }
 }
