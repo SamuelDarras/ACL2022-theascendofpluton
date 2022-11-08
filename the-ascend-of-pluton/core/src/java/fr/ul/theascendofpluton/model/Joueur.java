@@ -15,7 +15,7 @@ public class Joueur {
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
-    private boolean shouldAttack;
+    private boolean shouldAttack = false;
 
     public boolean isShouldAttack() {
         return shouldAttack;
@@ -85,7 +85,7 @@ public class Joueur {
 
         PolygonShape p = new PolygonShape();
         p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, 0f, .25f, p)).setUserData("player");
+        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
         p.dispose();
 
         body.setUserData(this);
@@ -113,11 +113,12 @@ public class Joueur {
             for (Body body : bodies) {
                 if (body.getUserData() instanceof Zombie) {
                     Zombie z = (Zombie) body.getUserData();
-                    if (z.getDistance(body.getPosition()) < range) {
+                    if (z.getDistance(getPosition()) < range) {
                         inflictDamage(z);
                     }
                 }
             }
+            shouldAttack = false;
         }
 
         if (somthingDone) {
@@ -149,6 +150,6 @@ public class Joueur {
 
     public void receiveDamage(float n){
         this.life -= n;
-        System.out.println(this.life);
+        // System.out.println(this.life);
     }
 }
