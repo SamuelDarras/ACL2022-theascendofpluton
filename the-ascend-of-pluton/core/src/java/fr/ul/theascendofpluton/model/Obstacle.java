@@ -37,7 +37,7 @@ public class Obstacle {
         fixtureDef.shape = shape;
 
         body.setFixedRotation(true);
-        body.createFixture(fixtureDef);
+        body.createFixture(fixtureDef).setUserData("obstacle");
         body.setUserData(this);
         shape.dispose();
     }
