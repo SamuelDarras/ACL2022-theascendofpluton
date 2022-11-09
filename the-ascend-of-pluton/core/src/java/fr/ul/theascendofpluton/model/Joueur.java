@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 public class Joueur {
 
@@ -14,6 +15,15 @@ public class Joueur {
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
+    private boolean shouldAttack = false;
+
+    public boolean isShouldAttack() {
+        return shouldAttack;
+    }
+
+    public void setShouldAttack(boolean shouldAttack) {
+        this.shouldAttack = shouldAttack;
+    }
 
     public boolean isShouldGoRight() {
         return shouldGoRight;
@@ -47,19 +57,26 @@ public class Joueur {
         this.shouldGoDown = shouldGoDown;
     }
 
-    private float l = 1f;
-    private float h = 1f;
+    private float strength = 10f;
+    private float range = 12f;
+
+    private float l = 5f;
+    private float h = 6f;
 
     private World world;
     private Body body;
+    private float life;
 
     private final float VELOCITY = 20f;
+
+    public final String name = "player";
 
     public Joueur(World world) {
         this.world = world;
     }
 
-    public void register(float x, float y) {
+    public void register(float x, float y, float life) {
+        this.life = life;
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -68,26 +85,40 @@ public class Joueur {
 
         PolygonShape p = new PolygonShape();
         p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, .1f, .25f, p));
+        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
         p.dispose();
 
         body.setUserData(this);
     }
 
     public void update() {
-        boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp;
+        boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp || shouldAttack;
 
         if (shouldGoLeft) {
-            body.applyLinearImpulse(-VELOCITY, 0f, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(-VELOCITY, 0f).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoRight) {
-            body.applyLinearImpulse(VELOCITY, 0f, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(VELOCITY, 0f).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoUp) {
-            body.applyLinearImpulse(0f, VELOCITY, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(0f, VELOCITY).add(body.getLinearVelocity()).nor().scl(VELOCITY));
         }
         if (shouldGoDown) {
-            body.applyLinearImpulse(0f, -VELOCITY, getPosition().x, getPosition().y, true);
+            body.setLinearVelocity(new Vector2(0f, -VELOCITY).add(body.getLinearVelocity()).nor().scl(VELOCITY));
+        }
+        if (shouldAttack) {
+            Array<Body> bodies = new Array<>();
+            world.getBodies(bodies);
+
+            for (Body body : bodies) {
+                if (body.getUserData() instanceof Zombie) {
+                    Zombie z = (Zombie) body.getUserData();
+                    if (z.getDistance(getPosition()) < range) {
+                        inflictDamage(z);
+                    }
+                }
+            }
+            shouldAttack = false;
         }
 
         if (somthingDone) {
@@ -95,6 +126,7 @@ public class Joueur {
         } else {
             body.setLinearVelocity(0f, 0f);
         }
+
     }
 
     public Vector2 getPosition() {
@@ -110,5 +142,18 @@ public class Joueur {
         fixtureDef.shape = s;
 
         return fixtureDef;
+    }
+
+    public void inflictDamage(Zombie target) {
+        target.receiveDamage(strength);
+    }
+
+    public void receiveDamage(float n){
+        this.life -= n;
+        // System.out.println(this.life);
+    }
+
+    public float getLife() {
+        return life;
     }
 }
