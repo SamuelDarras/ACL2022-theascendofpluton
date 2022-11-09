@@ -11,4 +11,8 @@ Le joueur peut récolter de l'équipement et de l'argent en tuant des ennemis da
 
 # Exécution
 
-Se placer dans `./the-ascend-of-pluton` et exécuter `./gradlew run`
+Se placer dans `./the-ascend-of-pluton` et exécuter 
+```sh
+$ gradle wrapper
+$ ./gradlew run
+```
