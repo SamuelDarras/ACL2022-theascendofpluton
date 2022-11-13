@@ -83,6 +83,7 @@
  <objectgroup id="3" name="Player" class="Entity">
   <object id="1" name="Pluton" class="Player" x="416" y="352">
    <properties>
+    <property name="monnaie" type="float" value="0"/>
     <property name="vie" type="float" value="100"/>
    </properties>
    <point/>
@@ -91,36 +92,67 @@
  <objectgroup id="4" name="Zombies">
   <properties>
    <property name="damage" type="float" value="5"/>
+   <property name="monnaie" type="float" value="2"/>
    <property name="vie" type="float" value="15"/>
   </properties>
   <object id="4" x="474" y="104">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="5" x="536" y="99">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="6" x="597" y="140">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="7" x="510" y="156">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="8" x="451" y="158">
+   <properties>
+    <property name="monnaie" type="float" value="1"/>
+   </properties>
    <point/>
   </object>
   <object id="9" x="610" y="200">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="10" x="541" y="236">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="11" x="640" y="271">
+   <properties>
+    <property name="monnaie" type="float" value="3"/>
+   </properties>
    <point/>
   </object>
   <object id="12" x="655" y="212">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
   <object id="13" x="575" y="280">
+   <properties>
+    <property name="monnaie" type="float" value="2"/>
+   </properties>
    <point/>
   </object>
  </objectgroup>

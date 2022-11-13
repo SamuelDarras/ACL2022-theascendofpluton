@@ -5,6 +5,9 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import fr.ul.theascendofpluton.view.GameView;
 
+import java.net.CacheRequest;
+
+
 public class Zombie {
     private BodyDef bodyDef;
     private Body body;
@@ -12,16 +15,18 @@ public class Zombie {
     public final String name = "zombie";
     public float life;
     public float damage;
+    public float money;
 
     private GameView gv;
     private World world;
 
     //x,y postion de l'ennemi dans le monde
-    public Zombie(World world, float x, float y, float life, float damage, GameView gv){
+    public Zombie(World world, float x, float y, float life, float damage, GameView gv, float money){
         this.life = life;
         this.damage = damage;
         this.world = world;
         this.gv = gv;
+        this.money = money;
 
         bodyDef  = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -41,6 +46,7 @@ public class Zombie {
         body.createFixture(fixtureDef).setUserData("zombie");
         body.setUserData(this);
         shape.dispose();
+
     }
 
     //x,y coordonnées à atteindre
@@ -64,7 +70,6 @@ public class Zombie {
             gv.setToDestroy(this);
             // world.destroyBody(this.body);
         }
-        // System.out.println(life);
     }
 
     public float getDistance(Vector2 position) {
@@ -79,4 +84,7 @@ public class Zombie {
         return body.getPosition();
     }
 
+    public float getMoney() {
+        return money;
+    }
 }

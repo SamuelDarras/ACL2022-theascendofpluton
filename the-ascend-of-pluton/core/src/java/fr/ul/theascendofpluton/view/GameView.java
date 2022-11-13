@@ -66,7 +66,8 @@ public class GameView extends ScreenAdapter {
         joueur = new Joueur(world);
         joueur.register((float) mapObjectPluton.getProperties().get("x"),
                 (float) mapObjectPluton.getProperties().get("y"),
-                (float) mapObjectPluton.getProperties().get("vie"));
+                (float) mapObjectPluton.getProperties().get("vie"),
+                (float) mapObjectPluton.getProperties().get("monnaie"));
 
         camera = new OrthographicCamera();
         camera.position.x = joueur.getPosition().x;
@@ -155,6 +156,9 @@ public class GameView extends ScreenAdapter {
 
     public void setToDestroy(Zombie zombie) {
         zombie.dispose();
+        //À la mort du zombie, le joueur gagne de l'argent
+        joueur.receiveMoney(zombie.getMoney());
+        System.out.println(joueur.getMoney());
         this.zombies.remove(zombie);
     }
 }

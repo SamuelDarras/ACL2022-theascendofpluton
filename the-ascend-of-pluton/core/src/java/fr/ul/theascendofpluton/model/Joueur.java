@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Joueur {
 
+
     private boolean shouldGoRight = false;
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
@@ -66,6 +67,7 @@ public class Joueur {
     private World world;
     private Body body;
     private float life;
+    private float money;
 
     private final float VELOCITY = 20f;
 
@@ -75,8 +77,9 @@ public class Joueur {
         this.world = world;
     }
 
-    public void register(float x, float y, float life) {
+    public void register(float x, float y, float life, float money) {
         this.life = life;
+        this.money = money;
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -148,12 +151,17 @@ public class Joueur {
         target.receiveDamage(strength);
     }
 
-    public void receiveDamage(float n){
-        this.life -= n;
-        // System.out.println(this.life);
+    public void receiveDamage(float damage){
+        this.life -= damage;
     }
-
+    public void receiveMoney(float monnaie){
+        this.money += monnaie;
+    }
     public float getLife() {
         return life;
+    }
+
+    public float getMoney() {
+        return money;
     }
 }

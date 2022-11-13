@@ -7,10 +7,10 @@ import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import fr.ul.theascendofpluton.model.AcidPuddle;
+import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.model.Obstacle;
@@ -109,11 +109,12 @@ public class LevelLoader {
         Set<Zombie> zombies = new HashSet<>();
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
         float vie = (float) mapLayerZombies.getProperties().get("vie");
-        ;
         float damage = (float) mapLayerZombies.getProperties().get("damage");
+        //float money = (float) mapLayerZombies.getProperties().get("monnaie");
         for (MapObject mapObject : mapLayerZombies.getObjects()) {
             zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"),
-                    (float) mapObject.getProperties().get("y"), vie, damage, gv));
+                    (float) mapObject.getProperties().get("y"), vie, damage, gv,
+                    (float) mapObject.getProperties().get("monnaie")));
         }
         return zombies;
     }
