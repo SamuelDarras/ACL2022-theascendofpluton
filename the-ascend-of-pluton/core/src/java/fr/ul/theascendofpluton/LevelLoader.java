@@ -7,9 +7,10 @@ import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import fr.ul.theascendofpluton.helper.MapGraph;
+import fr.ul.theascendofpluton.mapElement.Node;
 import fr.ul.theascendofpluton.model.AcidPuddle;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.view.GameView;
@@ -22,11 +23,16 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
 
+    //graph map for A*
+    public MapGraph mapGraph;
+
     private GameView gv;
     public Map<String, Sprite> spriteHashMap;
 
     public LevelLoader(GameView gv) {
         this.gv = gv;
+
+        mapGraph = new MapGraph();
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
         Sprite zombie = new Sprite(zomTexture, 13, 36, 32, 27);
@@ -43,6 +49,8 @@ public class LevelLoader {
     public void load(String level_name){
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        //createMapGraph((TiledMapTileLayer)tiledMap.getLayers().get("sol"));
     }
 
     public MapRenderer getRenderer() {
@@ -116,6 +124,38 @@ public class LevelLoader {
                     (float) mapObject.getProperties().get("y"), vie, damage, gv));
         }
         return zombies;
+    }
+
+    public void createMapGraph(TiledMapTileLayer mapLayer){
+        for (int i = 0; i < mapLayer.getWidth(); i++) {
+            for (int j = 0; j < mapLayer.getHeight(); j++) {
+                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
+                if (cell != null){
+                    mapGraph.addNode(i+"-"+j, new Node(i * mapLayer.getTileWidth(), j * mapLayer.getTileHeight()));
+                }
+            }
+        }
+
+        //System.out.println(mapGraph.nodes);
+
+        for (int i = 0; i < mapLayer.getWidth(); i++) {
+            for (int j = 0; j < mapLayer.getHeight(); j++) {
+                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
+                if (cell != null){
+                    Node node = mapGraph.nodes.get(i+"-"+j);
+                    for (int k = i-1; k < i+2; k++){
+                        for (int l = j-1; k < j+2; j++){
+                            TiledMapTileLayer.Cell neighborCell = mapLayer.getCell(k, l);
+                            //System.out.println(node + " -- " + neighborCell + " -- " + mapGraph.nodes.get(k+"-"+l));
+                            if (neighborCell != null){
+                                mapGraph.connectNodes(node, mapGraph.nodes.get(k+"-"+l));
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public int getLevelWidth() {
