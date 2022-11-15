@@ -6,9 +6,11 @@ import fr.ul.theascendofpluton.model.Joueur;
 
 public class PlayerControlListener implements InputProcessor {
     private Joueur joueur;
+    private boolean debugMode;
 
     public PlayerControlListener(Joueur joueur) {
         this.joueur = joueur;
+        debugMode = false;
     }
 
     @Override
@@ -31,9 +33,12 @@ public class PlayerControlListener implements InputProcessor {
             joueur.setShouldGoDown(true);
             r = true;
         }
-        
         if (keycode == Input.Keys.SPACE) {
             joueur.setShouldAttack(true);
+            r = true;
+        }
+        if(keycode == Input.Keys.B){
+            debugMode = !debugMode;
             r = true;
         }
 
@@ -90,5 +95,9 @@ public class PlayerControlListener implements InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         return false;
+    }
+
+    public boolean isDebugMode(){
+        return debugMode;
     }
 }

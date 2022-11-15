@@ -149,10 +149,14 @@ public class Joueur {
     }
 
     public void receiveDamage(float n){
-        this.life -= n;
-        // System.out.println(this.life);
+        if(!isDead()){
+            this.life -= n;
+        }
     }
 
+    public boolean isDead(){
+        return life <= 0f;
+    }
     public float getLife() {
         return life;
     }

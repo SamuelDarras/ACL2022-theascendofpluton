@@ -125,4 +125,8 @@ public class LevelLoader {
     public int getLevelHeight() {
         return (int) tiledMap.getProperties().get("height");
     }
+
+    public void dispose(){
+        tiledMap.dispose();
+    }
 }

@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,11 +15,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 
+import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
 import fr.ul.theascendofpluton.model.Zombie;
@@ -27,69 +31,55 @@ import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.model.Obstacle;
 
 public class GameView extends ScreenAdapter {
-    private final float CAMERA_HEIGHT = (32*9)/1.5f;
-    private final float CAMERA_WIDTH = (32*16)/1.5f;
+    private final Pluton game;
+    private final LevelLoader levelLoader;
+    private final Viewport vp;
+    private final OrthographicCamera camera;
+    private final Box2DDebugRenderer debugRenderer;
+    private final World world;
+    private final PlayerControlListener c;
+    private final Joueur joueur;
+    private final Texture plutonTexture;
+    private final Sprite plutonSprite;
+    private final Set<Zombie> zombies;
 
-    Viewport vp;
-    OrthographicCamera camera;
 
-    SpriteBatch batch;
-
-    Texture plutonTexture;
-    Sprite plutonSprite;
-
-    Box2DDebugRenderer renderer;
-    World world;
-
-    LevelLoader levelLoader;
-
-    Joueur joueur;
-    MapObject mapObjectPluton;
-    PlayerControlListener c;
-    PlayerContactListener contactListener;
-
-    MapObjects zombiesMo;
-    Set<Zombie> zombies;
-    Obstacle o;
-
-    public GameView() {
+    public GameView(Pluton game) {
         super();
+        this.game = game;
         levelLoader = new LevelLoader(this);
         levelLoader.load("pluton");
 
-        mapObjectPluton = levelLoader.getPluton();
+        MapObject mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
-
-        levelLoader.addObstacles(world);
-        zombies = levelLoader.addZombies(world);
-
         joueur = new Joueur(world);
         joueur.register((float) mapObjectPluton.getProperties().get("x"),
                 (float) mapObjectPluton.getProperties().get("y"),
                 (float) mapObjectPluton.getProperties().get("vie"));
 
+        levelLoader.addObstacles(world);
+        zombies = levelLoader.addZombies(world);
+
         camera = new OrthographicCamera();
         camera.position.x = joueur.getPosition().x;
         camera.position.y = joueur.getPosition().y;
 
-        vp = new FitViewport(CAMERA_WIDTH, CAMERA_HEIGHT, camera);
+        vp = new FitViewport(Pluton.CAMERA_WIDTH, Pluton.CAMERA_HEIGHT, camera);
         vp.apply();
 
-        renderer = new Box2DDebugRenderer();
+        debugRenderer = new Box2DDebugRenderer();
 
-        batch = new SpriteBatch();
-
-        plutonTexture = new Texture(Gdx.files.internal("pluton.png"));
+        plutonTexture = new Texture(Gdx.files.internal("player.png"));
         plutonSprite = new Sprite(plutonTexture, 0, 0, 32, 32);
 
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
-        contactListener = new PlayerContactListener();
+
+        PlayerContactListener contactListener = new PlayerContactListener();
         world.setContactListener(contactListener);
 
 
     }
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -97,34 +87,32 @@ public class GameView extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         update();
-        batch.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
 
         levelLoader.getRenderer().setView(camera);
-        levelLoader.getRenderer().render();
 
-        batch.begin();
-            plutonSprite.draw(batch);
+        game.batch.begin();
+
+        if(c.isDebugMode()){
+            debugRenderer.render(world, camera.combined);
+        }
+        else{
+            levelLoader.getRenderer().render();
+            plutonSprite.draw(game.batch);
 
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
                 s.setPosition(zombie.getPosition().x - s.getWidth()/2, zombie.getPosition().y - s.getHeight()/2);
-                s.draw(batch);
-                zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+                s.draw(game.batch);
             }
-        batch.end();
-
-        renderer.render(world, camera.combined);
+        }
+        game.batch.end();
     }
 
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, levelLoader.getLevelWidth(), levelLoader.getLevelHeight());
-        if(joueur == null){
-            camera.position.set((float) mapObjectPluton.getProperties().get("x"), (float) mapObjectPluton.getProperties().get("y"), 0);
-        }
-        else{
-            camera.position.set(joueur.getPosition().x,joueur.getPosition().y, 0);
-        }
+        camera.position.set(joueur.getPosition().x,joueur.getPosition().y, 0);
         camera.update();
 
         levelLoader.getRenderer().setView(camera);
@@ -134,23 +122,40 @@ public class GameView extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        renderer.dispose();
+        levelLoader.dispose();
+        debugRenderer.dispose();
         world.dispose();
     }
 
     private void update() {
         plutonSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
 
-        if (!(joueur.getPosition().x + CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - CAMERA_WIDTH/2 < 0))
+        if (!(joueur.getPosition().x + Pluton.CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - Pluton.CAMERA_WIDTH/2 < 0))
             camera.position.x = joueur.getPosition().x;
 
-        if (!(joueur.getPosition().y + CAMERA_HEIGHT/2 > levelLoader.getLevelHeight() * 32 || joueur.getPosition().y - CAMERA_HEIGHT/2 < 0))
+        if (!(joueur.getPosition().y + Pluton.CAMERA_HEIGHT/2 > levelLoader.getLevelHeight() * 32 || joueur.getPosition().y - Pluton.CAMERA_HEIGHT/2 < 0))
             camera.position.y = joueur.getPosition().y;
 
+        if(joueur.isDead()){
+            game_over();
+        }
+        else{
+            joueur.update();
+        }
+
+        for(Zombie zombie : zombies){
+            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+        }
+
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
-        joueur.update();
 
         camera.update();
+    }
+
+    private void game_over() {
+        Music gameOverMusic = Pluton.manager.get("sounds/death.ogg", Music.class);
+        gameOverMusic.setOnCompletionListener(music -> game.setScreen(new GameOverView(game)));
+        gameOverMusic.play();
     }
 
     public void setToDestroy(Zombie zombie) {

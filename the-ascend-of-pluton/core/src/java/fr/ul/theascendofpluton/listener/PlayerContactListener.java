@@ -20,7 +20,7 @@ public class PlayerContactListener implements ContactListener {
 
 
         //Lorsque le Joueur rentre en collision avec l'acide
-        System.out.println(fixture_a.getUserData());
+        //System.out.println(fixture_a.getUserData());
         if (fixture_b.getUserData().equals("acid") && fixture_a.getUserData().equals("player")) {
             Joueur entity_a = (Joueur) fixture_a.getBody().getUserData();
 
