@@ -14,7 +14,6 @@ public class Pluton extends Game {
     public SpriteBatch batch;
     public static AssetManager manager;
 
-
     @Override
     public void create() {
         batch = new SpriteBatch();

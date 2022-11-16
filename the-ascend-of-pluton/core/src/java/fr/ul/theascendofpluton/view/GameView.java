@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -39,9 +40,8 @@ public class GameView extends ScreenAdapter {
     private final World world;
     private final PlayerControlListener c;
     private final Joueur joueur;
-    private final Texture plutonTexture;
-    private final Sprite plutonSprite;
     private final Set<Zombie> zombies;
+    private boolean finished = false;
 
 
     public GameView(Pluton game) {
@@ -69,16 +69,40 @@ public class GameView extends ScreenAdapter {
 
         debugRenderer = new Box2DDebugRenderer();
 
-        plutonTexture = new Texture(Gdx.files.internal("player.png"));
-        plutonSprite = new Sprite(plutonTexture, 0, 0, 32, 32);
+
 
         c = new PlayerControlListener(joueur);
         Gdx.input.setInputProcessor(c);
 
         PlayerContactListener contactListener = new PlayerContactListener();
         world.setContactListener(contactListener);
+    }
+    private void update() {
 
+        if (!(joueur.getPosition().x + Pluton.CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - Pluton.CAMERA_WIDTH/2 < 0))
+            camera.position.x = joueur.getPosition().x;
 
+        if (!(joueur.getPosition().y + Pluton.CAMERA_HEIGHT/2 > levelLoader.getLevelHeight() * 32 || joueur.getPosition().y - Pluton.CAMERA_HEIGHT/2 < 0))
+            camera.position.y = joueur.getPosition().y;
+
+        if(!finished){
+            if(joueur.isDead()){
+                finished = true;
+                //world.setContactListener(null); au cas ou ça sigsegv plus tard
+                game_over();
+            }
+            else{
+                joueur.update();
+            }
+        }
+
+        for(Zombie zombie : zombies){
+            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+        }
+
+        world.step(Gdx.graphics.getDeltaTime(), 2, 2);
+
+        camera.update();
     }
     @Override
     public void render(float delta) {
@@ -87,6 +111,8 @@ public class GameView extends ScreenAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         update();
+
+
         game.batch.setProjectionMatrix(camera.combined);
 
         levelLoader.getRenderer().setView(camera);
@@ -98,7 +124,12 @@ public class GameView extends ScreenAdapter {
         }
         else{
             levelLoader.getRenderer().render();
-            plutonSprite.draw(game.batch);
+
+            joueur.updatePlayerSprite(delta);
+
+            Sprite playerSprite = joueur.getPlayerSprite();
+            playerSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
+            playerSprite.draw(game.batch);
 
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
@@ -127,35 +158,15 @@ public class GameView extends ScreenAdapter {
         world.dispose();
     }
 
-    private void update() {
-        plutonSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
-
-        if (!(joueur.getPosition().x + Pluton.CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - Pluton.CAMERA_WIDTH/2 < 0))
-            camera.position.x = joueur.getPosition().x;
-
-        if (!(joueur.getPosition().y + Pluton.CAMERA_HEIGHT/2 > levelLoader.getLevelHeight() * 32 || joueur.getPosition().y - Pluton.CAMERA_HEIGHT/2 < 0))
-            camera.position.y = joueur.getPosition().y;
-
-        if(joueur.isDead()){
-            game_over();
-        }
-        else{
-            joueur.update();
-        }
-
-        for(Zombie zombie : zombies){
-            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
-        }
-
-        world.step(Gdx.graphics.getDeltaTime(), 2, 2);
-
-        camera.update();
-    }
 
     private void game_over() {
         Music gameOverMusic = Pluton.manager.get("sounds/death.ogg", Music.class);
-        gameOverMusic.setOnCompletionListener(music -> game.setScreen(new GameOverView(game)));
+        gameOverMusic.setOnCompletionListener(music -> {
+            game.setScreen(new GameOverView(game));
+            dispose();
+        });
         gameOverMusic.play();
+
     }
 
     public void setToDestroy(Zombie zombie) {
