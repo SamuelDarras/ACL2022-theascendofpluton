@@ -1,6 +1,7 @@
 package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -13,6 +14,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import fr.ul.theascendofpluton.Pluton;
 
 public class Joueur {
     private float strength = 10f;
@@ -22,11 +25,15 @@ public class Joueur {
     private World world;
     private Body body;
     private float life;
+    private boolean isTakingContinuousDamage = false;
+    private float continuousDamageValue = 0;
+    private boolean invulnerable = false;
     private final float VELOCITY = 20f;
     public final String name = "player";
     private float stateTimer = 0;
     private final Sprite playerSprite;
     private TextureRegion playerStand;
+    private TextureRegion playerInvulterable;
     private Animation<TextureRegion> death_anim;
     private boolean shouldGoRight = false;
     private boolean shouldGoLeft = false;
@@ -50,6 +57,8 @@ public class Joueur {
         //A FAIRE SI L'ON VEUT DES ANIMATIONS
 
         playerStand = textureRegions[0][0];
+
+        playerInvulterable = textureRegions[13][1];
 
         System.arraycopy(textureRegions[15], 0, death_frames, 0, 8);
         death_anim = new Animation<>(0.025f, death_frames);
@@ -86,6 +95,9 @@ public class Joueur {
         if(isDead()){
             playerSprite.setRegion(death_anim.getKeyFrame(stateTimer, false));
             stateTimer += delta;
+        }
+        else if(invulnerable){
+            playerSprite.setRegion(playerInvulterable);
         }
         else{
             playerSprite.setRegion(playerStand);
@@ -132,6 +144,9 @@ public class Joueur {
     }
 
     public void update() {
+        if(isTakingContinuousDamage){
+            receiveDamage(continuousDamageValue);
+        }
         boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp || shouldAttack;
 
         if (shouldGoLeft) {
@@ -180,9 +195,29 @@ public class Joueur {
     }
 
     public void receiveDamage(float n){
-        if(!isDead()){
+        if(!isDead() && !invulnerable){
             this.life -= n;
+
+            if(!isDead()){
+                Pluton.manager.get("sounds/hurt.ogg", Music.class).play();
+                invulnerable = true;
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        invulnerable = false;
+                    }
+                },.5f);
+            }
         }
+    }
+    public void receiveContinuousDamage(float n){
+        isTakingContinuousDamage = true;
+        continuousDamageValue = n;
+    }
+
+    public void stopContinuousDamage(){
+        isTakingContinuousDamage = false;
+        continuousDamageValue = 0;
     }
 
     public boolean isDead(){

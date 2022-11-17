@@ -5,9 +5,9 @@ import com.badlogic.gdx.physics.box2d.*;
 public class AcidPuddle {
     public BodyDef bodyDef;
     public Body body;
-    public static float damage;
+    public  float damage;
 
-    public static float getDamage() {
+    public  float getDamage() {
         return damage;
     }
 
