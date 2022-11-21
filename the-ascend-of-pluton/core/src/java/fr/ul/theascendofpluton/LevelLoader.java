@@ -126,4 +126,8 @@ public class LevelLoader {
     public int getLevelHeight() {
         return (int) tiledMap.getProperties().get("height");
     }
+
+    public TiledMap getMap() {
+        return this.tiledMap;
+    }
 }

@@ -24,8 +24,6 @@ import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
 
-import fr.ul.theascendofpluton.model.Obstacle;
-
 public class GameView extends ScreenAdapter {
     private final float CAMERA_HEIGHT = (32*9)/1.5f;
     private final float CAMERA_WIDTH = (32*16)/1.5f;
@@ -50,12 +48,15 @@ public class GameView extends ScreenAdapter {
 
     MapObjects zombiesMo;
     Set<Zombie> zombies;
-    Obstacle o;
+
+    MiniMap map;
 
     public GameView() {
         super();
         levelLoader = new LevelLoader(this);
         levelLoader.load("pluton");
+
+        map = new MiniMap(levelLoader.getMap(), levelLoader.getPluton());
 
         mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
@@ -115,6 +116,8 @@ public class GameView extends ScreenAdapter {
         batch.end();
 
         renderer.render(world, camera.combined);
+        
+        map.render();
     }
 
     @Override
@@ -150,6 +153,8 @@ public class GameView extends ScreenAdapter {
 
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
         joueur.update();
+
+        map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
 
         camera.update();
     }
