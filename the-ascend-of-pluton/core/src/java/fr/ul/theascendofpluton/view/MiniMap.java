@@ -14,13 +14,13 @@ public class MiniMap {
     public MiniMap(TiledMap map, MapObject pluton) {
         renderer = new OrthogonalTiledMapRenderer(map);
         camera.setToOrtho(false, 30, 20);
-        camera.zoom = 60;
+        camera.zoom = 90;
         this.pluton = pluton;
     }
 
     public void update(float x, float y, float width, float height) {
-        camera.position.x = width - 400;
-        camera.position.y = height - 100;
+        camera.position.x = width - 800;
+        camera.position.y = height - 400;
         camera.update();
 
         renderer.setView(camera);
