@@ -19,9 +19,11 @@ public class Pluton extends Game {
         batch = new SpriteBatch();
 
         manager = new AssetManager();
+
         manager.load("sounds/hurt.ogg", Music.class);
         manager.load("sounds/game_over.wav", Music.class);
         manager.load("sounds/death.ogg", Music.class);
+        manager.load("sounds/heal.wav", Music.class);
         manager.finishLoading();
 
         setScreen(new GameView(this));

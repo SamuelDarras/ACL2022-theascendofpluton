@@ -6,14 +6,17 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import fr.ul.theascendofpluton.model.AcidPuddle;
+import fr.ul.theascendofpluton.model.Apple;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.model.Obstacle;
+import sun.tools.jconsole.JConsole;
 
 import java.util.*;
 import java.util.Map;
@@ -23,17 +26,27 @@ public class LevelLoader {
     private TiledMapRenderer tiledMapRenderer;
 
     private GameView gv;
+    private Set<Zombie> zombies;
+    private Set<Apple> apples;
     public Map<String, Sprite> spriteHashMap;
 
     public LevelLoader(GameView gv) {
         this.gv = gv;
+        zombies = new HashSet<>();
+        apples = new HashSet<>();
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
         Sprite zombie = new Sprite(zomTexture, 13, 36, 32, 27);
         zombie.setScale(.3f);
 
+        Texture appleTexture = new Texture(Gdx.files.internal("apple.png"));
+        Sprite appleSprite = new Sprite(appleTexture,0,0,64,64);
+        appleSprite.setScale(.25f);
+
         spriteHashMap = new HashMap<>();
         spriteHashMap.put("zombie", zombie);
+        spriteHashMap.put("apple", appleSprite);
+
     }
 
     /**
@@ -105,17 +118,28 @@ public class LevelLoader {
      * @param world
      * @return le set contenant les zombies ajoutés au monde.
      */
-    public Set<Zombie> addZombies(World world){
-        Set<Zombie> zombies = new HashSet<>();
+    public void addObjects(World world){
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
         float vie = (float) mapLayerZombies.getProperties().get("vie");
-        ;
         float damage = (float) mapLayerZombies.getProperties().get("damage");
         for (MapObject mapObject : mapLayerZombies.getObjects()) {
             zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"),
                     (float) mapObject.getProperties().get("y"), vie, damage, gv));
         }
-        return zombies;
+
+        MapLayer mapLayerApples = tiledMap.getLayers().get("Apples");
+        TiledMapTileSet appleTileSet = tiledMap.getTileSets().getTileSet("Apple");
+        System.out.println(appleTileSet);
+
+        float heal = (float) mapLayerApples.getProperties().get("heal");
+        for (MapObject mapObject : mapLayerApples.getObjects()){
+            TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
+            Polygon polygon = tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class).get(0).getPolygon();
+            polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
+            apples.add(new Apple(world,tiledMapTileMapObject.getX()-(float)mapLayerApples.getProperties().get("offsetX"), tiledMapTileMapObject.getY()-(float)mapLayerApples.getProperties().get("offsetY"), polygon.getTransformedVertices(), heal, gv));
+            // je ne sais pas pourquoi je dois mettre ces offsets
+        }
+
     }
 
     public int getLevelWidth() {
@@ -126,7 +150,15 @@ public class LevelLoader {
         return (int) tiledMap.getProperties().get("height");
     }
 
+    public Set<Zombie> getZombies(){
+        return zombies;
+    }
+
     public void dispose(){
         tiledMap.dispose();
+    }
+
+    public Set<Apple> getApples() {
+        return apples;
     }
 }

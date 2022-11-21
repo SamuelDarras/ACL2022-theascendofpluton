@@ -61,7 +61,7 @@ public class Zombie {
     public void receiveDamage(float damage) {
         life -= damage;
         if (life <= 0f) {
-            gv.setToDestroy(this);
+            dispose();
             // world.destroyBody(this.body);
         }
         // System.out.println(life);
@@ -72,6 +72,7 @@ public class Zombie {
     }
 
     public void dispose() {
+        gv.setToDestroy(this);
         world.destroyBody(body);
     }
 

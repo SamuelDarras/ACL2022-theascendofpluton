@@ -2,6 +2,7 @@ package fr.ul.theascendofpluton.listener;
 
 import com.badlogic.gdx.physics.box2d.*;
 import fr.ul.theascendofpluton.model.AcidPuddle;
+import fr.ul.theascendofpluton.model.Apple;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.model.Zombie;
 
@@ -19,20 +20,22 @@ public class PlayerContactListener implements ContactListener {
             maybePlayerFixture = contact.getFixtureA();
         }
 
-
-        //Lorsque le Joueur rentre en collision avec l'acide
-        System.out.println(maybePlayerFixture.getUserData());
-        if (otherFixture.getUserData().equals("acid") && maybePlayerFixture.getUserData().equals("player")) {
+        if(maybePlayerFixture.getUserData().equals("player")){
             Joueur joueur = (Joueur) maybePlayerFixture.getBody().getUserData();
-            AcidPuddle acidPuddle =  (AcidPuddle) otherFixture.getBody().getUserData() ;
-
-            joueur.receiveContinuousDamage(acidPuddle.getDamage());
-            System.out.println("Vie restante : " + joueur.getLife());
-        } else if (otherFixture.getUserData().equals("zombie") && maybePlayerFixture.getUserData().equals("player")) {
-            Joueur joueur = (Joueur) maybePlayerFixture.getBody().getUserData();
-            Zombie zombie = (Zombie) otherFixture.getBody().getUserData();
-
-            joueur.receiveDamage(zombie.damage);
+            switch ((String)otherFixture.getUserData()){
+                case "acid":
+                    AcidPuddle acidPuddle =  (AcidPuddle) otherFixture.getBody().getUserData() ;
+                    joueur.receiveContinuousDamage(acidPuddle.getDamage());
+                    break;
+                case "zombie":
+                    Zombie zombie = (Zombie) otherFixture.getBody().getUserData();
+                    joueur.receiveDamage(zombie.damage);
+                    break;
+                case "apple":
+                    Apple apple = (Apple) otherFixture.getBody().getUserData();
+                    joueur.receiveLife(apple.getHeal());
+                    break;
+            }
             System.out.println("Vie restante : " + joueur.getLife());
         }
     }

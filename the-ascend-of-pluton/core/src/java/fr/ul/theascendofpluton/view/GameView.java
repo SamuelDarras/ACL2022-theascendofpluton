@@ -25,6 +25,7 @@ import com.badlogic.gdx.maps.MapObjects;
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
+import fr.ul.theascendofpluton.model.Apple;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
@@ -41,6 +42,7 @@ public class GameView extends ScreenAdapter {
     private final PlayerControlListener c;
     private final Joueur joueur;
     private final Set<Zombie> zombies;
+    private final Set<Apple> apples;
     private boolean finished = false;
 
 
@@ -48,7 +50,7 @@ public class GameView extends ScreenAdapter {
         super();
         this.game = game;
         levelLoader = new LevelLoader(this);
-        levelLoader.load("pluton");
+        levelLoader.load("plutonV2");
 
         MapObject mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
@@ -58,7 +60,9 @@ public class GameView extends ScreenAdapter {
                 (float) mapObjectPluton.getProperties().get("vie"));
 
         levelLoader.addObstacles(world);
-        zombies = levelLoader.addZombies(world);
+        levelLoader.addObjects(world);
+        zombies = levelLoader.getZombies();
+        apples = levelLoader.getApples();
 
         camera = new OrthographicCamera();
         camera.position.x = joueur.getPosition().x;
@@ -99,6 +103,9 @@ public class GameView extends ScreenAdapter {
         for(Zombie zombie : zombies){
             zombie.update(joueur.getPosition().x, joueur.getPosition().y);
         }
+        for(Apple apple : apples){
+            apple.update();
+        }
 
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
 
@@ -130,7 +137,11 @@ public class GameView extends ScreenAdapter {
             Sprite playerSprite = joueur.getPlayerSprite();
             playerSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
             playerSprite.draw(game.batch);
-
+            for(Apple apple : apples){
+                Sprite s = levelLoader.spriteHashMap.get("apple");
+                s.setPosition(apple.getPosition().x, apple.getPosition().y - s.getHeight()/2 *.25f);
+                s.draw(game.batch);
+            }
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
                 s.setPosition(zombie.getPosition().x - s.getWidth()/2, zombie.getPosition().y - s.getHeight()/2);
@@ -170,7 +181,9 @@ public class GameView extends ScreenAdapter {
     }
 
     public void setToDestroy(Zombie zombie) {
-        zombie.dispose();
         this.zombies.remove(zombie);
+    }
+    public void setToDestroy2(Apple apple){
+        this.apples.remove(apple);
     }
 }

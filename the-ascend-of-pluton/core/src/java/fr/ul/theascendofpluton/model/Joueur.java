@@ -24,6 +24,7 @@ public class Joueur {
     private float h = 6f;
     private World world;
     private Body body;
+    private float maxLife;
     private float life;
     private boolean isTakingContinuousDamage = false;
     private float continuousDamageValue = 0;
@@ -67,6 +68,7 @@ public class Joueur {
 
     public void register(float x, float y, float life) {
         this.life = life;
+        maxLife = life;
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -210,9 +212,14 @@ public class Joueur {
             }
         }
     }
+
     public void receiveContinuousDamage(float n){
         isTakingContinuousDamage = true;
         continuousDamageValue = n;
+    }
+    public void receiveLife(float n){
+        life = Math.min(life + n, maxLife);
+        Pluton.manager.get("sounds/heal.wav", Music.class).play();
     }
 
     public void stopContinuousDamage(){
