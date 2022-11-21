@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 
 public class Joueur {
 
-
     private boolean shouldGoRight = false;
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
@@ -159,6 +158,10 @@ public class Joueur {
     }
     public float getLife() {
         return life;
+    }
+
+    public float getStrength() {
+        return strength;
     }
 
     public float getMoney() {

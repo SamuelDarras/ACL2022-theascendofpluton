@@ -1,0 +1,12 @@
+sourceCompatibility = 1.8
+
+test {
+    useJUnitPlatform()
+}
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = [ "src/java" ]
+sourceSets.test.java.srcDirs = [ "src/tests" ]
+
+eclipse.project.name = appName + "-core"

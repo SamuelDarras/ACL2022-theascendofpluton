@@ -5,9 +5,11 @@ import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -34,7 +36,7 @@ public class GameView extends ScreenAdapter {
     OrthographicCamera camera;
 
     SpriteBatch batch;
-
+    BitmapFont font;
     Texture plutonTexture;
     Sprite plutonSprite;
 
@@ -54,6 +56,7 @@ public class GameView extends ScreenAdapter {
 
     public GameView() {
         super();
+
         levelLoader = new LevelLoader(this);
         levelLoader.load("pluton");
 
@@ -79,7 +82,7 @@ public class GameView extends ScreenAdapter {
         renderer = new Box2DDebugRenderer();
 
         batch = new SpriteBatch();
-
+        font = new BitmapFont();
         plutonTexture = new Texture(Gdx.files.internal("pluton.png"));
         plutonSprite = new Sprite(plutonTexture, 0, 0, 32, 32);
 
@@ -104,8 +107,8 @@ public class GameView extends ScreenAdapter {
         levelLoader.getRenderer().render();
 
         batch.begin();
-            plutonSprite.draw(batch);
-
+        showStats();
+        plutonSprite.draw(batch);
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
                 s.setPosition(zombie.getPosition().x - s.getWidth()/2, zombie.getPosition().y - s.getHeight()/2);
@@ -160,5 +163,16 @@ public class GameView extends ScreenAdapter {
         joueur.receiveMoney(zombie.getMoney());
         System.out.println(joueur.getMoney());
         this.zombies.remove(zombie);
+    }
+
+    public void showStats(){
+
+        font.draw(batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168, camera.position.y-72);
+        font.draw(batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168, camera.position.y-80);
+        font.draw(batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168, camera.position.y-88);
+
+        //batch = new SpriteBatch();
+        //
+        font.getData().setScale(0.4f, 0.4f);
     }
 }
