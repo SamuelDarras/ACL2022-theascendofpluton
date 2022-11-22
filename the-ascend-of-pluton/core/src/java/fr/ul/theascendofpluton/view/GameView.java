@@ -5,14 +5,17 @@ import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.maps.MapObject;
@@ -20,6 +23,7 @@ import com.badlogic.gdx.maps.MapObjects;
 
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
+import fr.ul.theascendofpluton.mapElement.Node;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
@@ -51,6 +55,8 @@ public class GameView extends ScreenAdapter {
     MapObjects zombiesMo;
     Set<Zombie> zombies;
     Obstacle o;
+
+    ShapeRenderer shapeRenderer;
 
     public GameView() {
         super();
@@ -87,7 +93,7 @@ public class GameView extends ScreenAdapter {
         contactListener = new PlayerContactListener();
         world.setContactListener(contactListener);
 
-
+        shapeRenderer = new ShapeRenderer();
     }
 
     @Override
@@ -98,12 +104,13 @@ public class GameView extends ScreenAdapter {
 
         update();
         batch.setProjectionMatrix(camera.combined);
+        shapeRenderer.setProjectionMatrix(camera.combined);
 
         levelLoader.getRenderer().setView(camera);
         levelLoader.getRenderer().render();
 
         batch.begin();
-            plutonSprite.draw(batch);
+            /*plutonSprite.draw(batch);
 
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
@@ -111,6 +118,25 @@ public class GameView extends ScreenAdapter {
                 s.draw(batch);
                 zombie.update(joueur.getPosition().x, joueur.getPosition().y);
             }
+*/
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.CYAN);
+
+
+            for (Node n : levelLoader.tmpNode){
+                shapeRenderer.circle(n.getX(), n.getY(), 1);
+            }
+            /*
+            for (Array<Vector2> a : levelLoader.tmpPolygon){
+                for (Vector2 c : a){
+                    shapeRenderer.circle(c.x, c.y, 1);
+                }
+            }
+             */
+
+
+            shapeRenderer.end();
+
         batch.end();
 
         renderer.render(world, camera.combined);
