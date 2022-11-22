@@ -15,9 +15,9 @@ public class Apple {
     private GameView gv;
     private World world;
 
-    public Apple(World world, float x, float y, float[] verticies, float heal, GameView gv){
+    public Apple(World world, Vector2 coords, float[] verticies, float heal, GameView gv){
         bodyDef  = new BodyDef();
-        bodyDef.position.set(x, y);
+        bodyDef.position.set(coords);
         body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();

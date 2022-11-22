@@ -43,8 +43,23 @@ public class Joueur {
     private boolean shouldAttack = false;
 
 
-    public Joueur(World world) {
+    public Joueur(World world, Vector2 coords, float[] verticies, float life) {
         this.world = world;
+        this.life = life;
+        maxLife = life;
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(coords);
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        body = world.createBody(bodyDef);
+        body.setFixedRotation(true);
+
+        PolygonShape p = new PolygonShape();
+        p.set(verticies);
+        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
+        p.dispose();
+
+        body.setUserData(this);
+
         playerSprite = new Sprite();
         playerSprite.setSize(32, 32);
         initTextures();
@@ -66,22 +81,7 @@ public class Joueur {
 
     }
 
-    public void register(float x, float y, float life) {
-        this.life = life;
-        maxLife = life;
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(x, y);
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        body = world.createBody(bodyDef);
-        body.setFixedRotation(true);
 
-        PolygonShape p = new PolygonShape();
-        p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
-        p.dispose();
-
-        body.setUserData(this);
-    }
     static FixtureDef createFixture(float density, float resitution, float firction, Shape s) {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.density = density;

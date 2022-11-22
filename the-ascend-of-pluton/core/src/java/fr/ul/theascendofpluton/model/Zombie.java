@@ -17,7 +17,7 @@ public class Zombie {
     private World world;
 
     //x,y postion de l'ennemi dans le monde
-    public Zombie(World world, float x, float y, float life, float damage, GameView gv){
+    public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, GameView gv){
         this.life = life;
         this.damage = damage;
         this.world = world;
@@ -25,12 +25,12 @@ public class Zombie {
 
         bodyDef  = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x, y);
+        bodyDef.position.set(coords);
         body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(4f,5f);
+        shape.set(verticies);
 
         fixtureDef.shape = shape;
         fixtureDef.density = .5f;

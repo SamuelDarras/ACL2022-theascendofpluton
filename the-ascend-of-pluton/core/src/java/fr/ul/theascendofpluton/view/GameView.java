@@ -52,17 +52,14 @@ public class GameView extends ScreenAdapter {
         levelLoader = new LevelLoader(this);
         levelLoader.load("plutonV2");
 
-        MapObject mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
-        joueur = new Joueur(world);
-        joueur.register((float) mapObjectPluton.getProperties().get("x"),
-                (float) mapObjectPluton.getProperties().get("y"),
-                (float) mapObjectPluton.getProperties().get("vie"));
+
 
         levelLoader.addObstacles(world);
         levelLoader.addObjects(world);
         zombies = levelLoader.getZombies();
         apples = levelLoader.getApples();
+        joueur = levelLoader.getPluton();
 
         camera = new OrthographicCamera();
         camera.position.x = joueur.getPosition().x;
@@ -101,8 +98,9 @@ public class GameView extends ScreenAdapter {
         }
 
         for(Zombie zombie : zombies){
-            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+            //zombie.update(joueur.getPosition().x, joueur.getPosition().y);
         }
+
         for(Apple apple : apples){
             apple.update();
         }
@@ -135,7 +133,7 @@ public class GameView extends ScreenAdapter {
             joueur.updatePlayerSprite(delta);
 
             Sprite playerSprite = joueur.getPlayerSprite();
-            playerSprite.setPosition(joueur.getPosition().x - 16 , joueur.getPosition().y - 16);
+            playerSprite.setPosition(joueur.getPosition().x  , joueur.getPosition().y );
             playerSprite.draw(game.batch);
             for(Apple apple : apples){
                 Sprite s = levelLoader.spriteHashMap.get("apple");
@@ -144,7 +142,7 @@ public class GameView extends ScreenAdapter {
             }
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
-                s.setPosition(zombie.getPosition().x - s.getWidth()/2, zombie.getPosition().y - s.getHeight()/2);
+                s.setPosition(zombie.getPosition().x + 6*.25f,  zombie.getPosition().y - 40*.25f);
                 s.draw(game.batch);
             }
         }

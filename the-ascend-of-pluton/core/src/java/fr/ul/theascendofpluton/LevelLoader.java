@@ -9,13 +9,11 @@ import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import fr.ul.theascendofpluton.model.AcidPuddle;
-import fr.ul.theascendofpluton.model.Apple;
-import fr.ul.theascendofpluton.model.Zombie;
+import fr.ul.theascendofpluton.model.*;
 import fr.ul.theascendofpluton.view.GameView;
-import fr.ul.theascendofpluton.model.Obstacle;
 import sun.tools.jconsole.JConsole;
 
 import java.util.*;
@@ -28,6 +26,7 @@ public class LevelLoader {
     private GameView gv;
     private Set<Zombie> zombies;
     private Set<Apple> apples;
+    private Joueur joueur;
     public Map<String, Sprite> spriteHashMap;
 
     public LevelLoader(GameView gv) {
@@ -62,53 +61,70 @@ public class LevelLoader {
         return tiledMapRenderer;
     }
 
-    public MapObject getPluton() {
-        return tiledMap.getLayers().get("Player").getObjects().get("Pluton");
+    public Joueur getPluton() {
+        return joueur;
     }
 
-    /**
-     * récupère les coordonnées et les sommets des polygones présents dans une couche de la map
-     * @param mapLayer couche de la map contenant des tuiles
-     */
-    private Map<int[], Array<float[]>> getPolygonesFromLayer(TiledMapTileLayer mapLayer){
-        Map<int [], Array<float[]>> map = new HashMap<>();
-        for (int i = 0; i < mapLayer.getWidth(); i++) {
-            for (int j = 0; j < mapLayer.getHeight(); j++) {
-                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
-                if (cell != null){
-                    int[] coords = new int[]{i * mapLayer.getTileWidth(), j * mapLayer.getTileHeight()};
-                    Array<float[]> arrayVerticies = new Array<>();
-                    for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)){
-                        arrayVerticies.add(polygonMapObject.getPolygon().getTransformedVertices());
+    private Map<Vector2, Array<float[]>> getPolygones(MapLayer mapLayer){
+        Map<Vector2, Array<float[]>> map = new HashMap<>();
+        if(mapLayer instanceof TiledMapTileLayer){
+            TiledMapTileLayer tiledMapTileLayer = (TiledMapTileLayer) mapLayer;
+            for (int i = 0; i < tiledMapTileLayer.getWidth(); i++) {
+                for (int j = 0; j < tiledMapTileLayer.getHeight(); j++) {
+                    TiledMapTileLayer.Cell cell = tiledMapTileLayer.getCell(i, j);
+                    if (cell != null){
+                        Array<float[]> arrayVerticies = new Array<>();
+                        for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)){
+                            arrayVerticies.add(polygonMapObject.getPolygon().getTransformedVertices());
+                        }
+                        map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), arrayVerticies);
                     }
-                    map.put(coords, arrayVerticies);
                 }
+            }
+        }
+        else {
+            for(MapObject mapObject : mapLayer.getObjects()){
+                TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
+                Array<float[]> arrayVerticies = new Array<>();
+                for(PolygonMapObject polygonMapObject: tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class)){
+                    Polygon polygon = polygonMapObject.getPolygon();
+                    polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
+                    arrayVerticies.add(polygon.getTransformedVertices());
+                }
+                Vector2 coords = new Vector2(tiledMapTileMapObject.getX() - (float)mapLayer.getProperties().get("offsetX"), tiledMapTileMapObject.getY() - (float)mapLayer.getProperties().get("offsetY")); // TODO: deduction automatique du décalage
+                map.put(coords, arrayVerticies);
             }
         }
         return map;
     }
+
+//     for (MapObject mapObject : mapLayerApples.getObjects()){
+//        TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
+//        Polygon polygon = tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class).get(0).getPolygon();
+//        polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
+//        apples.add(new Apple(world,tiledMapTileMapObject.getX()-(float)mapLayerApples.getProperties().get("offsetX"), tiledMapTileMapObject.getY()-(float)mapLayerApples.getProperties().get("offsetY"), polygon.getTransformedVertices(), heal, gv));
+//        // je ne sais pas pourquoi je dois mettre ces offsets
+//    }
 
     /**
      * Ajoute les différents obstacles dans le monde via la tiledMap
      * @param world
      */
     public void addObstacles(World world){
-        Map<int[], Array<float[]>> mapObstacles = new HashMap<>();
-        Map<int[], Array<float[]>> mapPuddles = new HashMap<>();
-
-        mapObstacles.putAll(getPolygonesFromLayer((TiledMapTileLayer)tiledMap.getLayers().get("sol")));
-        mapObstacles.putAll(getPolygonesFromLayer((TiledMapTileLayer)tiledMap.getLayers().get("vide")));
-        mapPuddles.putAll(getPolygonesFromLayer((TiledMapTileLayer)tiledMap.getLayers().get("puddles")));
-
+        Map<Vector2, Array<float[]>> mapObstacles = new HashMap<>();
+        Map<Vector2, Array<float[]>> mapPuddles = new HashMap<>();
+        mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("sol")));
+        mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("vide")));
+        mapPuddles.putAll(getPolygones(tiledMap.getLayers().get("puddles")));
         mapObstacles.forEach((key, value)->{
             for(float[] verticies : value){
-                new Obstacle(world, key[0], key[1], verticies);
+                new Obstacle(world, key, verticies);
             }
         });
 
         mapPuddles.forEach((key, value)->{
             for(float[] verticies : value){
-                new AcidPuddle(world, key[0], key[1], verticies, 5);
+                new AcidPuddle(world, key, verticies, 5);
             }
         });
     }
@@ -120,26 +136,30 @@ public class LevelLoader {
      */
     public void addObjects(World world){
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
-        float vie = (float) mapLayerZombies.getProperties().get("vie");
-        float damage = (float) mapLayerZombies.getProperties().get("damage");
-        for (MapObject mapObject : mapLayerZombies.getObjects()) {
-            zombies.add(new Zombie(world, (float) mapObject.getProperties().get("x"),
-                    (float) mapObject.getProperties().get("y"), vie, damage, gv));
-        }
+        float life = (float)mapLayerZombies.getProperties().get("life");
+        float damage = (float)mapLayerZombies.getProperties().get("damage");
+        Map<Vector2, Array<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
+        mapZombies.forEach((key, value)->{
+            for(float[] verticies : value){
+                zombies.add(new Zombie(world, key, verticies, life, damage, gv));
+            }
+        });
 
         MapLayer mapLayerApples = tiledMap.getLayers().get("Apples");
-        TiledMapTileSet appleTileSet = tiledMap.getTileSets().getTileSet("Apple");
-        System.out.println(appleTileSet);
+        float heal = (float)mapLayerApples.getProperties().get("heal");
+        Map<Vector2, Array<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
+        mapApples.forEach((coords, value)->{
+            for(float[] verticies : value){
+                apples.add(new Apple(world, coords, verticies, heal, gv));
+            }
+        });
 
-        float heal = (float) mapLayerApples.getProperties().get("heal");
-        for (MapObject mapObject : mapLayerApples.getObjects()){
-            TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
-            Polygon polygon = tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class).get(0).getPolygon();
-            polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
-            apples.add(new Apple(world,tiledMapTileMapObject.getX()-(float)mapLayerApples.getProperties().get("offsetX"), tiledMapTileMapObject.getY()-(float)mapLayerApples.getProperties().get("offsetY"), polygon.getTransformedVertices(), heal, gv));
-            // je ne sais pas pourquoi je dois mettre ces offsets
-        }
-
+        MapLayer mapLayerJoueur = tiledMap.getLayers().get("Player");
+        MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
+        Map<Vector2, Array<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
+        mapPlayer.forEach((coords, value)->{
+            joueur = new Joueur(world, coords, value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
+        });
     }
 
     public int getLevelWidth() {
