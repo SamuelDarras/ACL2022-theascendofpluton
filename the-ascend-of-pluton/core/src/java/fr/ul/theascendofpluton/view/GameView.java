@@ -134,8 +134,7 @@ public class GameView extends ScreenAdapter {
         else{
             levelLoader.getRenderer().render();
 
-        showStats();
-        joueur.updatePlayerSprite(delta);
+            joueur.updatePlayerSprite(delta);
             Sprite playerSprite = joueur.getPlayerSprite();
             playerSprite.setPosition(joueur.getPosition().x  , joueur.getPosition().y );
             playerSprite.draw(game.batch);
@@ -149,10 +148,11 @@ public class GameView extends ScreenAdapter {
                 s.setPosition(zombie.getPosition().x + 6*.25f,  zombie.getPosition().y - 40*.25f);
                 s.draw(game.batch);
             }
+            showStats();
+            map.render();
         }
         game.batch.end();
         
-        map.render();
     }
 
     @Override
@@ -196,10 +196,10 @@ public class GameView extends ScreenAdapter {
     }
 
     public void showStats(){
-
-        font.draw(game.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168, camera.position.y-72);
-        font.draw(game.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168, camera.position.y-80);
-        font.draw(game.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168, camera.position.y-88);
+        // TODO: ajouter une autre caméra
+        font.draw(game.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168f, camera.position.y-72f);
+        font.draw(game.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168f, camera.position.y-80f);
+        font.draw(game.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
 
         //batch = new SpriteBatch();
         //
