@@ -14,7 +14,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import fr.ul.theascendofpluton.model.*;
 import fr.ul.theascendofpluton.view.GameView;
-import sun.tools.jconsole.JConsole;
 
 import java.util.*;
 import java.util.Map;

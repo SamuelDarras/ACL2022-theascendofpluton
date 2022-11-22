@@ -9,25 +9,31 @@ public class MiniMap {
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera         camera = new OrthographicCamera();
 
-    private MapObject pluton;
+    private boolean show = false;
 
-    public MiniMap(TiledMap map, MapObject pluton) {
+    public MiniMap(TiledMap map) {
         renderer = new OrthogonalTiledMapRenderer(map);
         camera.setToOrtho(false, 30, 20);
-        camera.zoom = 90;
-        this.pluton = pluton;
+        camera.zoom = 40;
     }
 
     public void update(float x, float y, float width, float height) {
-        camera.position.x = width - 800;
-        camera.position.y = height - 400;
+        camera.position.x = x;
+        camera.position.y = y;
+        // camera.position.x = width + map.getProperties().get("width", Integer.class)*32;
+        // camera.position.y = height + map.getProperties().get("height", Integer.class)*32;
         camera.update();
 
         renderer.setView(camera);
     }
 
+    public void toggle() {
+        show = !show;
+    }
+
     public void render() {
-        renderer.render(new int[]{1, 2, 3});
-        renderer.renderObject(pluton);
+        if (show) {
+            renderer.render(new int[]{1, 2, 3});
+        }
     }
 }

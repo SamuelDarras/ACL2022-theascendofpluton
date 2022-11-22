@@ -54,11 +54,9 @@ public class GameView extends ScreenAdapter {
         levelLoader = new LevelLoader(this);
         levelLoader.load("plutonV2");
 
-        map = new MiniMap(levelLoader.getMap(), levelLoader.getPluton());
+        map = new MiniMap(levelLoader.getMap());
 
-        mapObjectPluton = levelLoader.getPluton();
         world = new World(new Vector2(0f, 0f), true);
-
 
         levelLoader.addObstacles(world);
         levelLoader.addObjects(world);
@@ -77,7 +75,7 @@ public class GameView extends ScreenAdapter {
 
         font = new BitmapFont();
 
-        c = new PlayerControlListener(joueur);
+        c = new PlayerControlListener(joueur, map);
         Gdx.input.setInputProcessor(c);
 
         PlayerContactListener contactListener = new PlayerContactListener();
@@ -103,7 +101,7 @@ public class GameView extends ScreenAdapter {
         }
 
         for(Zombie zombie : zombies){
-            //zombie.update(joueur.getPosition().x, joueur.getPosition().y);
+            zombie.update(joueur.getPosition().x, joueur.getPosition().y);
         }
 
         for(Apple apple : apples){
@@ -113,6 +111,7 @@ public class GameView extends ScreenAdapter {
         world.step(Gdx.graphics.getDeltaTime(), 2, 2);
 
         camera.update();
+        map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
     }
     @Override
     public void render(float delta) {
@@ -183,7 +182,6 @@ public class GameView extends ScreenAdapter {
         });
         gameOverMusic.play();
 
-        map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
 
     }
 
@@ -199,9 +197,9 @@ public class GameView extends ScreenAdapter {
 
     public void showStats(){
 
-        font.draw(batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168, camera.position.y-72);
-        font.draw(batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168, camera.position.y-80);
-        font.draw(batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168, camera.position.y-88);
+        font.draw(game.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168, camera.position.y-72);
+        font.draw(game.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168, camera.position.y-80);
+        font.draw(game.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168, camera.position.y-88);
 
         //batch = new SpriteBatch();
         //

@@ -41,6 +41,7 @@ public class Joueur {
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
     private boolean shouldAttack = false;
+    private float monnaie = 0f;
 
 
     public Joueur(World world, Vector2 coords, float[] verticies, float life) {
@@ -236,5 +237,17 @@ public class Joueur {
 
     public Sprite getPlayerSprite(){
         return playerSprite;
+    }
+
+    public void receiveMoney(float money) {
+        this.monnaie += money;
+    }
+
+    public float getMoney() {
+        return this.monnaie;
+    }
+
+    public float getStrength() {
+        return strength;
     }
 }

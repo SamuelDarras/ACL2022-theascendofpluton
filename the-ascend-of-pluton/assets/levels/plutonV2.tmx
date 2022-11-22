@@ -187,6 +187,7 @@
  <objectgroup id="4" name="Zombies">
   <properties>
    <property name="damage" type="float" value="5"/>
+   <property name="monnaie" type="float" value="2"/>
    <property name="life" type="float" value="15"/>
    <property name="offsetX" type="float" value="12"/>
    <property name="offsetY" type="float" value="0"/>

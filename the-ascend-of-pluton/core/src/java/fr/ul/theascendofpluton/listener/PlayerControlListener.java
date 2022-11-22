@@ -3,13 +3,16 @@ package fr.ul.theascendofpluton.listener;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import fr.ul.theascendofpluton.model.Joueur;
+import fr.ul.theascendofpluton.view.MiniMap;
 
 public class PlayerControlListener implements InputProcessor {
     private Joueur joueur;
     private boolean debugMode;
+    private MiniMap map;
 
-    public PlayerControlListener(Joueur joueur) {
+    public PlayerControlListener(Joueur joueur, MiniMap map) {
         this.joueur = joueur;
+        this.map = map;
         debugMode = false;
     }
 
@@ -39,6 +42,11 @@ public class PlayerControlListener implements InputProcessor {
         }
         if(keycode == Input.Keys.B){
             debugMode = !debugMode;
+            r = true;
+        }
+        if(keycode == Input.Keys.M){
+            System.out.println("ici");
+            map.toggle();
             r = true;
         }
 
