@@ -72,7 +72,7 @@
     <polygon points="0,0 13,0 13,5 7,12 0,12"/>
    </object>
    <object id="2" x="0" y="0">
-    <polygon points="32,15 32,32 20,32 20,25 28,15"/>
+    <polygon points="32,17 32,32 20,32 20,25 28,17"/>
    </object>
   </objectgroup>
  </tile>

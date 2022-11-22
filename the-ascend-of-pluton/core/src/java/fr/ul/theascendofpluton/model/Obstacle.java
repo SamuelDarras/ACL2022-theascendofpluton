@@ -1,5 +1,6 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
@@ -25,9 +26,9 @@ public class Obstacle {
         shape.dispose();
     }
 
-    public Obstacle(World world, int x, int y, float[] vertices){
+    public Obstacle(World world, Vector2 coords, float[] vertices){
         bodyDef  = new BodyDef();
-        bodyDef.position.set(x, y);
+        bodyDef.position.set(coords);
         body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();

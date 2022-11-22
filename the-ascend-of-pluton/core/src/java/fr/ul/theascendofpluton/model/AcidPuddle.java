@@ -1,20 +1,21 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class AcidPuddle {
     public BodyDef bodyDef;
     public Body body;
-    public static float damage;
+    public  float damage;
 
-    public static float getDamage() {
+    public  float getDamage() {
         return damage;
     }
 
     //x,y postion de l'acide dans le monde avec son nombre de dégâts infligé au entité
-    public AcidPuddle(World world, float x, float y, float[] verticies, float damage){
+    public AcidPuddle(World world, Vector2 coords, float[] verticies, float damage){
         bodyDef  = new BodyDef();
-        bodyDef.position.set(x, y);
+        bodyDef.position.set(coords);
         body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();

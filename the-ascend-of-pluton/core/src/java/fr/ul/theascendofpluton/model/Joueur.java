@@ -1,5 +1,11 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.math.Vector2;
@@ -8,15 +14,97 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import fr.ul.theascendofpluton.Pluton;
 
 public class Joueur {
-
+    private float strength = 10f;
+    private float range = 12f;
+    private float l = 5f;
+    private float h = 6f;
+    private World world;
+    private Body body;
+    private float maxLife;
+    private float life;
+    private boolean isTakingContinuousDamage = false;
+    private float continuousDamageValue = 0;
+    private boolean invulnerable = false;
+    private final float VELOCITY = 20f;
+    public final String name = "player";
+    private float stateTimer = 0;
+    private final Sprite playerSprite;
+    private TextureRegion playerStand;
+    private TextureRegion playerInvulterable;
+    private Animation<TextureRegion> death_anim;
     private boolean shouldGoRight = false;
     private boolean shouldGoLeft = false;
     private boolean shouldGoUp = false;
     private boolean shouldGoDown = false;
     private boolean shouldAttack = false;
 
+
+    public Joueur(World world, Vector2 coords, float[] verticies, float life) {
+        this.world = world;
+        this.life = life;
+        maxLife = life;
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(coords);
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        body = world.createBody(bodyDef);
+        body.setFixedRotation(true);
+
+        PolygonShape p = new PolygonShape();
+        p.set(verticies);
+        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
+        p.dispose();
+
+        body.setUserData(this);
+
+        playerSprite = new Sprite();
+        playerSprite.setSize(32, 32);
+        initTextures();
+    }
+
+    private void initTextures() {
+        Texture plutonTexture = new Texture(Gdx.files.internal("player.png"));
+        TextureRegion[][] textureRegions = TextureRegion.split(plutonTexture, plutonTexture.getWidth() / 10, plutonTexture.getHeight() / 24); // max 10 textures/ligne et 24 lignes
+        TextureRegion[] death_frames = new TextureRegion[8];
+
+        //A FAIRE SI L'ON VEUT DES ANIMATIONS
+
+        playerStand = textureRegions[0][0];
+
+        playerInvulterable = textureRegions[13][1];
+
+        System.arraycopy(textureRegions[15], 0, death_frames, 0, 8);
+        death_anim = new Animation<>(0.025f, death_frames);
+
+    }
+
+
+    static FixtureDef createFixture(float density, float resitution, float firction, Shape s) {
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.density = density;
+        fixtureDef.restitution = resitution;
+        fixtureDef.friction = firction;
+
+        fixtureDef.shape = s;
+
+        return fixtureDef;
+    }
+
+    public void updatePlayerSprite(float delta){
+        if(isDead()){
+            playerSprite.setRegion(death_anim.getKeyFrame(stateTimer, false));
+            stateTimer += delta;
+        }
+        else if(invulnerable){
+            playerSprite.setRegion(playerInvulterable);
+        }
+        else{
+            playerSprite.setRegion(playerStand);
+        }
+    }
     public boolean isShouldAttack() {
         return shouldAttack;
     }
@@ -57,43 +145,10 @@ public class Joueur {
         this.shouldGoDown = shouldGoDown;
     }
 
-    private float strength = 10f;
-    private float range = 12f;
-
-    private float l = 5f;
-    private float h = 6f;
-
-    private World world;
-    private Body body;
-    private float life;
-    private float money;
-
-    private final float VELOCITY = 20f;
-
-    public final String name = "player";
-
-    public Joueur(World world) {
-        this.world = world;
-    }
-
-    public void register(float x, float y, float life, float money) {
-        this.life = life;
-        this.money = money;
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(x, y);
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        body = world.createBody(bodyDef);
-        body.setFixedRotation(true);
-
-        PolygonShape p = new PolygonShape();
-        p.set(new Vector2[] { new Vector2(-l, h), new Vector2(l, h), new Vector2(l, -h), new Vector2(-l, -h) });
-        body.createFixture(createFixture(.5f, .0f, 10f, p)).setUserData("player");
-        p.dispose();
-
-        body.setUserData(this);
-    }
-
     public void update() {
+        if(isTakingContinuousDamage){
+            receiveDamage(continuousDamageValue);
+        }
         boolean somthingDone = shouldGoLeft || shouldGoDown || shouldGoRight || shouldGoUp || shouldAttack;
 
         if (shouldGoLeft) {
@@ -135,36 +190,51 @@ public class Joueur {
         return body.getPosition();
     }
 
-    static FixtureDef createFixture(float density, float resitution, float firction, Shape s) {
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = density;
-        fixtureDef.restitution = resitution;
-        fixtureDef.friction = firction;
 
-        fixtureDef.shape = s;
-
-        return fixtureDef;
-    }
 
     public void inflictDamage(Zombie target) {
         target.receiveDamage(strength);
     }
 
-    public void receiveDamage(float damage){
-        this.life -= damage;
+    public void receiveDamage(float n){
+        if(!isDead() && !invulnerable){
+            this.life -= n;
+
+            if(!isDead()){
+                Pluton.manager.get("sounds/hurt.ogg", Music.class).play();
+                invulnerable = true;
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        invulnerable = false;
+                    }
+                },.5f);
+            }
+        }
     }
-    public void receiveMoney(float monnaie){
-        this.money += monnaie;
+
+    public void receiveContinuousDamage(float n){
+        isTakingContinuousDamage = true;
+        continuousDamageValue = n;
+    }
+    public void receiveLife(float n){
+        life = Math.min(life + n, maxLife);
+        Pluton.manager.get("sounds/heal.wav", Music.class).play();
+    }
+
+    public void stopContinuousDamage(){
+        isTakingContinuousDamage = false;
+        continuousDamageValue = 0;
+    }
+
+    public boolean isDead(){
+        return life <= 0f;
     }
     public float getLife() {
         return life;
     }
 
-    public float getStrength() {
-        return strength;
-    }
-
-    public float getMoney() {
-        return money;
+    public Sprite getPlayerSprite(){
+        return playerSprite;
     }
 }
