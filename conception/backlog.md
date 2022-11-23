@@ -12,13 +12,13 @@
 + Le niveau possède des flaques d'acide qui infligent 3 dégâts au joueur si ce dernier marche dessus,
 
 
-- Le joueur récupère de l'argent lorsqu'il tue un ennemi.
++ Le joueur récupère de l'argent lorsqu'il tue un ennemi.
 - Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis une interface ouverte en appuyant sur la touche "P",
 - Les zombies se déplacent de manière intelligente en esquivant les obstacles,
-- Lorsque le personnage n'a plus de points de vie, la partie se termine et doit tout recommencer,
-- Le joueur peut se repérer dans le niveau,
-- Le joueur peut récupérer des points de vie à certains endroits du niveau,
-- Le joueur peut voir les statistiques de son personnage.
++ Lorsque le personnage n'a plus de points de vie, la partie se termine et doit tout recommencer,
++ Le joueur peut se repérer dans le niveau,
++ Le joueur peut récupérer des points de vie à certains endroits du niveau,
++ Le joueur peut voir les statistiques de son personnage.
 
 
 - Le joueur peut passer au niveau suivant en tuant le boss du niveau courant,
@@ -59,3 +59,11 @@ Objectif : mise en place des systèmes de combat et d'achat.
 - Le joueur peut voir les statistiques de son personnage.
 
 Objectif : mise en place du système d'achat et amélioration de l'interface graphique.
+
+
+# Backlog S3:
+- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis une interface ouverte en appuyant sur la touche "P", (BOUCHER Yohan)
+- Les zombies se déplacent de manière intelligente en esquivant les obstacles, (PHEULPIN Naomi)
+- Le joueur peut passer au niveau suivant en tuant le boss du niveau courant, (GROSJEAN Lucas)
+- Le joueur peut utiliser de l'équipement récupéré en tuant des ennemis,
+- Le joueur peut quitter sa partie et la reprendre où il l'a laissée. (DARRAS Samuel)
