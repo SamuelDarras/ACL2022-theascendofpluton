@@ -40,10 +40,18 @@ Aucune
 # Sprint 2
 
 ## Fonctionnalités réalisées: 
+- Lorsque le personnage n'a plus de points de vie, la partie se termine et doit tout recommencer,
+- Le joueur peut récupérer des points de vie a certains endroits du niveau,
+- Le joueur peut voir les statistiques de son personnage,
+- Le personnage peut gagner de l'argent en tuant des ennemis,
+- Le joueur peut se repérer dans le niveau.
 
-## Fonctionnalités non réalisées: 
+## Fonctionnalités non réalisées:
+- Le joueur peut dépenser son argent pour améliorer son personnage,
+- Les zombies se déplacent de manière intelligente en esquivant les obstacles.
 
 ## Fonctionnalités validées:
+Aucune
 
 ---
 

@@ -22,10 +22,15 @@ Meilleure réparation dans le temps du travail demandé
 
 # Sprint 2
 ## Ce qui s'est bien passé
+Presque toutes les taches prévues sont finies (sauf "Le joueur peut dépenser son argent pour améliorer son personnage")
 
 ## Ce qui s'est mal passé
+Le code est mal organisé et très peu commenté, ce qui ralenti la progression globale.
+Aucun tests n'ont été ralisés.
 
 ## Décision pour le prochain sprint 
+Commenter d'aventage le code.
+Tester.
 
 # Sprint 3
 ## Ce qui s'est bien passé
