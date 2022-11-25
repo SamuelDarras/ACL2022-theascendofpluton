@@ -1,37 +1,27 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 
-import fr.ul.theascendofpluton.view.GameView;
+import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.Pluton;
 
-import java.net.CacheRequest;
-
-
-public class Zombie {
-    private BodyDef bodyDef;
-    private Body body;
-
+public class Zombie extends GameObject {
     public final String name = "zombie";
     public float life;
     public float damage;
     public float money;
 
-    private GameView gv;
-    private World world;
-
     //x,y postion de l'ennemi dans le monde
-    public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, GameView gv, float money){
+    public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, float money){
+        super(coords, world);
         this.life = life;
         this.damage = damage;
-        this.world = world;
-        this.gv = gv;
         this.money = money;
-
-        bodyDef  = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(coords);
-        body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
@@ -42,50 +32,59 @@ public class Zombie {
         fixtureDef.restitution = .1f;
         fixtureDef.friction = .5f;
 
-        body.setFixedRotation(true);
-        body.createFixture(fixtureDef).setUserData("zombie");
-        body.setUserData(this);
+        getBodyDef().type = BodyDef.BodyType.DynamicBody;
+        getBodyDef().position.set(coords);
+        setBody(world.createBody(getBodyDef()));
+
+        getBody().setFixedRotation(true);
+        getBody().createFixture(fixtureDef).setUserData("zombie");
+        getBody().setUserData(this);
         shape.dispose();
 
     }
 
     //x,y coordonnées à atteindre
-    public void update(float x, float y){
-        float target_x = body.getPosition().x - x;
-        float target_y = body.getPosition().y - y;
-        float force_x = 0;
-        float force_y = 0;
+    @Override
+    public void update(GameWorld gameWorld) {
+        // System.out.println(getBody().getPosition());
+        return;
+        // float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
+        // float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
+        // float force_x = 0;
+        // float force_y = 0;
 
-        if (target_x < 0) force_x = 10f;
-        if (target_x > 0) force_x = -10f;
-        if (target_y < 0) force_y = 10f;
-        if (target_y > 0) force_y = -10f;
+        // if (target_x < 0) force_x = 10f;
+        // if (target_x > 0) force_x = -10f;
+        // if (target_y < 0) force_y = 10f;
+        // if (target_y > 0) force_y = -10f;
 
-        body.setLinearVelocity(force_x, force_y);
+        // getBody().setLinearVelocity(force_x, force_y);
+
+        // if (life <= 0f) {
+        //     gameWorld.remove(this);
+        // }
     }
 
     public void receiveDamage(float damage) {
         life -= damage;
-        if (life <= 0f) {
-            dispose();
-            // world.destroyBody(this.body);
-        }
     }
 
     public float getDistance(Vector2 position) {
-        return position.dst(body.getPosition());
-    }
-
-    public void dispose() {
-        gv.setToDestroy(this);
-        world.destroyBody(body);
+        return position.dst(getBody().getPosition());
     }
 
     public Vector2 getPosition() {
-        return body.getPosition();
+        return getBody().getPosition();
     }
 
     public float getMoney() {
         return money;
+    }
+
+    @Override
+    public void render(float delta) {
+        Sprite s = LevelLoader.getInstance().spriteHashMap.get("zombie");
+        s.setPosition(getPosition().x, getPosition().y);
+        s.draw(Pluton.batch);
     }
 }

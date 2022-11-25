@@ -21,19 +21,19 @@ public class PlayerControlListener implements InputProcessor {
         boolean r = false;
 
         if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
-            joueur.setShouldGoRight(true);
+            joueur.addDirection(Joueur.RIGHT);
             r = true;
         }
         if (keycode == Input.Keys.Q || keycode == Input.Keys.LEFT) {
-            joueur.setShouldGoLeft(true);
+            joueur.addDirection(Joueur.LEFT);
             r = true;
         }
         if (keycode == Input.Keys.Z || keycode == Input.Keys.UP) {
-            joueur.setShouldGoUp(true);
+            joueur.addDirection(Joueur.UP);
             r = true;
         }
         if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
-            joueur.setShouldGoDown(true);
+            joueur.addDirection(Joueur.DOWN);
             r = true;
         }
         if (keycode == Input.Keys.SPACE) {
@@ -57,19 +57,19 @@ public class PlayerControlListener implements InputProcessor {
     public boolean keyUp(int keycode) {
         boolean r = false;
         if (keycode == Input.Keys.D || keycode == Input.Keys.RIGHT) {
-            joueur.setShouldGoRight(false);
+            joueur.removeDirection(Joueur.RIGHT);
             r = true;
         }
         if (keycode == Input.Keys.Q || keycode == Input.Keys.LEFT) {
-            joueur.setShouldGoLeft(false);
+            joueur.removeDirection(Joueur.LEFT);
             r = true;
         }
         if (keycode == Input.Keys.Z || keycode == Input.Keys.UP) {
-            joueur.setShouldGoUp(false);
+            joueur.removeDirection(Joueur.UP);
             r = true;
         }
         if (keycode == Input.Keys.S || keycode == Input.Keys.DOWN) {
-            joueur.setShouldGoDown(false);
+            joueur.removeDirection(Joueur.DOWN);
             r = true;
         }
         return r;

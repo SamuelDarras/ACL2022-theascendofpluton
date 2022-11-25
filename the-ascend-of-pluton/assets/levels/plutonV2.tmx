@@ -192,15 +192,6 @@
    <property name="offsetX" type="float" value="12"/>
    <property name="offsetY" type="float" value="0"/>
   </properties>
-  <object id="31" gid="183" x="977.5" y="335.5" width="16" height="16"/>
-  <object id="32" gid="183" x="1197.75" y="219.5" width="16" height="16"/>
-  <object id="33" gid="183" x="1204.25" y="169.25" width="16" height="16"/>
-  <object id="34" gid="183" x="1136.75" y="173" width="16" height="16"/>
-  <object id="35" gid="183" x="1101.25" y="234.25" width="16" height="16"/>
-  <object id="36" gid="183" x="953.5" y="239.25" width="16" height="16"/>
-  <object id="37" gid="183" x="1184.5" y="254" width="16" height="16"/>
-  <object id="38" gid="183" x="1082.25" y="200.75" width="16" height="16"/>
-  <object id="39" gid="183" x="1133.25" y="206.5" width="16" height="16"/>
   <object id="40" gid="183" x="713.75" y="51.5" width="16" height="16"/>
  </objectgroup>
  <objectgroup id="5" name="Apples">

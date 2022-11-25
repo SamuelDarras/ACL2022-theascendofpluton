@@ -1,24 +1,20 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import fr.ul.theascendofpluton.view.GameView;
 
-import java.util.Map;
-import java.util.Set;
+import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.Pluton;
 
-public class Apple {
+public class Apple extends GameObject  {
     private final float heal;
     private boolean used = false;
-    private final BodyDef bodyDef;
-    private final Body body;
-    private GameView gv;
-    private World world;
 
-    public Apple(World world, Vector2 coords, float[] verticies, float heal, GameView gv){
-        bodyDef  = new BodyDef();
-        bodyDef.position.set(coords);
-        body = world.createBody(bodyDef);
+    public Apple(World world, Vector2 coords, float[] verticies, float heal){
+        super(coords, world);
+
+        setBody(world.createBody(getBodyDef()));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor = true;
@@ -27,23 +23,16 @@ public class Apple {
 
         fixtureDef.shape = shape;
 
-        body.setFixedRotation(true);
-        body.createFixture(fixtureDef).setUserData("apple");
-        body.setUserData(this);
+        getBody().setFixedRotation(true);
+        getBody().createFixture(fixtureDef).setUserData("apple");
+        getBody().setUserData(this);
         shape.dispose();
 
-        this.world = world;
         this.heal = heal;
-        this.gv = gv;
-    }
-
-    public void dispose() {
-        gv.setToDestroy2(this);
-        world.destroyBody(body);
     }
 
     public Vector2 getPosition() {
-        return body.getPosition();
+        return getBody().getPosition();
     }
 
     public float getHeal() {
@@ -51,9 +40,18 @@ public class Apple {
         return heal;
     }
 
-    public void update() {
-        if(used){
-            dispose();
+    @Override
+    public void update(GameWorld world) {
+        if(used) {
+            world.remove(this);
         }
+    }
+
+    @Override
+    public void render(float delta) {
+        Sprite s = LevelLoader.getInstance().spriteHashMap.get("apple");
+        s.setPosition(getPosition().x, getPosition().y - s.getHeight()/2 *.25f);
+        s.draw(Pluton.batch);
+        
     }
 }
