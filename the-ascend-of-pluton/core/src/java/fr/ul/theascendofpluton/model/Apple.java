@@ -12,7 +12,7 @@ public class Apple extends GameObject  {
     private boolean used = false;
 
     public Apple(World world, Vector2 coords, float[] verticies, float heal){
-        super(coords, world);
+        super(coords);
 
         setBody(world.createBody(getBodyDef()));
 
@@ -31,10 +31,6 @@ public class Apple extends GameObject  {
         this.heal = heal;
     }
 
-    public Vector2 getPosition() {
-        return getBody().getPosition();
-    }
-
     public float getHeal() {
         used = true;
         return heal;
@@ -49,9 +45,7 @@ public class Apple extends GameObject  {
 
     @Override
     public void render(float delta) {
-        Sprite s = LevelLoader.getInstance().spriteHashMap.get("apple");
-        s.setPosition(getPosition().x, getPosition().y - s.getHeight()/2 *.25f);
-        s.draw(Pluton.batch);
-        
+        super.render();
     }
+
 }

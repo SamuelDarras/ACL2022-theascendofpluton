@@ -3,8 +3,8 @@
  <image source="zombies.png" width="1600" height="64"/>
  <tile id="0">
   <objectgroup draworder="index" id="1">
-   <object id="1" x="0" y="0">
-    <polygon points="64,64 64,0 0,0 0,64"/>
+   <object id="4" x="0" y="0">
+    <polygon points="14,36 44,36 44,64 14,64"/>
    </object>
   </objectgroup>
  </tile>

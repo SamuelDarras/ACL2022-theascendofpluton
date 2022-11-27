@@ -18,7 +18,7 @@ public class Zombie extends GameObject {
 
     //x,y postion de l'ennemi dans le monde
     public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, float money){
-        super(coords, world);
+        super(coords);
         this.life = life;
         this.damage = damage;
         this.money = money;
@@ -46,23 +46,26 @@ public class Zombie extends GameObject {
     //x,y coordonnées à atteindre
     @Override
     public void update(GameWorld gameWorld) {
-        // System.out.println(getBody().getPosition());
-        return;
-        // float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
-        // float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
-        // float force_x = 0;
-        // float force_y = 0;
+//         float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
+//         float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
+//         float force_x = 0;
+//         float force_y = 0;
+//
+//         if (target_x < 0) force_x = 10f;
+//         if (target_x > 0) force_x = -10f;
+//         if (target_y < 0) force_y = 10f;
+//         if (target_y > 0) force_y = -10f;
+//
+//         getBody().setLinearVelocity(force_x, force_y);
+//
+//         if (life <= 0f) {
+//             gameWorld.remove(this);
+//         }
+    }
 
-        // if (target_x < 0) force_x = 10f;
-        // if (target_x > 0) force_x = -10f;
-        // if (target_y < 0) force_y = 10f;
-        // if (target_y > 0) force_y = -10f;
-
-        // getBody().setLinearVelocity(force_x, force_y);
-
-        // if (life <= 0f) {
-        //     gameWorld.remove(this);
-        // }
+    @Override
+    public void render(float delta) {
+        super.render();
     }
 
     public void receiveDamage(float damage) {
@@ -79,12 +82,5 @@ public class Zombie extends GameObject {
 
     public float getMoney() {
         return money;
-    }
-
-    @Override
-    public void render(float delta) {
-        Sprite s = LevelLoader.getInstance().spriteHashMap.get("zombie");
-        s.setPosition(getPosition().x, getPosition().y);
-        s.draw(Pluton.batch);
     }
 }

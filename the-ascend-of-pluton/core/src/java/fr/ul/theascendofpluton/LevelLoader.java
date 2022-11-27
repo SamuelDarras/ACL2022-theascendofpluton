@@ -9,12 +9,14 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.GeometryUtils;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import fr.ul.theascendofpluton.model.*;
 import fr.ul.theascendofpluton.view.GameView;
+import sun.tools.jconsole.JConsole;
 
 import java.util.*;
 import java.util.Map;
@@ -22,31 +24,32 @@ import java.util.Map;
 public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
-
-    private Set<Zombie> zombies;
-    private Set<Apple> apples;
     private Joueur joueur;
     public Map<String, Sprite> spriteHashMap;
+    public Map<String, Vector2> spriteOffsets;
 
     private GameWorld gameWorld;
 
     private static LevelLoader INSTANCE = new LevelLoader();
 
     private LevelLoader() {
-        zombies = new HashSet<>();
-        apples = new HashSet<>();
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
         Sprite zombie = new Sprite(zomTexture, 0, 0, 64, 64);
-        zombie.setScale(.25f);
+        zombie.setSize(16,16);
 
         Texture appleTexture = new Texture(Gdx.files.internal("apple.png"));
         Sprite appleSprite = new Sprite(appleTexture,0,0,64,64);
-        appleSprite.setScale(.25f);
+        appleSprite.setSize(16,16);
 
+        Sprite playerSprite = new Sprite();
+        playerSprite.setSize(32, 32);
+
+        spriteOffsets = new HashMap<>();
         spriteHashMap = new HashMap<>();
-        spriteHashMap.put("zombie", zombie);
-        spriteHashMap.put("apple", appleSprite);
+        spriteHashMap.put(Zombie.class.getSimpleName(), zombie);
+        spriteHashMap.put(Apple.class.getSimpleName(), appleSprite);
+        spriteHashMap.put(Joueur.class.getSimpleName(), playerSprite);
     }
 
     public static LevelLoader getInstance() {
@@ -75,19 +78,24 @@ public class LevelLoader {
         return joueur;
     }
 
-    private Map<Vector2, Array<float[]>> getPolygones(MapLayer mapLayer){
-        Map<Vector2, Array<float[]>> map = new HashMap<>();
+    public Vector2 getCentroid (float[] vertices) {
+        Vector2 centroid = new Vector2();
+        return GeometryUtils.polygonCentroid(vertices, 0, vertices.length, centroid);
+    }
+
+    private Map<Vector2, List<float[]>> getPolygones(MapLayer mapLayer){
+        Map<Vector2, List<float[]>> map = new HashMap<>();
         if(mapLayer instanceof TiledMapTileLayer){
             TiledMapTileLayer tiledMapTileLayer = (TiledMapTileLayer) mapLayer;
             for (int i = 0; i < tiledMapTileLayer.getWidth(); i++) {
                 for (int j = 0; j < tiledMapTileLayer.getHeight(); j++) {
                     TiledMapTileLayer.Cell cell = tiledMapTileLayer.getCell(i, j);
                     if (cell != null){
-                        Array<float[]> arrayVerticies = new Array<>();
+                        List<float[]> arrayVerticies = new ArrayList<>();
                         for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)){
                             arrayVerticies.add(polygonMapObject.getPolygon().getTransformedVertices());
                         }
-                        map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), new Array<>(arrayVerticies));
+                        map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), new ArrayList<>(arrayVerticies));
                     }
                 }
             }
@@ -95,15 +103,27 @@ public class LevelLoader {
         else {
             for(MapObject mapObject : mapLayer.getObjects()){
                 TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
-                Array<float[]> arrayVerticies = new Array<>();
+                List<float[]> arrayVerticies = new ArrayList<>();
+                List<Vector2> arrayCentroid = new ArrayList<>();
                 for(PolygonMapObject polygonMapObject: tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class)){
                     Polygon polygon = polygonMapObject.getPolygon();
                     polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
+                    Vector2 centroid = getCentroid(polygon.getTransformedVertices());
+                    arrayCentroid.add(centroid);
+                    polygon.translate(-centroid.x, -centroid.y);
                     arrayVerticies.add(polygon.getTransformedVertices());
                 }
                 // Vector2 coords = new Vector2(tiledMapTileMapObject.getX() - (float)mapLayer.getProperties().get("offsetX"), tiledMapTileMapObject.getY() - (float)mapLayer.getProperties().get("offsetY")); // TODO: deduction automatique du décalage
-                Vector2 coords = new Vector2(tiledMapTileMapObject.getX(), tiledMapTileMapObject.getY()); // TODO: deduction automatique du décalage
-                map.put(coords, new Array<>(arrayVerticies));
+
+                Vector2 globalCentroid = arrayCentroid.stream().reduce(new Vector2(), Vector2::add);
+                globalCentroid.set(globalCentroid.x/arrayCentroid.size(), globalCentroid.y/arrayCentroid.size());
+                if(!spriteOffsets.containsKey(mapLayer.getName())){
+                    System.out.println(new Vector2(globalCentroid.x, globalCentroid.y - 32 * (2-2*tiledMapTileMapObject.getScaleY())));
+                    spriteOffsets.put(mapLayer.getName(), globalCentroid.add(0, - 32 *(2-2*tiledMapTileMapObject.getScaleY())));
+                }
+                Vector2 coords = globalCentroid.cpy().add(tiledMapTileMapObject.getX(), tiledMapTileMapObject.getY());
+                //Vector2 coords = new Vector2(tiledMapTileMapObject.getX() + (float)tiledMapTileMapObject.getProperties().get("width")/2, tiledMapTileMapObject.getY() + (float)tiledMapTileMapObject.getProperties().get("height")/2); // TODO: deduction automatique du décalage
+                map.put(coords.cpy(), new ArrayList<>(arrayVerticies));
             }
         }
         return map;
@@ -114,8 +134,8 @@ public class LevelLoader {
      * @param world
      */
     public void addObstacles(World world){
-        Map<Vector2, Array<float[]>> mapObstacles = new HashMap<>();
-        Map<Vector2, Array<float[]>> mapPuddles = new HashMap<>();
+        Map<Vector2, List<float[]>> mapObstacles = new HashMap<>();
+        Map<Vector2, List<float[]>> mapPuddles = new HashMap<>();
         mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("sol")));
         mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("vide")));
         mapPuddles.putAll(getPolygones(tiledMap.getLayers().get("puddles")));
@@ -138,29 +158,29 @@ public class LevelLoader {
      * @return le set contenant les zombies ajoutés au monde.
      */
     public void addObjects(World world){
-        MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombies");
+        MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
         float life = (float)mapLayerZombies.getProperties().get("life");
         float damage = (float)mapLayerZombies.getProperties().get("damage");
         float monnaie = (float)mapLayerZombies.getProperties().get("monnaie");
-        Map<Vector2, Array<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
+        Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
         mapZombies.forEach((coords, polygons)->{
             for (float[] polygonVerticies : polygons) {
                 gameWorld.add(new Zombie(world, coords, polygonVerticies, life, damage, monnaie));
             }
         });
 
-        MapLayer mapLayerApples = tiledMap.getLayers().get("Apples");
+        MapLayer mapLayerApples = tiledMap.getLayers().get("Apple");
         float heal = (float)mapLayerApples.getProperties().get("heal");
-        Map<Vector2, Array<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
+        Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
         mapApples.forEach((coords, value)->{
             for(float[] verticies : value){
                 gameWorld.add(new Apple(world, coords, verticies, heal));
             }
         });
 
-        MapLayer mapLayerJoueur = tiledMap.getLayers().get("Player");
+        MapLayer mapLayerJoueur = tiledMap.getLayers().get("Joueur");
         MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
-        Map<Vector2, Array<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
+        Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
         mapPlayer.forEach((coords, value)->{
             joueur = new Joueur(world, coords, value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
             gameWorld.setJoueur(joueur);
@@ -176,16 +196,8 @@ public class LevelLoader {
         return (int) tiledMap.getProperties().get("height");
     }
 
-    public Set<Zombie> getZombies(){
-        return zombies;
-    }
-
     public void dispose(){
         tiledMap.dispose();
-    }
-
-    public Set<Apple> getApples() {
-        return apples;
     }
 
     public TiledMap getMap() {

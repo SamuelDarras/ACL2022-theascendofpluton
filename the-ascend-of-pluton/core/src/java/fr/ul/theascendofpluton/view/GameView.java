@@ -28,15 +28,13 @@ public class GameView extends ScreenAdapter {
     private final PlayerControlListener c;
     private final Joueur joueur;
     private boolean finished = false;
-
     private MiniMap map;
-    private BitmapFont font;
 
     public GameView(Pluton game) {
         super();
         this.game = game;
         levelLoader = LevelLoader.getInstance();
-        levelLoader.load("plutonV2");
+        levelLoader.load("test");
         joueur = levelLoader.getGameWorld().getJoueur();
 
         map = new MiniMap(levelLoader.getMap());
@@ -48,8 +46,6 @@ public class GameView extends ScreenAdapter {
         vp = new FitViewport(Pluton.CAMERA_WIDTH, Pluton.CAMERA_HEIGHT, camera);
 
         debugRenderer = new Box2DDebugRenderer();
-
-        font = new BitmapFont();
 
         c = new PlayerControlListener(levelLoader.getGameWorld().getJoueur(), map);
         Gdx.input.setInputProcessor(c);
@@ -94,6 +90,7 @@ public class GameView extends ScreenAdapter {
         Pluton.batch.begin();
 
         if (c.isDebugMode()) {
+            levelLoader.getGameWorld().renderDebug();
             debugRenderer.render(world, camera.combined);
         } else {
             levelLoader.getRenderer().render();
@@ -135,25 +132,14 @@ public class GameView extends ScreenAdapter {
         });
         gameOverMusic.play();
     }
-
-    public void setToDestroy(Zombie zombie) {
-        //À la mort du zombie, le joueur gagne de l'argent
-        joueur.receiveMoney(zombie.getMoney());
-        System.out.println(joueur.getMoney());
-        // this.zombies.remove(zombie);
-    }
-    public void setToDestroy2(Apple apple){
-        // this.apples.remove(apple);
-    }
-
     public void showStats(){
         // TODO: ajouter une autre caméra
-        font.draw(Pluton.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168f, camera.position.y-72f);
-        font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168f, camera.position.y-80f);
-        font.draw(Pluton.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
+        Pluton.font.draw(Pluton.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168f, camera.position.y-72f);
+        Pluton.font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168f, camera.position.y-80f);
+        Pluton.font.draw(Pluton.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
 
         //batch = new SpriteBatch();
         //
-        font.getData().setScale(0.4f, 0.4f);
+        Pluton.font.getData().setScale(0.4f, 0.4f);
     }
 }

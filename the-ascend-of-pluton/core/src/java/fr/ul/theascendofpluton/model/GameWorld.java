@@ -37,7 +37,11 @@ public class GameWorld {
             u.render(delta);
         }
     }
-
+    public void renderDebug(){
+        for(GameObject u : gameObjects){
+            u.renderDebug();
+        }
+    }
     public World getWorld() {
         return world;
     }
@@ -49,6 +53,7 @@ public class GameWorld {
     public void add(GameObject u) {
         gameObjects.add(u);
     }
+
 
     public void setJoueur(Joueur joueur) {
         this.joueur = joueur;

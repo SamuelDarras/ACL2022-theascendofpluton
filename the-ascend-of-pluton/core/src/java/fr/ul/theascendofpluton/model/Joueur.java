@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 
+import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
 
 public class Joueur extends GameObject {
@@ -42,7 +43,7 @@ public class Joueur extends GameObject {
     public static final int DOWN  = 3;
 
     public Joueur(World world, Vector2 coords, float[] verticies, float life) {
-        super(coords, world);
+        super(coords);
         this.life = life;
         maxLife = life;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
@@ -89,6 +90,7 @@ public class Joueur extends GameObject {
     }
 
     private void updatePlayerSprite(float delta) {
+        Sprite playerSprite = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
         if (isDead()) {
             playerSprite.setRegion(deathAnimation.getKeyFrame(stateTimer, false));
             stateTimer += delta;
@@ -108,7 +110,6 @@ public class Joueur extends GameObject {
     }
 
     public void update(GameWorld gameWorld) {
-        System.out.println(getBody().getPosition());
         if (isDead()) {
             return;
         }
@@ -170,9 +171,6 @@ public class Joueur extends GameObject {
         }
     }
 
-    public Vector2 getPosition() {
-        return getBody().getPosition();
-    }
 
     public void inflictDamage(Zombie target) {
         target.receiveDamage(strength);
@@ -233,8 +231,7 @@ public class Joueur extends GameObject {
     @Override
     public void render(float delta) {
         updatePlayerSprite(delta);
-        playerSprite.setPosition(getPosition().x, getPosition().y);
-        playerSprite.draw(Pluton.batch);
+        super.render();
     }
 
     public void addDirection(int direction) {

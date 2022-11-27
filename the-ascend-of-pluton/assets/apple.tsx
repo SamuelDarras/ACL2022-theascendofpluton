@@ -3,9 +3,9 @@
  <image source="apple.png" width="64" height="64"/>
  <tile id="0">
   <objectgroup draworder="index" id="1">
-   <object id="1" x="31.5" y="43.25">
-    <polygon points="0,0 -9.75,-4.125 -13.625,-13.125 -9.375,-23.625 0.625,-25.5 11.5,-21.125 13.5,-12.75 9.375,-3.375"/>
-   </object>
+      <object id="1" x="0" y="0">
+          <polygon points="31.5,43.25 21.75,39.125 17.875,30.125 22.125,19.625 32.125,17.75 43.0,22.125 45.0,30.5 40.875,39.875"/>
+      </object>
   </objectgroup>
  </tile>
 </tileset>
