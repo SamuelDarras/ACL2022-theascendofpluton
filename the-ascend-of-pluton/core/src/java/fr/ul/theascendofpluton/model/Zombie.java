@@ -43,22 +43,22 @@ public class Zombie extends GameObject {
     //x,y coordonnées à atteindre
     @Override
     public void update(GameWorld gameWorld) {
-//         float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
-//         float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
-//         float force_x = 0;
-//         float force_y = 0;
-//
-//         if (target_x < 0) force_x = 10f;
-//         if (target_x > 0) force_x = -10f;
-//         if (target_y < 0) force_y = 10f;
-//         if (target_y > 0) force_y = -10f;
-//
-//         getBody().setLinearVelocity(force_x, force_y);
-//
-//         if (life <= 0f) {
-//             LevelLoader.getInstance().getPluton().receiveMoney(money);
-//             gameWorld.remove(this);
-//         }
+         float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
+         float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
+         float force_x = 0;
+         float force_y = 0;
+
+         if (target_x < 0) force_x = 10f;
+         if (target_x > 0) force_x = -10f;
+         if (target_y < 0) force_y = 10f;
+         if (target_y > 0) force_y = -10f;
+
+         getBody().setLinearVelocity(force_x, force_y);
+
+         if (life <= 0f) {
+             LevelLoader.getInstance().getPluton().receiveMoney(money);
+             gameWorld.remove(this);
+         }
     }
 
     @Override

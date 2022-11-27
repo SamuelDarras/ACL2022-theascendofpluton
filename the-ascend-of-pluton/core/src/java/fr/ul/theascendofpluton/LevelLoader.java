@@ -1,7 +1,6 @@
 package fr.ul.theascendofpluton;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.*;
@@ -10,13 +9,10 @@ import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.GeometryUtils;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.model.*;
-import fr.ul.theascendofpluton.view.GameView;
-import sun.tools.jconsole.JConsole;
 
 import java.util.*;
 import java.util.Map;

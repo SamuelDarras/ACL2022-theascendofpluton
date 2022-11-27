@@ -5,7 +5,6 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -13,8 +12,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
-import fr.ul.theascendofpluton.model.Apple;
-import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.LevelLoader;
 
