@@ -34,7 +34,7 @@ public class GameView extends ScreenAdapter {
         super();
         this.game = game;
         levelLoader = LevelLoader.getInstance();
-        levelLoader.load("test");
+        levelLoader.load("plutonV2");
         joueur = levelLoader.getGameWorld().getJoueur();
 
         map = new MiniMap(levelLoader.getMap());

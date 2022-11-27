@@ -1,14 +1,11 @@
 package fr.ul.theascendofpluton.model;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-
 import fr.ul.theascendofpluton.LevelLoader;
-import fr.ul.theascendofpluton.Pluton;
 
 public class Zombie extends GameObject {
     public final String name = "zombie";
@@ -59,6 +56,7 @@ public class Zombie extends GameObject {
 //         getBody().setLinearVelocity(force_x, force_y);
 //
 //         if (life <= 0f) {
+//             LevelLoader.getInstance().getPluton().receiveMoney(money);
 //             gameWorld.remove(this);
 //         }
     }
@@ -80,7 +78,4 @@ public class Zombie extends GameObject {
         return getBody().getPosition();
     }
 
-    public float getMoney() {
-        return money;
-    }
 }

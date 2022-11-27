@@ -35,19 +35,19 @@ public class LevelLoader {
     private LevelLoader() {
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
-        Sprite zombie = new Sprite(zomTexture, 0, 0, 64, 64);
-        zombie.setSize(16,16);
+        Sprite zombieSprite = new Sprite(zomTexture, 0, 0, 64, 64);
+        zombieSprite.setSize(16,16);
 
         Texture appleTexture = new Texture(Gdx.files.internal("apple.png"));
         Sprite appleSprite = new Sprite(appleTexture,0,0,64,64);
         appleSprite.setSize(16,16);
 
         Sprite playerSprite = new Sprite();
-        playerSprite.setSize(32, 32);
+        playerSprite.setSize(24, 24);
 
         spriteOffsets = new HashMap<>();
         spriteHashMap = new HashMap<>();
-        spriteHashMap.put(Zombie.class.getSimpleName(), zombie);
+        spriteHashMap.put(Zombie.class.getSimpleName(), zombieSprite);
         spriteHashMap.put(Apple.class.getSimpleName(), appleSprite);
         spriteHashMap.put(Joueur.class.getSimpleName(), playerSprite);
     }
@@ -101,29 +101,29 @@ public class LevelLoader {
             }
         }
         else {
+            List<float[]> arrayVerticies = new ArrayList<>();
+            List<Vector2> arrayCentroid = new ArrayList<>();
             for(MapObject mapObject : mapLayer.getObjects()){
                 TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
-                List<float[]> arrayVerticies = new ArrayList<>();
-                List<Vector2> arrayCentroid = new ArrayList<>();
                 for(PolygonMapObject polygonMapObject: tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class)){
                     Polygon polygon = polygonMapObject.getPolygon();
+                    polygon.setPosition(0,(float)mapObject.getProperties().get("height"));
                     polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
                     Vector2 centroid = getCentroid(polygon.getTransformedVertices());
-                    arrayCentroid.add(centroid);
+                    arrayCentroid.add(centroid.cpy());
                     polygon.translate(-centroid.x, -centroid.y);
                     arrayVerticies.add(polygon.getTransformedVertices());
-                }
-                // Vector2 coords = new Vector2(tiledMapTileMapObject.getX() - (float)mapLayer.getProperties().get("offsetX"), tiledMapTileMapObject.getY() - (float)mapLayer.getProperties().get("offsetY")); // TODO: deduction automatique du décalage
 
+                }
                 Vector2 globalCentroid = arrayCentroid.stream().reduce(new Vector2(), Vector2::add);
                 globalCentroid.set(globalCentroid.x/arrayCentroid.size(), globalCentroid.y/arrayCentroid.size());
                 if(!spriteOffsets.containsKey(mapLayer.getName())){
-                    System.out.println(new Vector2(globalCentroid.x, globalCentroid.y - 32 * (2-2*tiledMapTileMapObject.getScaleY())));
-                    spriteOffsets.put(mapLayer.getName(), globalCentroid.add(0, - 32 *(2-2*tiledMapTileMapObject.getScaleY())));
+                    spriteOffsets.put(mapLayer.getName(), globalCentroid.cpy());
                 }
                 Vector2 coords = globalCentroid.cpy().add(tiledMapTileMapObject.getX(), tiledMapTileMapObject.getY());
-                //Vector2 coords = new Vector2(tiledMapTileMapObject.getX() + (float)tiledMapTileMapObject.getProperties().get("width")/2, tiledMapTileMapObject.getY() + (float)tiledMapTileMapObject.getProperties().get("height")/2); // TODO: deduction automatique du décalage
-                map.put(coords.cpy(), new ArrayList<>(arrayVerticies));
+                map.put(coords, new ArrayList<>(arrayVerticies));
+                arrayVerticies.clear();
+                arrayCentroid.clear();
             }
         }
         return map;
@@ -173,8 +173,8 @@ public class LevelLoader {
         float heal = (float)mapLayerApples.getProperties().get("heal");
         Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
         mapApples.forEach((coords, value)->{
-            for(float[] verticies : value){
-                gameWorld.add(new Apple(world, coords, verticies, heal));
+            for(float[] polygonVerticies : value){
+                gameWorld.add(new Apple(world, coords, polygonVerticies, heal));
             }
         });
 

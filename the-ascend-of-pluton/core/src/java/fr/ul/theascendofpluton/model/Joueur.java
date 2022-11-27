@@ -101,10 +101,6 @@ public class Joueur extends GameObject {
         }
     }
 
-    public boolean isShouldAttack() {
-        return shouldAttack;
-    }
-
     public void setShouldAttack(boolean shouldAttack) {
         this.shouldAttack = shouldAttack;
     }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="42">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="57">
  <editorsettings>
   <export format="json"/>
  </editorsettings>
@@ -174,9 +174,7 @@
 </data>
  </layer>
  <objectgroup id="3" name="Joueur">
-  <properties>
-  </properties>
-  <object id="41" name="Pluton" gid="208" x="790.5" y="165" width="32" height="32">
+  <object id="41" name="Pluton" gid="208" x="792.75" y="163" width="24" height="24">
    <properties>
     <property name="life" type="float" value="100"/>
    </properties>
@@ -189,11 +187,25 @@
    <property name="monnaie" type="float" value="2"/>
   </properties>
   <object id="40" gid="183" x="713.75" y="51.5" width="16" height="16"/>
+  <object id="42" gid="183" x="734.667" y="218" width="16" height="16"/>
+  <object id="43" gid="183" x="828" y="254.667" width="16" height="16"/>
+  <object id="44" gid="183" x="879.333" y="210" width="16" height="16"/>
+  <object id="45" gid="183" x="952.667" y="246" width="16" height="16"/>
+  <object id="46" gid="183" x="956.667" y="311.333" width="16" height="16"/>
+  <object id="47" gid="183" x="1063.33" y="293.333" width="16" height="16"/>
+  <object id="48" gid="183" x="1086.67" y="206.667" width="16" height="16"/>
+  <object id="49" gid="183" x="1104" y="166.667" width="16" height="16"/>
+  <object id="50" gid="183" x="1169.33" y="156" width="16" height="16"/>
+  <object id="51" gid="183" x="1212" y="212.667" width="16" height="16"/>
+  <object id="52" gid="183" x="1192.67" y="275.333" width="16" height="16"/>
+  <object id="53" gid="183" x="1130.67" y="234.667" width="16" height="16"/>
  </objectgroup>
  <objectgroup id="5" name="Apple">
   <properties>
    <property name="heal" type="float" value="20"/>
   </properties>
   <object id="30" gid="182" x="775.75" y="91.75" width="16" height="16"/>
+  <object id="55" gid="182" x="710.667" y="326" width="16" height="16"/>
+  <object id="56" gid="182" x="1250.67" y="253.333" width="16" height="16"/>
  </objectgroup>
 </map>

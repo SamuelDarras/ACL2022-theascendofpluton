@@ -3,8 +3,8 @@
  <image source="player.png" width="320" height="768"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
-   <object id="2" x="10.25" y="9">
-    <polygon points="0,0 0,15 14,15 14,0"/>
+   <object id="2" x="0" y="0">
+    <polygon points="10.25,9 10.25,24 24.25,24 24.25,9"/>
    </object>
   </objectgroup>
  </tile>
