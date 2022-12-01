@@ -136,14 +136,19 @@ public class LevelLoader {
     }
 
     public void createMapGraph(TiledMapTileLayer mapLayer){
-        float[] cellCenter = new float[2];
+        //float[] cellCenter = new float[2];
+        Vector2 cellCenter;
+        Map<String, Node> allCenter = new HashMap<>();
+        Map<String, List<Node>> nodeByCell = new HashMap<>();
+        int factor = 2;
+        float dstNodes = 1f/factor * 25;
 
         for (int i = 0; i < mapLayer.getWidth(); i++) {
             for (int j = 0; j < mapLayer.getHeight(); j++) {
                 TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
                 if (cell != null){
-                    cellCenter[0] = i*mapLayer.getTileWidth() + mapLayer.getTileWidth()/2f;
-                    cellCenter[1] = j*mapLayer.getTileHeight() + mapLayer.getTileHeight()/2f;
+
+                    cellCenter = new Vector2(i*mapLayer.getTileWidth() + mapLayer.getTileWidth()/2f, j*mapLayer.getTileHeight() + mapLayer.getTileHeight()/2f);
 
                     Array<Array<Vector2>> cellPolygon = new Array<>();
                     Array<Vector2> tmp = new Array<>();
@@ -160,47 +165,93 @@ public class LevelLoader {
                         cellPolygon.add(tmp);
                     }
 
-                    for (float[] pt : divide(cellCenter, 2, 32, 32))
-                        if (cellPolygon.size == 0){
-                            tmpNode.add(new Node(pt[0], pt[1]));
-                            mapGraph.addNode(pt[0]+"-"+pt[1], new Node(pt[0], pt[1]));
-                        }
-                        else {
+                    Set<Vector2> subPoint = divide(cellCenter, factor, 32, 32);
+
+                    //Node centerNode = new Node(cellCenter.x, cellCenter.y);
+                    //allCenter.put(centerNode.getX()+"-"+centerNode.getY(),centerNode);
+                    //mapGraph.addNode(cellCenter.x + "-" + cellCenter.y, centerNode);
+
+                    List<Node> tmpNodeListByCell = new ArrayList<>();
+
+                    for (Vector2 pt : subPoint) {
+                        Node addedNode = new Node(pt.x, pt.y);
+                        if (cellPolygon.size == 0) {
+                            tmpNode.add(new Node(pt.x, pt.y));
+                            mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
+                            //mapGraph.connectNodes(addedNode, centerNode);
+                            tmpNodeListByCell.add(addedNode);
+                        } else {
                             for (Array<Vector2> polygon : cellPolygon) {
-                                if (!Intersector.isPointInPolygon(polygon, new Vector2(pt[0], pt[1]))) {
-                                    tmpNode.add(new Node(pt[0], pt[1]));
-                                    mapGraph.addNode(pt[0] + "-" + pt[1], new Node(pt[0], pt[1]));
+                                if (!Intersector.isPointInPolygon(polygon, new Vector2(pt.x, pt.y))) {
+                                    tmpNode.add(new Node(pt.x, pt.y));
+                                    mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
+                                    //mapGraph.connectNodes(addedNode, centerNode);
+                                    tmpNodeListByCell.add(addedNode);
                                 }
                             }
                         }
+                    }
+                    nodeByCell.put(i+"-"+j, tmpNodeListByCell);
                 }
             }
         }
-        /*
-        for (int i = 0; i < mapLayer.getWidth(); i++) {
-            for (int j = 0; j < mapLayer.getHeight(); j++) {
-                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
-                if (cell != null){
-                    Node node = mapGraph.nodes.get(i*mapLayer.getWidth()+"-"+j*mapLayer.getTileHeight());
-                    for (int k = i-1; k < i+2; k++){
-                        for (int l = j-1; k < j+2; j++){
-                            TiledMapTileLayer.Cell neighborCell = mapLayer.getCell(k, l);
-                            //System.out.println(node + " -- " + neighborCell + " -- " + mapGraph.nodes.get(k+"-"+l));
-                            if (neighborCell != null){
-                                mapGraph.connectNodes(node, mapGraph.nodes.get(k+"-"+l));
-                            }
 
-                        }
+        nodeByCell.forEach((key, nodeList) -> {
+            for (int i = 0; i<nodeList.size(); i++){
+                Node nodeSrc = nodeList.get(i);
+                for (int j = i; j<nodeList.size(); j++){
+                    Node nodeDst = nodeList.get(j);
+                    if(nodeSrc.dst(nodeDst) <= dstNodes){
+                        mapGraph.connectNodes(nodeSrc, nodeDst);
                     }
                 }
             }
+        });
+        Set<String> keys = nodeByCell.keySet();
+        Set<String> tmpKeys = new HashSet<>(keys);
+        final int[][] checkedCoords = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+        for (String key : keys){
+            String[] coords = key.split("-");
+            List<Node> nodeListSrc = nodeByCell.get(key);
+            for (int i = 0 ; i<checkedCoords.length ; i++){
+                String cellKey = (Integer.valueOf(coords[0]) + checkedCoords[i][0])+"-"+(Integer.valueOf(coords[1]) + checkedCoords[i][1]);
+                if(tmpKeys.contains(cellKey)){
+                    List<Node> nodeListDst = nodeByCell.get(cellKey);
+                    for (int j = 0; j < nodeListSrc.size(); j++){
+                        for (int k = 0; k < nodeListDst.size(); k++){
+                            Node nodeSrc = nodeListSrc.get(j);
+                            Node nodeDst = nodeListDst.get(k);
+                            if(nodeSrc.dst(nodeDst) <= dstNodes){
+                                mapGraph.connectNodes(nodeSrc, nodeDst);
+                            }
+                        }
+                    }
+                }
+
+            }
+            tmpKeys.remove(key);
         }
 
-         */
+        //List<Node> tmpAllCenter = new ArrayList<>(allCenter);
+        /*for (Node n : allCenter.values()){
+            if(allCenter.containsKey((n.getX()-32)+"-"+n.getY())){
+                mapGraph.connectNodes(n, allCenter.get((n.getX()-32)+"-"+n.getY()));
+            }
+            if(allCenter.containsKey((n.getX()+32)+"-"+n.getY())){
+                mapGraph.connectNodes(n, allCenter.get((n.getX()+32)+"-"+n.getY()));
+            }
+            if(allCenter.containsKey(n.getX()+"-"+(n.getY()-32))){
+                mapGraph.connectNodes(n, allCenter.get(n.getX()+"-"+(n.getY()-32)));
+            }
+            if(allCenter.containsKey(n.getX()+"-"+(n.getY()+32))){
+                mapGraph.connectNodes(n, allCenter.get(n.getX()+"-"+(n.getY()+32)));
+            }
+            allCenter.remove(n);
+        }*/
     }
 
-    private Set<float[]> divide(float[] center, int factor, int width, int height){
-        Set<float[]> list = new HashSet<>();
+    private Set<Vector2> divide(Vector2 center, int factor, int width, int height){
+        Set<Vector2> list = new HashSet<>();
         list.add(center);
 
         for (int i=0; i<factor; i++){
@@ -212,16 +263,16 @@ public class LevelLoader {
         return list;
     }
 
-    private Set<float[]> divideAux(Set<float[]> list, float width, float height){
-        Set<float[]> listCpy = new HashSet<>();
+    private Set<Vector2> divideAux(Set<Vector2> list, float width, float height){
+        Set<Vector2> listCpy = new HashSet<>();
         listCpy.addAll(list);
 
-        for (float[] pts : listCpy){
-            list.add(new float[]{pts[0] - width/2, pts[1] + height/2});
-            list.add(new float[]{pts[0] - width/2, pts[1] - height/2});
+        for (Vector2 pts : listCpy){
+            list.add(new Vector2(pts.x - width/2, pts.y + height/2));
+            list.add(new Vector2(pts.x - width/2, pts.y - height/2));
 
-            list.add(new float[]{pts[0] + width/2, pts[1] + height/2});
-            list.add(new float[]{pts[0] + width/2, pts[1] - height/2});
+            list.add(new Vector2(pts.x + width/2, pts.y + height/2));
+            list.add(new Vector2(pts.x + width/2, pts.y - height/2));
         }
 
         listCpy.removeAll(list);

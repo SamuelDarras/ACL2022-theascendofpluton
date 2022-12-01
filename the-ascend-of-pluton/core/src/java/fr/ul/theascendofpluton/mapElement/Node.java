@@ -40,4 +40,10 @@ public class Node {
         shapeRenderer.end();
 
     }
+
+    public float dst(Node n){
+        final float x_d = n.x - x;
+        final float y_d = n.y - y;
+        return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+    }
 }

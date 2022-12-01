@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Edge implements Connection<Node> {
 
-    private Node begin;
-    private Node end;
+    public Node begin;
+    public Node end;
 
     public Edge(Node begin, Node end) {
         this.begin = begin;
@@ -32,6 +32,5 @@ public class Edge implements Connection<Node> {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0, 0, 0, 1);
         shapeRenderer.rectLine(begin.getX(), begin.getY(), end.getX(), end.getY(), 4);
-        shapeRenderer.end();
     }
 }
