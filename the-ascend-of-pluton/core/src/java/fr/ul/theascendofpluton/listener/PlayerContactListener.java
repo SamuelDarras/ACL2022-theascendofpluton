@@ -20,17 +20,17 @@ public class PlayerContactListener implements ContactListener {
 
 
         //Lorsque le Joueur rentre en collision avec l'acide
-        System.out.println(fixture_a.getUserData());
+        //System.out.println(fixture_a.getUserData());
         if (fixture_b.getUserData().equals("acid") && fixture_a.getUserData().equals("player")) {
             Joueur entity_a = (Joueur) fixture_a.getBody().getUserData();
 
             entity_a.receiveDamage(AcidPuddle.getDamage());
-            System.out.println("Vie restante : " + entity_a.getLife());
+            //System.out.println("Vie restante : " + entity_a.getLife());
         } else if (fixture_b.getUserData().equals("zombie") && fixture_a.getUserData().equals("player")) {
             Joueur entity_a = (Joueur) fixture_a.getBody().getUserData();
             Zombie entity_b = (Zombie) fixture_b.getBody().getUserData();
             entity_a.receiveDamage(entity_b.damage);
-            System.out.println("Vie restante : " + entity_a.getLife());
+            //System.out.println("Vie restante : " + entity_a.getLife());
         }
     }
 

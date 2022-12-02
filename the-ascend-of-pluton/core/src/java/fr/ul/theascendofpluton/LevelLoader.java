@@ -19,6 +19,7 @@ import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.model.Obstacle;
 
+import java.io.*;
 import java.util.*;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class LevelLoader {
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        createMapGraph((TiledMapTileLayer)tiledMap.getLayers().get("sol"));
+        createMapGraph(level_name, (TiledMapTileLayer)tiledMap.getLayers().get("sol"));
     }
 
     public MapRenderer getRenderer() {
@@ -135,10 +136,9 @@ public class LevelLoader {
         return zombies;
     }
 
-    public void createMapGraph(TiledMapTileLayer mapLayer){
-        //float[] cellCenter = new float[2];
+    public void createMapGraph(String level_name, TiledMapTileLayer mapLayer){
+
         Vector2 cellCenter;
-        Map<String, Node> allCenter = new HashMap<>();
         Map<String, List<Node>> nodeByCell = new HashMap<>();
         int factor = 2;
         float dstNodes = 1f/factor * 25;
@@ -162,32 +162,30 @@ public class LevelLoader {
                             tmp.add(new Vector2(vertices[v]+i*mapLayer.getTileWidth(), vertices[v+1]+j*mapLayer.getTileHeight()));
                         }
 
-                        cellPolygon.add(tmp);
+                        cellPolygon.add(new Array<>(tmp));
+                        tmp.clear();
                     }
 
                     Set<Vector2> subPoint = divide(cellCenter, factor, 32, 32);
 
-                    //Node centerNode = new Node(cellCenter.x, cellCenter.y);
-                    //allCenter.put(centerNode.getX()+"-"+centerNode.getY(),centerNode);
-                    //mapGraph.addNode(cellCenter.x + "-" + cellCenter.y, centerNode);
-
                     List<Node> tmpNodeListByCell = new ArrayList<>();
-
                     for (Vector2 pt : subPoint) {
                         Node addedNode = new Node(pt.x, pt.y);
                         if (cellPolygon.size == 0) {
                             tmpNode.add(new Node(pt.x, pt.y));
                             mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
-                            //mapGraph.connectNodes(addedNode, centerNode);
                             tmpNodeListByCell.add(addedNode);
                         } else {
+                            boolean addable = true;
                             for (Array<Vector2> polygon : cellPolygon) {
-                                if (!Intersector.isPointInPolygon(polygon, new Vector2(pt.x, pt.y))) {
-                                    tmpNode.add(new Node(pt.x, pt.y));
-                                    mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
-                                    //mapGraph.connectNodes(addedNode, centerNode);
-                                    tmpNodeListByCell.add(addedNode);
+                                if (Intersector.isPointInPolygon(polygon, pt)) {
+                                    addable = false;
                                 }
+                            }
+                            if(addable){
+                                tmpNode.add(new Node(pt.x, pt.y));
+                                mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
+                                tmpNodeListByCell.add(addedNode);
                             }
                         }
                     }
@@ -232,22 +230,6 @@ public class LevelLoader {
             tmpKeys.remove(key);
         }
 
-        //List<Node> tmpAllCenter = new ArrayList<>(allCenter);
-        /*for (Node n : allCenter.values()){
-            if(allCenter.containsKey((n.getX()-32)+"-"+n.getY())){
-                mapGraph.connectNodes(n, allCenter.get((n.getX()-32)+"-"+n.getY()));
-            }
-            if(allCenter.containsKey((n.getX()+32)+"-"+n.getY())){
-                mapGraph.connectNodes(n, allCenter.get((n.getX()+32)+"-"+n.getY()));
-            }
-            if(allCenter.containsKey(n.getX()+"-"+(n.getY()-32))){
-                mapGraph.connectNodes(n, allCenter.get(n.getX()+"-"+(n.getY()-32)));
-            }
-            if(allCenter.containsKey(n.getX()+"-"+(n.getY()+32))){
-                mapGraph.connectNodes(n, allCenter.get(n.getX()+"-"+(n.getY()+32)));
-            }
-            allCenter.remove(n);
-        }*/
     }
 
     private Set<Vector2> divide(Vector2 center, int factor, int width, int height){

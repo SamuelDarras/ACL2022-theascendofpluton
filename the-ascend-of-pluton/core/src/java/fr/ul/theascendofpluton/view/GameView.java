@@ -23,6 +23,7 @@ import com.badlogic.gdx.maps.MapObjects;
 
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
+import fr.ul.theascendofpluton.mapElement.Edge;
 import fr.ul.theascendofpluton.mapElement.Node;
 import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.model.Joueur;
@@ -110,7 +111,7 @@ public class GameView extends ScreenAdapter {
         levelLoader.getRenderer().render();
 
         batch.begin();
-            /*plutonSprite.draw(batch);
+            plutonSprite.draw(batch);
 
             for (Zombie zombie : zombies) {
                 Sprite s = levelLoader.spriteHashMap.get("zombie");
@@ -118,7 +119,7 @@ public class GameView extends ScreenAdapter {
                 s.draw(batch);
                 zombie.update(joueur.getPosition().x, joueur.getPosition().y);
             }
-*/
+
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.CYAN);
 
@@ -126,14 +127,10 @@ public class GameView extends ScreenAdapter {
             for (Node n : levelLoader.tmpNode){
                 shapeRenderer.circle(n.getX(), n.getY(), 1);
             }
-            /*
-            for (Array<Vector2> a : levelLoader.tmpPolygon){
-                for (Vector2 c : a){
-                    shapeRenderer.circle(c.x, c.y, 1);
-                }
-            }
-             */
 
+            /*for (Edge e : levelLoader.mapGraph.edges){
+                shapeRenderer.rectLine(e.begin.getX(), e.begin.getY(), e.end.getX(), e.end.getY(), 1);
+            }*/
 
             shapeRenderer.end();
 
