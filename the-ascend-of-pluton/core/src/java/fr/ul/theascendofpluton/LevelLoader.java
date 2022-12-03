@@ -12,8 +12,13 @@ import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import fr.ul.theascendofpluton.model.*;
+import com.esotericsoftware.kryo.io.Input;
 
+import fr.ul.theascendofpluton.model.*;
+import fr.ul.theascendofpluton.view.GameView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.Map;
 
@@ -161,7 +166,7 @@ public class LevelLoader {
         Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
         mapZombies.forEach((coords, polygons)->{
             for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Zombie(world, coords, polygonVerticies, life, damage, monnaie));
+                gameWorld.add(new Zombie(world, coords, spriteOffsets.get(Zombie.class.getSimpleName()), polygonVerticies, life, damage, monnaie));
             }
         });
 
@@ -170,18 +175,26 @@ public class LevelLoader {
         Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
         mapApples.forEach((coords, value)->{
             for(float[] polygonVerticies : value){
-                gameWorld.add(new Apple(world, coords, polygonVerticies, heal));
+                gameWorld.add(new Apple(world, coords, spriteOffsets.get(Apple.class.getSimpleName()), polygonVerticies, heal));
             }
         });
 
-        MapLayer mapLayerJoueur = tiledMap.getLayers().get("Joueur");
-        MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
-        Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
-        mapPlayer.forEach((coords, value)->{
-            joueur = new Joueur(world, coords, value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
+        try {
+            Input input = new Input(new FileInputStream("joueur.bin"));
+            joueur = GameView.kryo.readObject(input, Joueur.class);
             gameWorld.setJoueur(joueur);
             gameWorld.add(joueur);
-        });
+            input.close();
+        } catch (FileNotFoundException e) {
+            MapLayer mapLayerJoueur = tiledMap.getLayers().get("Joueur");
+            MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
+            Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
+            mapPlayer.forEach((coords, value)->{
+                joueur = new Joueur(coords, spriteOffsets.get(Joueur.class.getSimpleName()), value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
+                gameWorld.setJoueur(joueur);
+                gameWorld.add(joueur);
+            });
+        }
     }
 
     public int getLevelWidth() {

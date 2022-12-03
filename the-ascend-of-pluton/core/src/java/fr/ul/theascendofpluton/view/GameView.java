@@ -1,14 +1,23 @@
 package fr.ul.theascendofpluton.view;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
@@ -23,16 +32,68 @@ public class GameView extends ScreenAdapter {
     private final Box2DDebugRenderer debugRenderer;
     private final World world;
     private final PlayerControlListener c;
-    private final Joueur joueur;
+    private Joueur joueur;
     private boolean finished = false;
     private MiniMap map;
 
+    public static final Kryo kryo = new Kryo();
+
     public GameView(Pluton game) {
         super();
+        kryo.register(Vector2.class);
+        kryo.register(Joueur.class, new Serializer<Joueur>() {
+            @Override
+            public void write(Kryo kryo, Output output, Joueur joueur) {
+                output.writeFloat(joueur.getPosition().x);
+                output.writeFloat(joueur.getPosition().y);
+
+                output.writeFloat(joueur.getLife());
+
+                output.writeFloat(joueur.getOffsetVector().x);
+                output.writeFloat(joueur.getOffsetVector().y);
+                
+                output.writeInt(joueur.getVertices().length);
+                output.writeFloats(joueur.getVertices(), 0, joueur.getVertices().length);
+            }
+
+            @Override
+            public Joueur read(Kryo kryo, Input input, Class<? extends Joueur> type) {
+                float x = input.readFloat();
+                float y = input.readFloat();
+
+                float life = input.readFloat();
+
+                float offsetX = input.readFloat();
+                float offsetY = input.readFloat();
+
+                int verticesLength = input.readInt();
+                float[] vertices = input.readFloats(verticesLength);
+
+                return new Joueur(new Vector2(x, y), new Vector2(offsetX, offsetY), vertices, life);
+            }
+        });
+        kryo.setReferences(true);
+
         this.game = game;
         levelLoader = LevelLoader.getInstance();
         levelLoader.load("plutonV2");
-        joueur = levelLoader.getGameWorld().getJoueur();
+
+        // try (Output output = new Output(new FileOutputStream("joueur.bin"))) {
+        //     kryo.writeObject(output, joueur);
+        //     output.close();
+        // } catch (FileNotFoundException | KryoException e) {
+        //     e.printStackTrace();
+        // }
+
+        // try {
+        //     Input input = new Input(new FileInputStream("joueur.bin"));
+        //     joueur = kryo.readObject(input, Joueur.class);
+        //     input.close();
+        // } catch (FileNotFoundException e) {
+        //     joueur = LevelLoader.getInstance().getPluton();
+        // }
+
+        joueur = LevelLoader.getInstance().getPluton();
 
         map = new MiniMap(levelLoader.getMap());
 

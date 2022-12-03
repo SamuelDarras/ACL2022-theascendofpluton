@@ -14,8 +14,8 @@ public class Zombie extends GameObject {
     public float money;
 
     //x,y postion de l'ennemi dans le monde
-    public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, float money){
-        super(coords);
+    public Zombie(World world, Vector2 coords, Vector2 offsetVector, float[] verticies, float life, float damage, float money){
+        super(coords, offsetVector);
         this.life = life;
         this.damage = damage;
         this.money = money;

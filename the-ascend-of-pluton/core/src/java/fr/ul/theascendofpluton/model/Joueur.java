@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 
@@ -42,12 +41,15 @@ public class Joueur extends GameObject {
     public static final int UP    = 2;
     public static final int DOWN  = 3;
 
-    public Joueur(World world, Vector2 coords, float[] verticies, float life) {
-        super(coords);
+    private float[] vertices;
+
+    public Joueur(Vector2 coords, Vector2 offsetVector, float[] verticies, float life) {
+        super(coords, offsetVector);
         this.life = life;
         maxLife = life;
+        this.vertices = verticies;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
-        setBody(world.createBody(getBodyDef()));
+        setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
         getBody().setFixedRotation(true);
 
         PolygonShape p = new PolygonShape();
@@ -222,6 +224,10 @@ public class Joueur extends GameObject {
 
     public float getStrength() {
         return strength;
+    }
+
+    public float[] getVertices() {
+        return vertices;
     }
 
     @Override

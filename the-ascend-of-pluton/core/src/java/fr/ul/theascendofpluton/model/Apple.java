@@ -8,8 +8,8 @@ public class Apple extends GameObject  {
     private final float heal;
     private boolean used = false;
 
-    public Apple(World world, Vector2 coords, float[] verticies, float heal){
-        super(coords);
+    public Apple(World world, Vector2 coords, Vector2 offsetVector, float[] verticies, float heal){
+        super(coords, offsetVector);
 
         setBody(world.createBody(getBodyDef()));
 

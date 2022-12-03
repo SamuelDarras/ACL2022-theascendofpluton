@@ -1,8 +1,15 @@
 package fr.ul.theascendofpluton.listener;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.io.Output;
+
 import fr.ul.theascendofpluton.model.Joueur;
+import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.view.MiniMap;
 
 public class PlayerControlListener implements InputProcessor {
@@ -48,6 +55,15 @@ public class PlayerControlListener implements InputProcessor {
             System.out.println("ici");
             map.toggle();
             r = true;
+        }
+
+        if (keycode == Input.Keys.S) {
+            try (Output output = new Output(new FileOutputStream("joueur.bin"))) {
+                GameView.kryo.writeObject(output, joueur);
+                output.close();
+            } catch (FileNotFoundException | KryoException e) {
+                e.printStackTrace();
+            }
         }
 
         return r;

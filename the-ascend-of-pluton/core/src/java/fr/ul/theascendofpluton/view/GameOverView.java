@@ -25,7 +25,7 @@ public class GameOverView extends ScreenAdapter {
     public GameOverView(Pluton game){
         this.game = game;
         vp = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
-        stage = new Stage(vp, game.batch);
+        stage = new Stage(vp, Pluton.batch);
 
         FreeTypeFontGenerator fGen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Comic_Sans_MS_Bold.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter fparams = new FreeTypeFontGenerator.FreeTypeFontParameter();

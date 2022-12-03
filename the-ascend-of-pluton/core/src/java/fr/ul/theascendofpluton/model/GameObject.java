@@ -11,10 +11,17 @@ import fr.ul.theascendofpluton.Pluton;
 public abstract class GameObject {
     private Body body;
     private final BodyDef bodyDef;
+    private final Vector2 offsetVector;
 
-    public GameObject(Vector2 coords) {
+
+    public GameObject(Vector2 coords, Vector2 offsetVector) {
         bodyDef = new BodyDef();
         bodyDef.position.set(coords);
+        this.offsetVector = offsetVector;
+    }
+
+    public Vector2 getOffsetVector() {
+        return offsetVector;
     }
 
     public abstract void update(GameWorld w);
@@ -23,8 +30,7 @@ public abstract class GameObject {
 
     void render(){
         Sprite s = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
-        Vector2 offsetVec = LevelLoader.getInstance().spriteOffsets.get(this.getClass().getSimpleName());
-        s.setPosition(getPosition().x - offsetVec.x, getPosition().y - offsetVec.y);
+        s.setPosition(getPosition().x - offsetVector.x, getPosition().y - offsetVector.y);
         s.draw(Pluton.batch);
     }
     public void renderDebug(){
