@@ -113,7 +113,6 @@ public class LevelLoader {
                         }
                         map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), new ArrayList<>(arrayVerticies));
                     }
-                    map.put(coords, arrayVerticies);
                 }
             }
         }
@@ -241,7 +240,6 @@ public class LevelLoader {
                     for (Vector2 pt : subPoint) {
                         Node addedNode = new Node(pt.x, pt.y);
                         if (cellPolygon.size == 0) {
-                            tmpNode.add(new Node(pt.x, pt.y));
                             mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
                             tmpNodeListByCell.add(addedNode);
                         } else {
@@ -252,7 +250,6 @@ public class LevelLoader {
                                 }
                             }
                             if(addable){
-                                tmpNode.add(new Node(pt.x, pt.y));
                                 mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
                                 tmpNodeListByCell.add(addedNode);
                             }
