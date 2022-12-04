@@ -1,10 +1,7 @@
 package fr.ul.theascendofpluton.listener;
 
 import com.badlogic.gdx.physics.box2d.*;
-import fr.ul.theascendofpluton.model.AcidPuddle;
-import fr.ul.theascendofpluton.model.Apple;
-import fr.ul.theascendofpluton.model.Joueur;
-import fr.ul.theascendofpluton.model.Zombie;
+import fr.ul.theascendofpluton.model.*;
 
 public class PlayerContactListener implements ContactListener {
 
@@ -29,7 +26,11 @@ public class PlayerContactListener implements ContactListener {
                     break;
                 case "zombie":
                     Zombie zombie = (Zombie) otherFixture.getBody().getUserData();
-                    joueur.receiveDamage(zombie.damage);
+                    zombie.inflictDamage(joueur);
+                    break;
+                case "bat":
+                    Bat bat = (Bat) otherFixture.getBody().getUserData();
+                    bat.inflictDamage(joueur);
                     break;
                 case "apple":
                     Apple apple = (Apple) otherFixture.getBody().getUserData();

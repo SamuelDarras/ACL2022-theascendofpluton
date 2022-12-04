@@ -41,11 +41,16 @@ public class LevelLoader {
         Sprite playerSprite = new Sprite();
         playerSprite.setSize(24, 24);
 
+        Texture batTexture = new Texture(Gdx.files.internal("bat.png"));
+        Sprite batSprite = new Sprite(batTexture,0,0,32,32);
+        batSprite.setSize(16,16);
+
         spriteOffsets = new HashMap<>();
         spriteHashMap = new HashMap<>();
         spriteHashMap.put(Zombie.class.getSimpleName(), zombieSprite);
         spriteHashMap.put(Apple.class.getSimpleName(), appleSprite);
         spriteHashMap.put(Joueur.class.getSimpleName(), playerSprite);
+        spriteHashMap.put(Bat.class.getSimpleName(), batSprite);
     }
 
     public static LevelLoader getInstance() {
@@ -155,13 +160,25 @@ public class LevelLoader {
      */
     public void addObjects(World world){
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
-        float life = (float)mapLayerZombies.getProperties().get("life");
-        float damage = (float)mapLayerZombies.getProperties().get("damage");
-        float monnaie = (float)mapLayerZombies.getProperties().get("monnaie");
+        float lifeZ = (float)mapLayerZombies.getProperties().get("life");
+        float damageZ = (float)mapLayerZombies.getProperties().get("damage");
+        float monnaieZ = (float)mapLayerZombies.getProperties().get("monnaie");
         Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
         mapZombies.forEach((coords, polygons)->{
             for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Zombie(world, coords, polygonVerticies, life, damage, monnaie));
+                gameWorld.add(new Zombie(world, coords, polygonVerticies, lifeZ, damageZ, monnaieZ));
+            }
+        });
+
+        MapLayer mapLayerBats = tiledMap.getLayers().get("Bat");
+        float lifeB = (float)mapLayerZombies.getProperties().get("life");
+        float damageB = (float)mapLayerZombies.getProperties().get("damage");
+        float monnaieB = (float)mapLayerZombies.getProperties().get("monnaie");
+        Map<Vector2, List<float[]>> mapBats = new HashMap<>(getPolygones(mapLayerBats));
+        mapBats.forEach((coords, polygons)->{
+            for (float[] polygonVerticies : polygons) {
+                System.out.println("oui");
+                gameWorld.add(new Bat(world, coords, polygonVerticies, lifeB, damageB, monnaieB));
             }
         });
 

@@ -19,11 +19,10 @@ import com.badlogic.gdx.utils.Timer;
 import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
 
-public class Joueur extends GameObject {
-    private float strength = 10f; // TODO: tiled
-    private float range = 12f;
+public class Joueur extends DamageableObject {
+    //private float strength = 10f; // TODO: tiled
+    private float range = 17f;
     private float maxLife;
-    private float life;
     private boolean isTakingContinuousDamage = false;
     private float continuousDamageValue = 0;
     private boolean invulnerable = false;
@@ -43,8 +42,7 @@ public class Joueur extends GameObject {
     public static final int DOWN  = 3;
 
     public Joueur(World world, Vector2 coords, float[] verticies, float life) {
-        super(coords);
-        this.life = life;
+        super(coords, life, 10f);
         maxLife = life;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
         setBody(world.createBody(getBodyDef()));
@@ -156,10 +154,10 @@ public class Joueur extends GameObject {
             gameWorld.getWorld().getBodies(bodies);
 
             for (Body body : bodies) {
-                if (body.getUserData() instanceof Zombie) {
-                    Zombie z = (Zombie) body.getUserData();
-                    if (z.getDistance(getPosition()) < range) {
-                        inflictDamage(z);
+                if (body.getUserData() instanceof DamageableObject && !(body.getUserData() instanceof Joueur)) {
+                    DamageableObject o = (DamageableObject) body.getUserData();
+                    if (o.getPosition().dst(getPosition()) < range) {
+                        inflictDamage(o);
                     }
                 }
             }
@@ -167,14 +165,10 @@ public class Joueur extends GameObject {
         }
     }
 
-
-    public void inflictDamage(Zombie target) {
-        target.receiveDamage(strength);
-    }
-
+    @Override
     public void receiveDamage(float n) {
         if (!isDead() && !invulnerable) {
-            this.life -= n;
+            super.receiveDamage(n);
 
             if (!isDead()) {
                 Pluton.manager.get("sounds/hurt.ogg", Music.class).play();
@@ -195,7 +189,7 @@ public class Joueur extends GameObject {
     }
 
     public void receiveLife(float n) {
-        life = Math.min(life + n, maxLife);
+        setLife(Math.min(getLife() + n, maxLife));
         Pluton.manager.get("sounds/heal.wav", Music.class).play();
     }
 
@@ -205,11 +199,7 @@ public class Joueur extends GameObject {
     }
 
     public boolean isDead() {
-        return life <= 0f;
-    }
-
-    public float getLife() {
-        return life;
+        return getLife() <= 0f;
     }
 
     public void receiveMoney(float money) {
@@ -218,10 +208,6 @@ public class Joueur extends GameObject {
 
     public float getMoney() {
         return this.money;
-    }
-
-    public float getStrength() {
-        return strength;
     }
 
     @Override
@@ -236,5 +222,9 @@ public class Joueur extends GameObject {
     
     public void removeDirection(int direction) {
         directions = (char) (~(0b1<<direction) & directions);
+    }
+
+    public float getRange() {
+        return range;
     }
 }
