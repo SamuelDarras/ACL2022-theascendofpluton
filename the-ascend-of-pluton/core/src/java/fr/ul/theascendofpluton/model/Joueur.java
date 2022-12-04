@@ -20,14 +20,14 @@ import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
 
 public class Joueur extends GameObject {
-    private float strength = 10f; // TODO: tiled
-    private float range = 12f;
+    private float strength;
+    private float range;
     private float maxLife;
     private float life;
     private boolean isTakingContinuousDamage = false;
     private float continuousDamageValue = 0;
     private boolean invulnerable = false;
-    private final float VELOCITY = 20f;
+    private final float VELOCITY = 30f;
     private float stateTimer = 0;
     private final Sprite playerSprite;
     private TextureRegion playerStand;
@@ -42,9 +42,11 @@ public class Joueur extends GameObject {
     public static final int UP    = 2;
     public static final int DOWN  = 3;
 
-    public Joueur(World world, Vector2 coords, float[] verticies, float life) {
+    public Joueur(World world, Vector2 coords, float[] verticies, float life, float strength, float range) {
         super(coords);
         this.life = life;
+        this.strength = strength;
+        this.range = range;
         maxLife = life;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
         setBody(world.createBody(getBodyDef()));

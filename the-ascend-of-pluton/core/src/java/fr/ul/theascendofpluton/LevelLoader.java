@@ -149,21 +149,27 @@ public class LevelLoader {
     }
 
     /**
-     * Ajoute au monde les zombies présents dans la tiledMap
+     * Ajoute au monde les objets présents dans la tiledMap
      * @param world
      * @return le set contenant les zombies ajoutés au monde.
      */
     public void addObjects(World world){
         MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
-        float life = (float)mapLayerZombies.getProperties().get("life");
-        float damage = (float)mapLayerZombies.getProperties().get("damage");
-        float monnaie = (float)mapLayerZombies.getProperties().get("monnaie");
         Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
         mapZombies.forEach((coords, polygons)->{
             for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Zombie(world, coords, polygonVerticies, life, damage, monnaie));
+                System.out.println(Arrays.toString(polygonVerticies));
+                gameWorld.add(new Zombie(world, coords, polygonVerticies, (float)mapLayerZombies.getProperties().get("life"), (float)mapLayerZombies.getProperties().get("damage"), (float)mapLayerZombies.getProperties().get("monnaie")));
             }
         });
+//
+//        MapLayer mapLayerBoss = tiledMap.getLayers().get("Boss");
+//        life = (float)mapLayerBoss.getProperties().get("life");
+//        damage = (float)mapLayerBoss.getProperties().get("damage");
+//        monnaie = (float)mapLayerBoss.getProperties().get("monnaie");
+//        Map<Vector2, List<float[]>> mapBoss = new HashMap<>(getPolygones(mapLayerBoss));
+
+
 
         MapLayer mapLayerApples = tiledMap.getLayers().get("Apple");
         float heal = (float)mapLayerApples.getProperties().get("heal");
@@ -178,7 +184,7 @@ public class LevelLoader {
         MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
         Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
         mapPlayer.forEach((coords, value)->{
-            joueur = new Joueur(world, coords, value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
+            joueur = new Joueur(world, coords, value.get(0), (float)mapLayerJoueur.getProperties().get("life"), (float)mapLayerJoueur.getProperties().get("strength"), (float)mapLayerJoueur.getProperties().get("range"));
             gameWorld.setJoueur(joueur);
             gameWorld.add(joueur);
         });
