@@ -60,13 +60,4 @@ public class Zombie extends DamageableObject {
     public void render(float delta) {
         super.render();
     }
-
-    public float getDistance(Vector2 position) {
-        return position.dst(getBody().getPosition());
-    }
-
-    public Vector2 getPosition() {
-        return getBody().getPosition();
-    }
-
 }

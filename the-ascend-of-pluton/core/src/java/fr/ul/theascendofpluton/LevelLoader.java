@@ -2,7 +2,9 @@ package fr.ul.theascendofpluton;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.*;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.*;
@@ -21,6 +23,8 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private Joueur joueur;
+
+    public Animation<TextureRegion> flyAnimation;
     public Map<String, Sprite> spriteHashMap;
     public Map<String, Vector2> spriteOffsets;
 
@@ -42,7 +46,13 @@ public class LevelLoader {
         playerSprite.setSize(24, 24);
 
         Texture batTexture = new Texture(Gdx.files.internal("bat.png"));
-        Sprite batSprite = new Sprite(batTexture,0,0,32,32);
+        TextureRegion[][] textureRegions = TextureRegion.split(batTexture, batTexture.getWidth() / 2,
+                batTexture.getHeight());
+        TextureRegion[] flyFrames = new TextureRegion[2];
+        System.arraycopy(textureRegions[0], 0, flyFrames, 0, 2);
+        flyAnimation = new Animation<>(0.5f, flyFrames);
+
+        Sprite batSprite = new Sprite();
         batSprite.setSize(16,16);
 
         spriteOffsets = new HashMap<>();
@@ -177,7 +187,6 @@ public class LevelLoader {
         Map<Vector2, List<float[]>> mapBats = new HashMap<>(getPolygones(mapLayerBats));
         mapBats.forEach((coords, polygons)->{
             for (float[] polygonVerticies : polygons) {
-                System.out.println("oui");
                 gameWorld.add(new Bat(world, coords, polygonVerticies, lifeB, damageB, monnaieB));
             }
         });

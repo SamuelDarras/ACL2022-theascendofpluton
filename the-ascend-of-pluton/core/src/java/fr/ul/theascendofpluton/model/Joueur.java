@@ -20,7 +20,6 @@ import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
 
 public class Joueur extends DamageableObject {
-    //private float strength = 10f; // TODO: tiled
     private float range = 17f;
     private float maxLife;
     private boolean isTakingContinuousDamage = false;

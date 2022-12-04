@@ -33,6 +33,7 @@ public class GameWorld {
     }
 
     public void render(float delta) {
+        Bat.stateTimer += delta;
         for(GameObject u : gameObjects) {
             u.render(delta);
         }

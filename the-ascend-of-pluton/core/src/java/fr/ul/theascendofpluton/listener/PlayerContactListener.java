@@ -37,7 +37,7 @@ public class PlayerContactListener implements ContactListener {
                     joueur.receiveLife(apple.getHeal());
                     break;
             }
-            System.out.println("Vie restante : " + joueur.getLife());
+            //System.out.println("Vie restante : " + joueur.getLife());
         }
     }
 

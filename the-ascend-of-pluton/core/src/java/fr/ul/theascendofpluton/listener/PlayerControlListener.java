@@ -45,7 +45,6 @@ public class PlayerControlListener implements InputProcessor {
             r = true;
         }
         if(keycode == Input.Keys.M){
-            System.out.println("ici");
             map.toggle();
             r = true;
         }

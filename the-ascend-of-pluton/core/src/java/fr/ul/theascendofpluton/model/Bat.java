@@ -1,5 +1,10 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -9,6 +14,8 @@ import fr.ul.theascendofpluton.LevelLoader;
 
 public class Bat extends DamageableObject{
     public float money;
+    public static float stateTimer = 0;
+
 
     public Bat(World world, Vector2 coords, float[] polygonVerticies, float life, float damage, float monnaie) {
         super(coords, life, damage);
@@ -31,6 +38,8 @@ public class Bat extends DamageableObject{
         getBody().createFixture(fixtureDef).setUserData("bat");
         getBody().setUserData(this);
         shape.dispose();
+
+        //initTextures();
     }
 
     @Override
@@ -53,17 +62,14 @@ public class Bat extends DamageableObject{
         }
     }
 
+    private void updateBatSprite() {
+        Sprite batSprite = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
+        batSprite.setRegion(LevelLoader.getInstance().flyAnimation.getKeyFrame(stateTimer, true));
+    }
+
     @Override
     public void render(float delta) {
+        updateBatSprite();
         super.render();
     }
-
-    public float getDistance(Vector2 position) {
-        return position.dst(getBody().getPosition());
-    }
-
-    public Vector2 getPosition() {
-        return getBody().getPosition();
-    }
-
 }
