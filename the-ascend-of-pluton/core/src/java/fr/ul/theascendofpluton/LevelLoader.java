@@ -29,6 +29,9 @@ public class LevelLoader {
     public Map<String, Sprite> spriteHashMap;
     public Map<String, Vector2> spriteOffsets;
 
+    private World world;
+
+
     private GameWorld gameWorld;
 
     private static LevelLoader INSTANCE = new LevelLoader();
@@ -65,7 +68,7 @@ public class LevelLoader {
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        World world = new World(new Vector2(), false);
+        this.world = new World(new Vector2(), false);
         gameWorld = new GameWorld(world);
         addObjects(world);
         addObstacles(world);
@@ -158,34 +161,22 @@ public class LevelLoader {
      * @param world
      * @return le set contenant les zombies ajoutés au monde.
      */
-    public void addObjects(World world){
-        MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
-        float life = (float)mapLayerZombies.getProperties().get("life");
-        float damage = (float)mapLayerZombies.getProperties().get("damage");
-        float monnaie = (float)mapLayerZombies.getProperties().get("monnaie");
-        Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
-        mapZombies.forEach((coords, polygons)->{
-            for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Zombie(world, coords, spriteOffsets.get(Zombie.class.getSimpleName()), polygonVerticies, life, damage, monnaie));
-            }
-        });
-
-        MapLayer mapLayerApples = tiledMap.getLayers().get("Apple");
-        float heal = (float)mapLayerApples.getProperties().get("heal");
-        Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
-        mapApples.forEach((coords, value)->{
-            for(float[] polygonVerticies : value){
-                gameWorld.add(new Apple(world, coords, spriteOffsets.get(Apple.class.getSimpleName()), polygonVerticies, heal));
-            }
-        });
-
-        try {
-            Input input = new Input(new FileInputStream("joueur.bin"));
-            joueur = GameView.kryo.readObject(input, Joueur.class);
-            gameWorld.setJoueur(joueur);
-            gameWorld.add(joueur);
-            input.close();
+    public void addObjects(World world) {
+        try (Input input = new Input(new FileInputStream("partie.bin"))) {
+            this.gameWorld = GameView.kryo.readObject(input, GameWorld.class);
+            this.joueur = gameWorld.getJoueur();
         } catch (FileNotFoundException e) {
+            MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
+            float life = (float)mapLayerZombies.getProperties().get("life");
+            float damage = (float)mapLayerZombies.getProperties().get("damage");
+            float monnaie = (float)mapLayerZombies.getProperties().get("monnaie");
+            Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
+            mapZombies.forEach((coords, polygons)->{
+                for (float[] polygonVerticies : polygons) {
+                    gameWorld.add(new Zombie(coords, spriteOffsets.get(Zombie.class.getSimpleName()), polygonVerticies, life, damage, monnaie));
+                }
+            });
+
             MapLayer mapLayerJoueur = tiledMap.getLayers().get("Joueur");
             MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
             Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
@@ -193,6 +184,14 @@ public class LevelLoader {
                 joueur = new Joueur(coords, spriteOffsets.get(Joueur.class.getSimpleName()), value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
                 gameWorld.setJoueur(joueur);
                 gameWorld.add(joueur);
+            });
+            MapLayer mapLayerApples = tiledMap.getLayers().get("Apple");
+            float heal = (float)mapLayerApples.getProperties().get("heal");
+            Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
+            mapApples.forEach((coords, value)->{
+                for(float[] polygonVerticies : value){
+                    gameWorld.add(new Apple(coords, spriteOffsets.get(Apple.class.getSimpleName()), polygonVerticies, heal));
+                }
             });
         }
     }
@@ -215,5 +214,9 @@ public class LevelLoader {
 
     public GameWorld getGameWorld() {
         return gameWorld;
+    }
+
+    public World getWorld() {
+        return world;
     }
 }

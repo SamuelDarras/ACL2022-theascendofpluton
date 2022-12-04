@@ -3,15 +3,21 @@ package fr.ul.theascendofpluton.model;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
+import fr.ul.theascendofpluton.LevelLoader;
+
 
 public class Apple extends GameObject  {
     private final float heal;
     private boolean used = false;
 
-    public Apple(World world, Vector2 coords, Vector2 offsetVector, float[] verticies, float heal){
+    private float[] verticies;
+
+    public Apple(Vector2 coords, Vector2 offsetVector, float[] verticies, float heal){
         super(coords, offsetVector);
 
-        setBody(world.createBody(getBodyDef()));
+        this.verticies = verticies;
+
+        setBody(LevelLoader.getInstance().getWorld().createBody(getBodyDef()));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor = true;
@@ -28,7 +34,7 @@ public class Apple extends GameObject  {
         this.heal = heal;
     }
 
-    public float getHeal() {
+    public float use() {
         used = true;
         return heal;
     }
@@ -45,4 +51,11 @@ public class Apple extends GameObject  {
         super.render();
     }
 
+    public float[] getVerticies() {
+        return verticies;
+    }
+
+    public float getHeal() {
+        return heal;
+    }
 }

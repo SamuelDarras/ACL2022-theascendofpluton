@@ -14,9 +14,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
+import fr.ul.theascendofpluton.view.GameView;
 
 public class Joueur extends GameObject {
     private float strength = 10f; // TODO: tiled
@@ -62,6 +67,7 @@ public class Joueur extends GameObject {
         playerSprite = new Sprite();
         playerSprite.setSize(32, 32);
         initTextures();
+
     }
 
     private void initTextures() {

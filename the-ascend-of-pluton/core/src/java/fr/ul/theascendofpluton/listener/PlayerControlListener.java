@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Output;
 
+import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.view.MiniMap;
@@ -52,15 +53,13 @@ public class PlayerControlListener implements InputProcessor {
             r = true;
         }
         if(keycode == Input.Keys.M){
-            System.out.println("ici");
             map.toggle();
             r = true;
         }
 
         if (keycode == Input.Keys.S) {
-            try (Output output = new Output(new FileOutputStream("joueur.bin"))) {
-                GameView.kryo.writeObject(output, joueur);
-                output.close();
+            try (Output output = new Output(new FileOutputStream("partie.bin"))) {
+                LevelLoader.getInstance().getGameWorld().save(output);
             } catch (FileNotFoundException | KryoException e) {
                 e.printStackTrace();
             }

@@ -21,7 +21,9 @@ import com.esotericsoftware.kryo.io.Output;
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
+import fr.ul.theascendofpluton.model.Apple;
 import fr.ul.theascendofpluton.model.Joueur;
+import fr.ul.theascendofpluton.model.Zombie;
 import fr.ul.theascendofpluton.LevelLoader;
 
 public class GameView extends ScreenAdapter {
@@ -71,6 +73,78 @@ public class GameView extends ScreenAdapter {
 
                 return new Joueur(new Vector2(x, y), new Vector2(offsetX, offsetY), vertices, life);
             }
+        });
+        kryo.register(Zombie.class, new Serializer<Zombie>() {
+
+            @Override
+            public void write(Kryo kryo, Output output, Zombie zombie) {
+                output.writeFloat(zombie.getPosition().x);
+                output.writeFloat(zombie.getPosition().y);
+
+                output.writeFloat(zombie.getLife());
+
+                output.writeFloat(zombie.getOffsetVector().x);
+                output.writeFloat(zombie.getOffsetVector().y);
+
+                output.writeInt(zombie.getVertices().length);
+                output.writeFloats(zombie.getVertices(), 0, zombie.getVertices().length);
+
+                output.writeFloat(zombie.getDamage());
+                output.writeFloat(zombie.getMoney());
+            }
+
+            @Override
+            public Zombie read(Kryo kryo, Input input, Class<? extends Zombie> type) {
+                float x = input.readFloat();
+                float y = input.readFloat();
+
+                float life = input.readFloat();
+
+                float offsetX = input.readFloat();
+                float offsetY = input.readFloat();
+
+                int verticesLength = input.readInt();
+                float[] vertices = input.readFloats(verticesLength);
+
+                float damage = input.readFloat();
+                float money = input.readFloat();
+
+                return new Zombie(new Vector2(x, y), new Vector2(offsetX, offsetY), vertices, life, damage, money);
+            }
+            
+        });
+        kryo.register(Apple.class, new Serializer<Apple>() {
+
+            @Override
+            public void write(Kryo kryo, Output output, Apple apple) {
+                output.writeFloat(apple.getPosition().x);
+                output.writeFloat(apple.getPosition().y);
+
+                output.writeFloat(apple.getOffsetVector().x);
+                output.writeFloat(apple.getOffsetVector().x);
+
+                output.writeInt(apple.getVerticies().length);
+                output.writeFloats(apple.getVerticies(), 0, apple.getVerticies().length);
+
+                output.writeFloat(apple.getHeal());
+            }
+
+            @Override
+            public Apple read(Kryo kryo, Input input, Class<? extends Apple> type) {
+                float x = input.readFloat();
+                float y = input.readFloat();
+
+                float offsetX = input.readFloat();
+                float offsetY = input.readFloat();
+
+                int verticesLength = input.readInt();
+                float[] vertices = input.readFloats(verticesLength);
+
+                float heal = input.readFloat();
+
+                return new Apple(new Vector2(x, y), new Vector2(offsetX, offsetY), vertices, heal);
+            }
+            
         });
         kryo.setReferences(true);
 

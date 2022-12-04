@@ -4,21 +4,25 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.LevelLoader;
 
 public class Zombie extends GameObject {
     public final String name = "zombie";
     public float life;
+
     public float damage;
     public float money;
 
+    private float[] vertices;
+
     //x,y postion de l'ennemi dans le monde
-    public Zombie(World world, Vector2 coords, Vector2 offsetVector, float[] verticies, float life, float damage, float money){
+    public Zombie(Vector2 coords, Vector2 offsetVector, float[] verticies, float life, float damage, float money){
         super(coords, offsetVector);
         this.life = life;
         this.damage = damage;
         this.money = money;
+
+        this.vertices = verticies;
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
@@ -31,15 +35,16 @@ public class Zombie extends GameObject {
 
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
         getBodyDef().position.set(coords);
-        setBody(world.createBody(getBodyDef()));
+        setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
 
         getBody().setFixedRotation(true);
         getBody().createFixture(fixtureDef).setUserData("zombie");
         getBody().setUserData(this);
         shape.dispose();
-
     }
 
+        
+    
     //x,y coordonnées à atteindre
     @Override
     public void update(GameWorld gameWorld) {
@@ -76,6 +81,22 @@ public class Zombie extends GameObject {
 
     public Vector2 getPosition() {
         return getBody().getPosition();
+    }
+
+    public float getLife() {
+        return life;
+    }
+
+    public float[] getVertices() {
+        return vertices;
+    }
+
+    public float getDamage() {
+        return damage;
+    }
+
+    public float getMoney() {
+        return money;
     }
 
 }

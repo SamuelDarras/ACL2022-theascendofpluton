@@ -33,10 +33,10 @@ public class PlayerContactListener implements ContactListener {
                     break;
                 case "apple":
                     Apple apple = (Apple) otherFixture.getBody().getUserData();
-                    joueur.receiveLife(apple.getHeal());
+                    joueur.receiveLife(apple.use());
                     break;
             }
-            System.out.println("Vie restante : " + joueur.getLife());
+            // System.out.println("Vie restante : " + joueur.getLife());
         }
     }
 
