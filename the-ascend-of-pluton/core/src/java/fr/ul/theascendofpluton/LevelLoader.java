@@ -11,9 +11,20 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.model.*;
+import com.badlogic.gdx.utils.Array;
+import fr.ul.theascendofpluton.helper.MapGraph;
+import fr.ul.theascendofpluton.mapElement.Edge;
+import fr.ul.theascendofpluton.mapElement.Node;
+import fr.ul.theascendofpluton.model.AcidPuddle;
+import fr.ul.theascendofpluton.model.Zombie;
+import fr.ul.theascendofpluton.view.GameView;
+import fr.ul.theascendofpluton.model.Obstacle;
 
+import java.io.*;
 import java.util.*;
 import java.util.Map;
 
@@ -21,6 +32,11 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private Joueur joueur;
+
+    //graph map for A*
+    public MapGraph mapGraph;
+
+    private GameView gv;
     public Map<String, Sprite> spriteHashMap;
     public Map<String, Vector2> spriteOffsets;
 
@@ -29,6 +45,8 @@ public class LevelLoader {
     private static LevelLoader INSTANCE = new LevelLoader();
 
     private LevelLoader() {
+
+        mapGraph = new MapGraph();
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
         Sprite zombieSprite = new Sprite(zomTexture, 0, 0, 64, 64);
@@ -59,6 +77,8 @@ public class LevelLoader {
     public void load(String level_name){
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        createMapGraph(level_name, (TiledMapTileLayer)tiledMap.getLayers().get("sol"));
 
         World world = new World(new Vector2(), false);
         gameWorld = new GameWorld(world);
@@ -93,6 +113,7 @@ public class LevelLoader {
                         }
                         map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), new ArrayList<>(arrayVerticies));
                     }
+                    map.put(coords, arrayVerticies);
                 }
             }
         }
@@ -182,6 +203,132 @@ public class LevelLoader {
             gameWorld.setJoueur(joueur);
             gameWorld.add(joueur);
         });
+    }
+
+    public void createMapGraph(String level_name, TiledMapTileLayer mapLayer){
+
+        Vector2 cellCenter;
+        Map<String, List<Node>> nodeByCell = new HashMap<>();
+        int factor = 2;
+        float dstNodes = 1f/factor * 25;
+
+        for (int i = 0; i < mapLayer.getWidth(); i++) {
+            for (int j = 0; j < mapLayer.getHeight(); j++) {
+                TiledMapTileLayer.Cell cell = mapLayer.getCell(i, j);
+                if (cell != null){
+
+                    cellCenter = new Vector2(i*mapLayer.getTileWidth() + mapLayer.getTileWidth()/2f, j*mapLayer.getTileHeight() + mapLayer.getTileHeight()/2f);
+
+                    Array<Array<Vector2>> cellPolygon = new Array<>();
+                    Array<Vector2> tmp = new Array<>();
+
+                    float[] vertices;
+
+                    for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)){
+                        vertices = polygonMapObject.getPolygon().getTransformedVertices();
+
+                        for (int v=0; v<vertices.length; v+=2){
+                            tmp.add(new Vector2(vertices[v]+i*mapLayer.getTileWidth(), vertices[v+1]+j*mapLayer.getTileHeight()));
+                        }
+
+                        cellPolygon.add(new Array<>(tmp));
+                        tmp.clear();
+                    }
+
+                    Set<Vector2> subPoint = divide(cellCenter, factor, 32, 32);
+
+                    List<Node> tmpNodeListByCell = new ArrayList<>();
+                    for (Vector2 pt : subPoint) {
+                        Node addedNode = new Node(pt.x, pt.y);
+                        if (cellPolygon.size == 0) {
+                            tmpNode.add(new Node(pt.x, pt.y));
+                            mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
+                            tmpNodeListByCell.add(addedNode);
+                        } else {
+                            boolean addable = true;
+                            for (Array<Vector2> polygon : cellPolygon) {
+                                if (Intersector.isPointInPolygon(polygon, pt)) {
+                                    addable = false;
+                                }
+                            }
+                            if(addable){
+                                tmpNode.add(new Node(pt.x, pt.y));
+                                mapGraph.addNode(pt.x + "-" + pt.y, addedNode);
+                                tmpNodeListByCell.add(addedNode);
+                            }
+                        }
+                    }
+                    nodeByCell.put(i+"-"+j, tmpNodeListByCell);
+                }
+            }
+        }
+
+        nodeByCell.forEach((key, nodeList) -> {
+            for (int i = 0; i<nodeList.size(); i++){
+                Node nodeSrc = nodeList.get(i);
+                for (int j = i; j<nodeList.size(); j++){
+                    Node nodeDst = nodeList.get(j);
+                    if(nodeSrc.dst(nodeDst) <= dstNodes){
+                        mapGraph.connectNodes(nodeSrc, nodeDst);
+                    }
+                }
+            }
+        });
+        Set<String> keys = nodeByCell.keySet();
+        Set<String> tmpKeys = new HashSet<>(keys);
+        final int[][] checkedCoords = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+        for (String key : keys){
+            String[] coords = key.split("-");
+            List<Node> nodeListSrc = nodeByCell.get(key);
+            for (int i = 0 ; i<checkedCoords.length ; i++){
+                String cellKey = (Integer.valueOf(coords[0]) + checkedCoords[i][0])+"-"+(Integer.valueOf(coords[1]) + checkedCoords[i][1]);
+                if(tmpKeys.contains(cellKey)){
+                    List<Node> nodeListDst = nodeByCell.get(cellKey);
+                    for (int j = 0; j < nodeListSrc.size(); j++){
+                        for (int k = 0; k < nodeListDst.size(); k++){
+                            Node nodeSrc = nodeListSrc.get(j);
+                            Node nodeDst = nodeListDst.get(k);
+                            if(nodeSrc.dst(nodeDst) <= dstNodes){
+                                mapGraph.connectNodes(nodeSrc, nodeDst);
+                            }
+                        }
+                    }
+                }
+
+            }
+            tmpKeys.remove(key);
+        }
+
+    }
+
+    private Set<Vector2> divide(Vector2 center, int factor, int width, int height){
+        Set<Vector2> list = new HashSet<>();
+        list.add(center);
+
+        for (int i=0; i<factor; i++){
+            width /= 2;
+            height /= 2;
+            list = divideAux(list, width, height);
+        }
+
+        return list;
+    }
+
+    private Set<Vector2> divideAux(Set<Vector2> list, float width, float height){
+        Set<Vector2> listCpy = new HashSet<>();
+        listCpy.addAll(list);
+
+        for (Vector2 pts : listCpy){
+            list.add(new Vector2(pts.x - width/2, pts.y + height/2));
+            list.add(new Vector2(pts.x - width/2, pts.y - height/2));
+
+            list.add(new Vector2(pts.x + width/2, pts.y + height/2));
+            list.add(new Vector2(pts.x + width/2, pts.y - height/2));
+        }
+
+        listCpy.removeAll(list);
+
+        return list;
     }
 
     public int getLevelWidth() {

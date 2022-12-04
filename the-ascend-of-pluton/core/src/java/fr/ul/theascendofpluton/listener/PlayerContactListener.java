@@ -17,7 +17,7 @@ public class PlayerContactListener implements ContactListener {
             maybePlayerFixture = contact.getFixtureB();
             otherFixture = contact.getFixtureA();
         } else {
-            maybePlayerFixture = contact.getFixtureA();
+            fixture_a = contact.getFixtureA();
         }
 
         if(maybePlayerFixture.getUserData().equals("player")){
