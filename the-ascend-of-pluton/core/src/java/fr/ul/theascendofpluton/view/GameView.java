@@ -6,7 +6,10 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -31,6 +34,10 @@ public class GameView extends ScreenAdapter {
 
     private ShapeRenderer shapeRenderer;
 
+    private OrthographicCamera HUDCamera;
+    private SpriteBatch HUDBatch;
+    private GlyphLayout HUBLayout;
+
     public GameView(Pluton game) {
         super();
         this.game = game;
@@ -54,7 +61,16 @@ public class GameView extends ScreenAdapter {
 
         PlayerContactListener contactListener = new PlayerContactListener();
         world.setContactListener(contactListener);
+
+        HUBLayout = new GlyphLayout();
+
+        HUDBatch = new SpriteBatch();
+        HUDCamera = new OrthographicCamera();
+        HUDCamera.position.set(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0);
+        HUDCamera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        HUDBatch.setProjectionMatrix(HUDCamera.combined);
     }
+
     private void update() {
         if (!(joueur.getPosition().x + Pluton.CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - Pluton.CAMERA_WIDTH/2 < 0))
             camera.position.x = joueur.getPosition().x;
@@ -75,6 +91,7 @@ public class GameView extends ScreenAdapter {
         camera.update();
         map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
     }
+
     @Override
     public void render(float delta) {
         update();
@@ -104,11 +121,17 @@ public class GameView extends ScreenAdapter {
             levelLoader.getRenderer().render();
 
             levelLoader.getGameWorld().render(delta);
-
-            showStats();
         }
         Pluton.batch.end();
-        
+
+        HUDBatch.begin();
+
+            Pluton.font.draw(HUDBatch, String.valueOf("Vie :"+joueur.getLife()), camera.viewportWidth/20f, camera.viewportHeight/2f);
+            Pluton.font.draw(HUDBatch, String.valueOf("Force :"+joueur.getDamage()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*2));
+            Pluton.font.draw(HUDBatch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*4));
+
+        HUDBatch.end();
+
         map.render();
     }
 
@@ -139,7 +162,7 @@ public class GameView extends ScreenAdapter {
         });
         gameOverMusic.play();
     }
-    public void showStats(){
+    public void showStats(OrthographicCamera camera){
         // TODO: ajouter une autre caméra
         Pluton.font.draw(Pluton.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168f, camera.position.y-72f);
         Pluton.font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getDamage()), camera.position.x-168f, camera.position.y-80f);
