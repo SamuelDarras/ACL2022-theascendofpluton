@@ -4,15 +4,18 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.view.MiniMap;
+import fr.ul.theascendofpluton.view.Shop;
 
 public class PlayerControlListener implements InputProcessor {
     private Joueur joueur;
     private boolean debugMode;
     private MiniMap map;
-
-    public PlayerControlListener(Joueur joueur, MiniMap map) {
+    private Shop shop;
+    private boolean isShopOpen = false;
+    public PlayerControlListener(Joueur joueur, MiniMap map, Shop shop) {
         this.joueur = joueur;
         this.map = map;
+        this.shop = shop;
         debugMode = false;
     }
 
@@ -49,6 +52,29 @@ public class PlayerControlListener implements InputProcessor {
             map.toggle();
             r = true;
         }
+        if(keycode == Input.Keys.P){
+            if(isShopOpen==false){
+                isShopOpen=true;
+            } else {
+                isShopOpen=false;
+            }
+            System.out.println(isShopOpen);
+            shop.toggle();
+            r = true;
+        }
+        if(isShopOpen){
+            if(keycode == Input.Keys.I){
+                joueur.buyShop("vie",5);
+                System.out.println("achat PV");
+                r = true;
+            }
+            if(keycode == Input.Keys.O){
+                joueur.buyShop("strength",10);
+                System.out.println("achat force");
+                r = true;
+            }
+        }
+
 
         return r;
     }
