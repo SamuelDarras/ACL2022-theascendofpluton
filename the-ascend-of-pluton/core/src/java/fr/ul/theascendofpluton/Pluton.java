@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import fr.ul.theascendofpluton.view.GameView;
+import fr.ul.theascendofpluton.view.TitleView;
 
 public class Pluton extends Game {
 
@@ -19,6 +20,8 @@ public class Pluton extends Game {
     public static BitmapFont font;
     public static AssetManager manager;
     public static Texture positionPoint;
+
+    private static String playerName = "";
 
     @Override
     public void create() {
@@ -36,7 +39,7 @@ public class Pluton extends Game {
         manager.load("sounds/heal.wav", Music.class);
         manager.finishLoading();
 
-        setScreen(new GameView(this));
+        setScreen(new TitleView(this));
     }
     @Override
     public void dispose() {
@@ -44,5 +47,12 @@ public class Pluton extends Game {
         manager.dispose();
         batch.dispose();
         LevelLoader.getInstance().dispose();
+    }
+
+    public static String getPlayerName() {
+        return playerName;
+    }
+    public static void setPlayerName(String playerName) {
+        Pluton.playerName = playerName;
     }
 }

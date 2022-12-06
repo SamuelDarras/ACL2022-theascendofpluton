@@ -31,7 +31,6 @@ public class LevelLoader {
 
     private World world;
 
-
     private GameWorld gameWorld;
 
     private static LevelLoader INSTANCE = new LevelLoader();
@@ -162,7 +161,7 @@ public class LevelLoader {
      * @return le set contenant les zombies ajoutés au monde.
      */
     public void addObjects(World world) {
-        try (Input input = new Input(new FileInputStream("partie.bin"))) {
+        try (Input input = new Input(new FileInputStream("partie-"+Pluton.getPlayerName()+".bin"))) {
             this.gameWorld = GameView.kryo.readObject(input, GameWorld.class);
             this.joueur = gameWorld.getJoueur();
         } catch (FileNotFoundException e) {

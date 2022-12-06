@@ -1,16 +1,20 @@
 package fr.ul.theascendofpluton.model;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.World;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.view.GameView;
 
 public class GameWorld {
@@ -124,7 +128,11 @@ public class GameWorld {
         world.dispose();
     }
 
-    public void save(Output output) {
-        GameView.kryo.writeObjectOrNull(output, this, getClass());
+    public void save() {
+        try (Output output = new Output(new FileOutputStream("partie-"+Pluton.getPlayerName()+".bin"))) {
+            GameView.kryo.writeObjectOrNull(output, this, getClass());
+        } catch (FileNotFoundException | KryoException e) {
+            e.printStackTrace();
+        }
     }
 }

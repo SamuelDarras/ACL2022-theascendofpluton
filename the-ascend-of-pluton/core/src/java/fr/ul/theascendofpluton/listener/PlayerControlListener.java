@@ -9,16 +9,19 @@ import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.io.Output;
 
 import fr.ul.theascendofpluton.LevelLoader;
+import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.model.Joueur;
 import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.view.MiniMap;
 
 public class PlayerControlListener implements InputProcessor {
+    private Pluton game;
     private Joueur joueur;
     private boolean debugMode;
     private MiniMap map;
 
-    public PlayerControlListener(Joueur joueur, MiniMap map) {
+    public PlayerControlListener(Joueur joueur, MiniMap map, Pluton game) {
+        this.game = game;
         this.joueur = joueur;
         this.map = map;
         debugMode = false;
@@ -57,12 +60,9 @@ public class PlayerControlListener implements InputProcessor {
             r = true;
         }
 
-        if (keycode == Input.Keys.S) {
-            try (Output output = new Output(new FileOutputStream("partie.bin"))) {
-                LevelLoader.getInstance().getGameWorld().save(output);
-            } catch (FileNotFoundException | KryoException e) {
-                e.printStackTrace();
-            }
+        if (keycode == Input.Keys.S && !LevelLoader.getInstance().getPluton().isDead()) {
+            LevelLoader.getInstance().getGameWorld().save();
+            r = true;
         }
 
         return r;

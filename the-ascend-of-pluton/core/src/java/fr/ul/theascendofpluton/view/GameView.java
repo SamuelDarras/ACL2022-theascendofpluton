@@ -164,7 +164,7 @@ public class GameView extends ScreenAdapter {
 
         debugRenderer = new Box2DDebugRenderer();
 
-        c = new PlayerControlListener(levelLoader.getGameWorld().getJoueur(), map);
+        c = new PlayerControlListener(levelLoader.getGameWorld().getJoueur(), map, game);
         Gdx.input.setInputProcessor(c);
 
         PlayerContactListener contactListener = new PlayerContactListener();
