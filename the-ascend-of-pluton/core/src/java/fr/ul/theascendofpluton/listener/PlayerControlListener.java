@@ -12,6 +12,7 @@ public class PlayerControlListener implements InputProcessor {
     private MiniMap map;
     private Shop shop;
     private boolean isShopOpen = false;
+
     public PlayerControlListener(Joueur joueur, MiniMap map, Shop shop) {
         this.joueur = joueur;
         this.map = map;
@@ -48,7 +49,7 @@ public class PlayerControlListener implements InputProcessor {
             r = true;
         }
         if(keycode == Input.Keys.M){
-            System.out.println("ici");
+            //System.out.println("ici");
             map.toggle();
             r = true;
         }
@@ -58,19 +59,18 @@ public class PlayerControlListener implements InputProcessor {
             } else {
                 isShopOpen=false;
             }
-            System.out.println(isShopOpen);
             shop.toggle();
             r = true;
         }
         if(isShopOpen){
             if(keycode == Input.Keys.I){
                 joueur.buyShop("vie",5);
-                System.out.println("achat PV");
+               // System.out.println("achat PV");
                 r = true;
             }
             if(keycode == Input.Keys.O){
                 joueur.buyShop("strength",10);
-                System.out.println("achat force");
+                //System.out.println("achat force");
                 r = true;
             }
         }

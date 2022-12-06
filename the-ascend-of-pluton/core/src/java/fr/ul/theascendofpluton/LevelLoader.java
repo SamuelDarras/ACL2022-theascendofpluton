@@ -19,9 +19,7 @@ import java.util.Map;
 
 public class LevelLoader {
     private TiledMap tiledMap;
-    private TiledMap tiledShop;
     private TiledMapRenderer tiledMapRenderer;
-    private TiledMapRenderer tiledShopRenderer;
     private Joueur joueur;
     public Map<String, Sprite> spriteHashMap;
     public Map<String, Vector2> spriteOffsets;
@@ -61,8 +59,6 @@ public class LevelLoader {
     public void load(String level_name){
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        tiledShop = new TmxMapLoader().load("levels/" + level_name + ".tmx");
-        tiledShopRenderer = new OrthogonalTiledMapRenderer(tiledShop);
 
         World world = new World(new Vector2(), false);
         gameWorld = new GameWorld(world);
@@ -72,9 +68,6 @@ public class LevelLoader {
 
     public MapRenderer getRenderer() {
         return tiledMapRenderer;
-    }
-    public MapRenderer getShopRenderer() {
-        return tiledShopRenderer;
     }
 
     public Joueur getPluton() {
@@ -205,8 +198,6 @@ public class LevelLoader {
 
     public TiledMap getMap() {
         return this.tiledMap;
-    }
-    public TiledMap getShop() {return this.tiledShop;
     }
 
     public GameWorld getGameWorld() {

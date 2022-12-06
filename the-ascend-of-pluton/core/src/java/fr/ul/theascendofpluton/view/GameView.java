@@ -29,7 +29,7 @@ public class GameView extends ScreenAdapter {
     private final Joueur joueur;
     private boolean finished = false;
     private MiniMap map;
-    private Shop shop;
+    private final Shop shop;
 
     public GameView(Pluton game) {
         super();
@@ -39,7 +39,7 @@ public class GameView extends ScreenAdapter {
         joueur = levelLoader.getGameWorld().getJoueur();
 
         map = new MiniMap(levelLoader.getMap());
-        shop = new Shop(levelLoader.getShop());
+        shop = new Shop(1,1);
 
         world = levelLoader.getGameWorld().getWorld();
 
@@ -55,6 +55,7 @@ public class GameView extends ScreenAdapter {
         PlayerContactListener contactListener = new PlayerContactListener();
         world.setContactListener(contactListener);
     }
+
     private void update() {
         if (!(joueur.getPosition().x + Pluton.CAMERA_WIDTH/2 > levelLoader.getLevelWidth() * 32 || joueur.getPosition().x - Pluton.CAMERA_WIDTH/2 < 0))
             camera.position.x = joueur.getPosition().x;
@@ -74,7 +75,6 @@ public class GameView extends ScreenAdapter {
 
         camera.update();
         map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
-        shop.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
     }
     @Override
     public void render(float delta) {
@@ -89,7 +89,6 @@ public class GameView extends ScreenAdapter {
         Pluton.batch.setProjectionMatrix(camera.combined);
 
         levelLoader.getRenderer().setView(camera);
-        levelLoader.getShopRenderer().setView(camera);
 
         Pluton.batch.begin();
 
@@ -98,17 +97,16 @@ public class GameView extends ScreenAdapter {
             debugRenderer.render(world, camera.combined);
         } else {
             levelLoader.getRenderer().render();
-            levelLoader.getShopRenderer().render();
 
             levelLoader.getGameWorld().render(delta);
 
             showStats();
+            shop.render();
 
         }
 
         Pluton.batch.end();
         map.render();
-        shop.render();
     }
 
     @Override
@@ -118,11 +116,10 @@ public class GameView extends ScreenAdapter {
         camera.update();
 
         levelLoader.getRenderer().setView(camera);
-        levelLoader.getShopRenderer().setView(camera);
 
         vp.update(width, height, true);
         map.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
-        shop.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
+        shop.resize(width, height);
     }
 
     @Override
@@ -141,13 +138,9 @@ public class GameView extends ScreenAdapter {
         gameOverMusic.play();
     }
     public void showStats(){
-        // TODO: ajouter une autre caméra
         Pluton.font.draw(Pluton.batch, String.valueOf("Vie :"+joueur.getLife()+"/"+joueur.getMaxLife()), camera.position.x-168f, camera.position.y-72f);
         Pluton.font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getStrength()), camera.position.x-168f, camera.position.y-80f);
         Pluton.font.draw(Pluton.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
-
-        //batch = new SpriteBatch();
-        //
         Pluton.font.getData().setScale(0.4f, 0.4f);
     }
 }
