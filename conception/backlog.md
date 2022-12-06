@@ -65,5 +65,6 @@ Objectif : mise en place du système d'achat et amélioration de l'interface gra
 - Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis une interface ouverte en appuyant sur la touche "P", (BOUCHER Yohan)
 - Les zombies se déplacent de manière intelligente en esquivant les obstacles, (PHEULPIN Naomi)
 - Le joueur peut passer au niveau suivant en tuant le boss du niveau courant, (GROSJEAN Lucas)
-- Le joueur peut utiliser de l'équipement récupéré en tuant des ennemis,
 - Le joueur peut quitter sa partie et la reprendre où il l'a laissée. (DARRAS Samuel)
+- Les zombies poursuivent le joueur si il est a moins de 3 cases d'eux.
+- Les chauves souris sont des ennemis volant, non impacté par les obstacles et les autres ennemis, posssèdant 10 points de vie et infligeant 2 points de dégâts. Leur but est de rentrer en collision avec ce dernier afin de l'attaquer.
