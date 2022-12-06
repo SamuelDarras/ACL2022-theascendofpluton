@@ -152,21 +152,6 @@ public class GameView extends ScreenAdapter {
         levelLoader = LevelLoader.getInstance();
         levelLoader.load("plutonV2");
 
-        // try (Output output = new Output(new FileOutputStream("joueur.bin"))) {
-        //     kryo.writeObject(output, joueur);
-        //     output.close();
-        // } catch (FileNotFoundException | KryoException e) {
-        //     e.printStackTrace();
-        // }
-
-        // try {
-        //     Input input = new Input(new FileInputStream("joueur.bin"));
-        //     joueur = kryo.readObject(input, Joueur.class);
-        //     input.close();
-        // } catch (FileNotFoundException e) {
-        //     joueur = LevelLoader.getInstance().getPluton();
-        // }
-
         joueur = LevelLoader.getInstance().getPluton();
 
         map = new MiniMap(levelLoader.getMap());
@@ -240,12 +225,13 @@ public class GameView extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, levelLoader.getLevelWidth(), levelLoader.getLevelHeight());
-        camera.position.set(joueur.getPosition().x,joueur.getPosition().y, 0);
+        System.out.println(joueur.getPosition().toString());
+        camera.position.set(joueur.getPosition().x, joueur.getPosition().y, 0);
         camera.update();
 
         levelLoader.getRenderer().setView(camera);
 
-        vp.update(width, height, true);
+        vp.update(width, height, false);
         map.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
     }
 
