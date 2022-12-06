@@ -47,6 +47,9 @@ public class GameWorld {
             @Override
             public void write(Kryo kryo, Output output, GameWorld object) {
                 System.out.println(LevelLoader.getInstance().getGameWorld().spriteOffsets);
+
+                output.writeInt(Pluton.getLevelIdx());
+
                 output.writeFloat(lastBossKilled.x);
                 output.writeFloat(lastBossKilled.y);
 
@@ -75,6 +78,7 @@ public class GameWorld {
 
             @Override
             public GameWorld read(Kryo kryo, Input input, Class<? extends GameWorld> type) {
+                Pluton.setLevelIdx(input.readInt());
                 GameWorld gameWorld = new GameWorld(world);
                 float x = input.readFloat();
                 float y = input.readFloat();

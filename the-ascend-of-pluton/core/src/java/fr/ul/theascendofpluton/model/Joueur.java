@@ -264,23 +264,15 @@ public class Joueur extends DamageableObject {
     }
 
     public float getStrength() {
-        return strength;
+        return getDamage();
     }
 
     public float getMaxLife() {
         return maxLife;
     }
 
-    public void setStrength(float strength) {
-        this.strength = strength;
-    }
-
     public void setMaxLife(float maxLife) {
         this.maxLife = maxLife;
-    }
-
-    public void setLife(float life) {
-        this.life = life;
     }
 
     @Override
@@ -304,12 +296,12 @@ public class Joueur extends DamageableObject {
                     //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
                     Pluton.manager.get("sounds/heal.wav", Music.class).play();
                     setMaxLife(this.maxLife+5);
-                    setLife(this.life+5);
+                    setLife(this.getLife()+5);
                     break;
                 case "strength":
                     //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
                     Pluton.manager.get("sounds/heal.wav", Music.class).play();
-                    setStrength(this.strength+2);
+                    setDamage(this.getDamage()+2);
                     break;
             }
             spendMoney(prix);
@@ -331,4 +323,7 @@ public class Joueur extends DamageableObject {
         return touchPortal;
     }
 
+    public float[] getVertices() {
+        return vertices;
+    }
 }

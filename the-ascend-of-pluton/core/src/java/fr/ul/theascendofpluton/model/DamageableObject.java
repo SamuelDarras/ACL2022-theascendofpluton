@@ -40,4 +40,7 @@ public abstract class DamageableObject extends GameObject{
         return money;
     }
 
+    public void setDamage(float damage) {
+        this.damage = damage;
+    }
 }

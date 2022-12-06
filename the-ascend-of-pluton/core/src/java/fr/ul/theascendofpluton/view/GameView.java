@@ -346,7 +346,7 @@ public class GameView extends ScreenAdapter {
         // TODO: ajouter une autre caméra
         HUDBatch.begin();
 
-            Pluton.font.draw(HUDBatch, String.valueOf("Vie :"+joueur.getLife()), camera.viewportWidth/20f, camera.viewportHeight/2f);
+            Pluton.font.draw(HUDBatch, String.valueOf("Vie :"+joueur.getLife()) + " / " + joueur.getMaxLife(), camera.viewportWidth/20f, camera.viewportHeight/2f);
             Pluton.font.draw(HUDBatch, String.valueOf("Force :"+joueur.getDamage()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*2));
             Pluton.font.draw(HUDBatch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*4));
 

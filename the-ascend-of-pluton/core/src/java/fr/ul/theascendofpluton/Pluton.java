@@ -17,7 +17,7 @@ import fr.ul.theascendofpluton.view.TitleView;
 public class Pluton extends Game {
 
     private String[] levelNameList = new String[]{"plutonV2"};
-    private int levelIdx;
+    private static int levelIdx;
     public static final float CAMERA_HEIGHT = (32*9)/1.5f;
     public static final float CAMERA_WIDTH = (32*16)/1.5f;
     public static SpriteBatch batch;
@@ -83,5 +83,13 @@ public class Pluton extends Game {
     }
     public void resetLevel(){
         levelIdx = 0;
+    }
+
+    public static int getLevelIdx() {
+        return levelIdx;
+    }
+
+    public static void setLevelIdx(int levelIdx) {
+        Pluton.levelIdx = levelIdx;
     }
 }
