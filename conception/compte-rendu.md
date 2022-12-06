@@ -58,7 +58,14 @@ Aucune
 # Sprint 3
 
 ## Fonctionnalités réalisées: 
+- Le joueur peut passer au niveau suivant en tuant le boss du niveau courant,
+- Le joueur peut dépenser son argent pour améliorer son personnage,
+- Les chauves souris sont des ennemis volant, non impacté par les obstacles et les autres ennemis, posssèdant 10 points de vie et infligeant 2 points de dégâts. Leur but est de rentrer en collision avec ce dernier afin de l'attaquer,
+- Les zombies poursuivent le joueur si il est a moins de 3 cases d'eux,
+- Le joueur peut quitter sa partie et la reprendre où il l'a laissé.
 
 ## Fonctionnalités non réalisées: 
+- Les zombies se déplacent de manière intelligente en esquivant les obstacles.
 
 ## Fonctionnalités validées:
+Aucune
