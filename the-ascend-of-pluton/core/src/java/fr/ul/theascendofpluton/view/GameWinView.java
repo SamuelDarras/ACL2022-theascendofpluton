@@ -1,5 +1,6 @@
 package fr.ul.theascendofpluton.view;
 
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -7,7 +8,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -15,18 +15,17 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import fr.ul.theascendofpluton.Pluton;
 
-
-public class GameOverView extends ScreenAdapter {
+public class GameWinView extends ScreenAdapter {
     private final Pluton game;
     private final Viewport vp;
     private final Stage stage;
+    private final Music gameWinMusic = Pluton.manager.get("sounds/game_win.wav", Music.class);
 
-    private final Music gameOverMusic = Pluton.manager.get("sounds/game_over.wav", Music.class);
-
-    public GameOverView(Pluton game){
+    public GameWinView(Pluton game){
         this.game = game;
         vp = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new OrthographicCamera());
         stage = new Stage(vp, Pluton.batch);
+
 
         Label.LabelStyle labelStyle = new Label.LabelStyle(Pluton.finalScreenFont, Color.GOLD);
 
@@ -34,16 +33,16 @@ public class GameOverView extends ScreenAdapter {
         table.center();
         table.setFillParent(true);
 
-        Label gameOverLabel = new Label("Perdu !", labelStyle);
-        Label playAgainLabel = new Label("Appuyez pour rejouer.", labelStyle);
+        Label gameWinLabel = new Label("Gagné !", labelStyle);
+        Label continueLabel = new Label("Appuyez pour continuer.", labelStyle);
 
-        table.add(gameOverLabel).expandX();
+        table.add(gameWinLabel).expandX();
         table.row();
-        table.add(playAgainLabel).expandX().padTop(10f);
+        table.add(continueLabel).expandX().padTop(10f);
 
         stage.addActor(table);
 
-        gameOverMusic.play();
+        gameWinMusic.play();
     }
 
     @Override
@@ -56,8 +55,8 @@ public class GameOverView extends ScreenAdapter {
     public void render(float delta) {
         super.render(delta);
         if(Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.justTouched()){
-            gameOverMusic.stop();
-            game.resetLevel();
+            gameWinMusic.stop();
+            game.nextLevel();
             game.setScreen(new GameView(game));
             dispose();
         }

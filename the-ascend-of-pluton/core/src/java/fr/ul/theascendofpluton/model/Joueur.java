@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 import com.esotericsoftware.kryo.Kryo;
@@ -23,22 +24,21 @@ import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.view.GameView;
 
-public class Joueur extends GameObject {
-    private float strength = 10f; // TODO: tiled
-    private float range = 12f;
+public class Joueur extends DamageableObject {
+    private float range;
     private float maxLife;
-    private float life;
     private boolean isTakingContinuousDamage = false;
     private float continuousDamageValue = 0;
     private boolean invulnerable = false;
-    private final float VELOCITY = 20f;
+    private final float VELOCITY = 30f;
     private float stateTimer = 0;
     private final Sprite playerSprite;
     private TextureRegion playerStand;
-    private TextureRegion playerInvulterable;
+    private TextureRegion playerInvulnerable;
     private Animation<TextureRegion> deathAnimation;
     private char directions;
     private boolean shouldAttack;
+    private boolean touchPortal = false;
     private float money = 0f;
     
     public static final int LEFT  = 0;
@@ -48,10 +48,32 @@ public class Joueur extends GameObject {
 
     private float[] vertices;
 
-    public Joueur(Vector2 coords, Vector2 offsetVector, float[] verticies, float life) {
-        super(coords, offsetVector);
-        this.life = life;
+    public Joueur(World world, Vector2 coords, float[] verticies, float life, float strength, float range) {
+        super(coords, life, strength, 0);
+        this.range = range;
         maxLife = life;
+
+        generateBody(world, verticies);
+
+        playerSprite = new Sprite();
+        playerSprite.setSize(32, 32);
+        initTextures();
+    }
+
+    /**
+     * Rajoute le joueur au nouveau monde lorsque celui-ci passe au prochain niveau
+     * @param world
+     * @param coords
+     * @param verticies
+     */
+    public void loadInNewWorld(World world, Vector2 coords, float[] verticies){
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(coords);
+        setBodyDef(bodyDef);
+        generateBody(world, verticies);
+    }
+
+    private void generateBody(World world, float[] verticies){
         this.vertices = verticies;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
         setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
@@ -63,11 +85,6 @@ public class Joueur extends GameObject {
         p.dispose();
 
         getBody().setUserData(this);
-
-        playerSprite = new Sprite();
-        playerSprite.setSize(32, 32);
-        initTextures();
-
     }
 
     private void initTextures() {
@@ -80,7 +97,7 @@ public class Joueur extends GameObject {
 
         playerStand = textureRegions[0][0];
 
-        playerInvulterable = textureRegions[13][1];
+        playerInvulnerable = textureRegions[13][1];
 
         System.arraycopy(textureRegions[15], 0, deathFrames, 0, 8);
         deathAnimation = new Animation<>(0.025f, deathFrames);
@@ -97,13 +114,17 @@ public class Joueur extends GameObject {
         return fixtureDef;
     }
 
+    /**
+     * Change le sprite en joueur en fonction de son état
+     * @param delta
+     */
     private void updatePlayerSprite(float delta) {
-        Sprite playerSprite = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
+        Sprite playerSprite = LevelLoader.getInstance().getSprite(this.getClass().getSimpleName());
         if (isDead()) {
             playerSprite.setRegion(deathAnimation.getKeyFrame(stateTimer, false));
             stateTimer += delta;
         } else if (invulnerable) {
-            playerSprite.setRegion(playerInvulterable);
+            playerSprite.setRegion(playerInvulnerable);
         } else {
             playerSprite.setRegion(playerStand);
         }
@@ -164,10 +185,10 @@ public class Joueur extends GameObject {
             gameWorld.getWorld().getBodies(bodies);
 
             for (Body body : bodies) {
-                if (body.getUserData() instanceof Zombie) {
-                    Zombie z = (Zombie) body.getUserData();
-                    if (z.getDistance(getPosition()) < range) {
-                        inflictDamage(z);
+                if (body.getUserData() instanceof DamageableObject && !(body.getUserData() instanceof Joueur)) {
+                    DamageableObject o = (DamageableObject) body.getUserData();
+                    if (o.getPosition().dst(getPosition()) < range) {
+                        inflictDamage(o);
                     }
                 }
             }
@@ -175,14 +196,10 @@ public class Joueur extends GameObject {
         }
     }
 
-
-    public void inflictDamage(Zombie target) {
-        target.receiveDamage(strength);
-    }
-
+    @Override
     public void receiveDamage(float n) {
         if (!isDead() && !invulnerable) {
-            this.life -= n;
+            super.receiveDamage(n);
 
             if (!isDead()) {
                 Pluton.manager.get("sounds/hurt.ogg", Music.class).play();
@@ -203,7 +220,7 @@ public class Joueur extends GameObject {
     }
 
     public void receiveLife(float n) {
-        life = Math.min(life + n, maxLife);
+        setLife(Math.min(getLife() + n, maxLife));
         Pluton.manager.get("sounds/heal.wav", Music.class).play();
     }
 
@@ -213,12 +230,9 @@ public class Joueur extends GameObject {
     }
 
     public boolean isDead() {
-        return life <= 0f;
+        return getLife() <= 0f;
     }
 
-    public float getLife() {
-        return life;
-    }
 
     public void receiveMoney(float money) {
         this.money += money;
@@ -226,10 +240,6 @@ public class Joueur extends GameObject {
 
     public float getMoney() {
         return this.money;
-    }
-
-    public float getStrength() {
-        return strength;
     }
 
     public float[] getVertices() {
@@ -249,4 +259,16 @@ public class Joueur extends GameObject {
     public void removeDirection(int direction) {
         directions = (char) (~(0b1<<direction) & directions);
     }
+
+    public float getRange() {
+        return range;
+    }
+
+    public void setTouchPortal(boolean touchPortal) {
+        this.touchPortal = touchPortal;
+    }
+    public boolean touchPortal(){
+        return touchPortal;
+    }
+
 }

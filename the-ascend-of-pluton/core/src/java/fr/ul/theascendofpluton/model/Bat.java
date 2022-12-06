@@ -1,79 +1,88 @@
 package fr.ul.theascendofpluton.model;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.LevelLoader;
 
-public class Zombie extends DamageableObject {
+public class Bat extends DamageableObject{
+    public static float stateTimer = 0;
 
     private float[] vertices;
 
-    //x,y postion de l'ennemi dans le monde
-    public Zombie(Vector2 coords, float[] verticies, float life, float damage, float money){
-        super(coords, life, damage, money);
+    public Bat(Vector2 coords, float[] polygonVerticies, float life, float damage, float monnaie) {
+        super(coords, life, damage, monnaie);
 
-        this.vertices = verticies;
+        this.vertices = polygonVerticies;
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.set(verticies);
+        shape.set(polygonVerticies);
 
         fixtureDef.shape = shape;
         fixtureDef.density = .5f;
         fixtureDef.restitution = .1f;
         fixtureDef.friction = .5f;
 
-        getBodyDef().type = BodyDef.BodyType.DynamicBody;
+        getBodyDef().type = BodyDef.BodyType.KinematicBody;
         getBodyDef().position.set(coords);
         setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
 
         getBody().setFixedRotation(true);
-        getBody().createFixture(fixtureDef).setUserData("zombie");
+        getBody().createFixture(fixtureDef).setUserData("bat");
         getBody().setUserData(this);
         shape.dispose();
+
+        //initTextures();
     }
 
-        
-    
-    //x,y coordonnées à atteindre
     @Override
-    public void update(GameWorld gameWorld) {
-        if(isTargetRange()){
+    public void update(GameWorld w) {
+        if (isTargetRange()) {
             float target_x = getBody().getPosition().x - LevelLoader.getInstance().getPluton().getPosition().x;
             float target_y = getBody().getPosition().y - LevelLoader.getInstance().getPluton().getPosition().y;
             float force_x = 0;
             float force_y = 0;
 
-            if (target_x < 0) force_x = 15f;
-            if (target_x > 0) force_x = -15f;
-            if (target_y < 0) force_y = 15f;
-            if (target_y > 0) force_y = -15f;
+            if (target_x < 0) force_x = 10f;
+            if (target_x > 0) force_x = -10f;
+            if (target_y < 0) force_y = 10f;
+            if (target_y > 0) force_y = -10f;
 
             getBody().setLinearVelocity(force_x, force_y);
         }
 
         if (getLife() <= 0f) {
             LevelLoader.getInstance().getPluton().receiveMoney(getMoney());
-            gameWorld.remove(this);
+            w.remove(this);
         }
+    }
+
+    private void updateBatSprite() {
+        Sprite batSprite = LevelLoader.getInstance().getSprite(this.getClass().getSimpleName());
+        batSprite.setRegion(LevelLoader.getInstance().flyAnimation.getKeyFrame(stateTimer, true));
     }
 
     /**
      *
-     * @return Vrai si le joueur est assez proche du zombie pour qu'il le pourchasse, faux sinon.
+     * @return Vrai si le joueur est assez proche du bat pour qu'il le pourchasse, faux sinon.
      */
     private boolean isTargetRange() {
-        return LevelLoader.getInstance().getPluton().getPosition().dst(getPosition()) <= 80;
+        return LevelLoader.getInstance().getPluton().getPosition().dst(getPosition()) <= 160;
     }
 
     @Override
     public void render(float delta) {
+        updateBatSprite();
         super.render();
     }
-
-
 
     public float[] getVertices() {
         return vertices;

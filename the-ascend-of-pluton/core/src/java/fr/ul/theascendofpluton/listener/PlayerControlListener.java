@@ -60,7 +60,7 @@ public class PlayerControlListener implements InputProcessor {
             r = true;
         }
 
-        if (keycode == Input.Keys.S && !LevelLoader.getInstance().getPluton().isDead()) {
+        if (keycode == Input.Keys.S && !joueur.isDead() && !joueur.touchPortal()) {
             LevelLoader.getInstance().getGameWorld().save();
             r = true;
         }

@@ -12,12 +12,12 @@ public class Apple extends GameObject  {
 
     private float[] verticies;
 
-    public Apple(Vector2 coords, Vector2 offsetVector, float[] verticies, float heal){
-        super(coords, offsetVector);
+    public Apple(Vector2 coords, float[] verticies, float heal){
+        super(coords);
 
         this.verticies = verticies;
 
-        setBody(LevelLoader.getInstance().getWorld().createBody(getBodyDef()));
+        setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.isSensor = true;
