@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import fr.ul.theascendofpluton.view.GameView;
 import fr.ul.theascendofpluton.view.TitleView;
 
 public class Pluton extends Game {
@@ -56,7 +55,7 @@ public class Pluton extends Game {
 
         levelIdx = 0;
 
-        setScreen(new GameView(this));
+        setScreen(new TitleView(this));
     }
     @Override
     public void dispose() {
