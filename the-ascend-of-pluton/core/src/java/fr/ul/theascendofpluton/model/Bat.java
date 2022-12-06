@@ -13,13 +13,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.LevelLoader;
 
 public class Bat extends DamageableObject{
-    public float money;
     public static float stateTimer = 0;
 
 
     public Bat(World world, Vector2 coords, float[] polygonVerticies, float life, float damage, float monnaie) {
-        super(coords, life, damage);
-        this.money = monnaie;
+        super(coords, life, damage, monnaie);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
@@ -44,8 +42,8 @@ public class Bat extends DamageableObject{
 
     @Override
     public void update(GameWorld w) {
-        float target_x = getBody().getPosition().x - w.getJoueur().getPosition().x;
-        float target_y = getBody().getPosition().y - w.getJoueur().getPosition().y;
+        float target_x = getBody().getPosition().x - LevelLoader.getInstance().getPluton().getPosition().x;
+        float target_y = getBody().getPosition().y - LevelLoader.getInstance().getPluton().getPosition().y;
         float force_x = 0;
         float force_y = 0;
 
@@ -57,13 +55,13 @@ public class Bat extends DamageableObject{
         getBody().setLinearVelocity(force_x, force_y);
 
         if (getLife() <= 0f) {
-            LevelLoader.getInstance().getPluton().receiveMoney(money);
+            LevelLoader.getInstance().getPluton().receiveMoney(getMoney());
             w.remove(this);
         }
     }
 
     private void updateBatSprite() {
-        Sprite batSprite = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
+        Sprite batSprite = LevelLoader.getInstance().getSprite(this.getClass().getSimpleName());
         batSprite.setRegion(LevelLoader.getInstance().flyAnimation.getKeyFrame(stateTimer, true));
     }
 

@@ -24,15 +24,10 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private Joueur joueur;
-<<<<<<< HEAD
 
     public Animation<TextureRegion> flyAnimation;
-    public Map<String, Sprite> spriteHashMap;
-    public Map<String, Vector2> spriteOffsets;
-=======
     private Map<String, Sprite> spriteHashMap;
     private Map<String, Vector2> spriteOffsets;
->>>>>>> origin/next_level
 
     private GameWorld gameWorld;
 
@@ -53,7 +48,10 @@ public class LevelLoader {
         Sprite playerSprite = new Sprite();
         playerSprite.setSize(24, 24);
 
-<<<<<<< HEAD
+        Texture portalTexture = new Texture(Gdx.files.internal("portal.png"));
+        Sprite portalSprite = new Sprite(portalTexture, 0, 0, 64, 64);
+        portalSprite.setSize(32, 32);
+
         Texture batTexture = new Texture(Gdx.files.internal("bat.png"));
         TextureRegion[][] textureRegions = TextureRegion.split(batTexture, batTexture.getWidth() / 2,
                 batTexture.getHeight());
@@ -63,23 +61,15 @@ public class LevelLoader {
 
         Sprite batSprite = new Sprite();
         batSprite.setSize(16,16);
-=======
-        Texture portalTexture = new Texture(Gdx.files.internal("portal.png"));
-        Sprite portalSprite = new Sprite(portalTexture, 0, 0, 64, 64);
-        portalSprite.setSize(32, 32);
->>>>>>> origin/next_level
 
         spriteOffsets = new HashMap<>();
         spriteHashMap = new HashMap<>();
         spriteHashMap.put(Zombie.class.getSimpleName(), zombieSprite);
         spriteHashMap.put(Apple.class.getSimpleName(), appleSprite);
         spriteHashMap.put(Joueur.class.getSimpleName(), playerSprite);
-<<<<<<< HEAD
-        spriteHashMap.put(Bat.class.getSimpleName(), batSprite);
-=======
         spriteHashMap.put("ZombieBoss", zombieBossSprite);
         spriteHashMap.put("Portal", portalSprite);
->>>>>>> origin/next_level
+        spriteHashMap.put(Bat.class.getSimpleName(), batSprite);
     }
 
     public static LevelLoader getInstance() {
@@ -221,86 +211,12 @@ public class LevelLoader {
                 arrayCentroid.clear();
             }
         }
-<<<<<<< HEAD
-        return map;
-    }
-
-    /**
-     * Ajoute les différents obstacles dans le monde via la tiledMap
-     * @param world
-     */
-    public void addObstacles(World world){
-        Map<Vector2, List<float[]>> mapObstacles = new HashMap<>();
-        Map<Vector2, List<float[]>> mapPuddles = new HashMap<>();
-        mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("sol")));
-        mapObstacles.putAll(getPolygones(tiledMap.getLayers().get("vide")));
-        mapPuddles.putAll(getPolygones(tiledMap.getLayers().get("puddles")));
-        mapObstacles.forEach((key, value)->{
-            for(float[] polygonVerticies : value){
-                new Obstacle(world, key, polygonVerticies);
-            }
-        });
-
-        mapPuddles.forEach((key, value)->{
-            for(float[] verticies : value){
-                new AcidPuddle(world, key, verticies, 5);
-            }
-        });
-    }
-
-    /**
-     * Ajoute au monde les zombies présents dans la tiledMap
-     * @param world
-     * @return le set contenant les zombies ajoutés au monde.
-     */
-    public void addObjects(World world){
-        MapLayer mapLayerZombies = tiledMap.getLayers().get("Zombie");
-        float lifeZ = (float)mapLayerZombies.getProperties().get("life");
-        float damageZ = (float)mapLayerZombies.getProperties().get("damage");
-        float monnaieZ = (float)mapLayerZombies.getProperties().get("monnaie");
-        Map<Vector2, List<float[]>> mapZombies = new HashMap<>(getPolygones(mapLayerZombies));
-        mapZombies.forEach((coords, polygons)->{
-            for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Zombie(world, coords, polygonVerticies, lifeZ, damageZ, monnaieZ));
-            }
-        });
-
-        MapLayer mapLayerBats = tiledMap.getLayers().get("Bat");
-        float lifeB = (float)mapLayerZombies.getProperties().get("life");
-        float damageB = (float)mapLayerZombies.getProperties().get("damage");
-        float monnaieB = (float)mapLayerZombies.getProperties().get("monnaie");
-        Map<Vector2, List<float[]>> mapBats = new HashMap<>(getPolygones(mapLayerBats));
-        mapBats.forEach((coords, polygons)->{
-            for (float[] polygonVerticies : polygons) {
-                gameWorld.add(new Bat(world, coords, polygonVerticies, lifeB, damageB, monnaieB));
-            }
-        });
-
-        MapLayer mapLayerApples = tiledMap.getLayers().get("Apple");
-        float heal = (float)mapLayerApples.getProperties().get("heal");
-        Map<Vector2, List<float[]>> mapApples = new HashMap<>(getPolygones(mapLayerApples));
-        mapApples.forEach((coords, value)->{
-            for(float[] polygonVerticies : value){
-                gameWorld.add(new Apple(world, coords, polygonVerticies, heal));
-            }
-        });
-
-        MapLayer mapLayerJoueur = tiledMap.getLayers().get("Joueur");
-        MapObject mapObjectJoueur = mapLayerJoueur.getObjects().get("Pluton");
-        Map<Vector2, List<float[]>> mapPlayer = new HashMap<>(getPolygones(mapLayerJoueur));
-        mapPlayer.forEach((coords, value)->{
-            joueur = new Joueur(world, coords, value.get(0), (float)mapObjectJoueur.getProperties().get("life"));
-            gameWorld.setJoueur(joueur);
-            gameWorld.add(joueur);
-        });
-=======
         if (countBosses == 0) {
             throw new LevelLoadException("Le niveau doit contenir au moins un boss");
         }
         if(countPlayer != 1) {
             throw new LevelLoadException("Le niveau doit contenir exactement un joueur");
         }
->>>>>>> origin/next_level
     }
 
     public int getLevelWidth() {
