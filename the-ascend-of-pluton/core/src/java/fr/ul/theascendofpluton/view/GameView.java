@@ -8,6 +8,8 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -43,6 +45,7 @@ public class GameView extends ScreenAdapter {
     private Joueur joueur;
     private boolean finished = false;
     private MiniMap map;
+    private final Shop shop;
 
     private ShapeRenderer shapeRenderer;
 
@@ -51,7 +54,7 @@ public class GameView extends ScreenAdapter {
 
     public static final Kryo kryo = new Kryo();
 
-    public <T> GameView(Pluton game) {
+    public GameView(Pluton game) {
         super();
         kryo.register(Vector2.class);
         kryo.register(Joueur.class, new Serializer<Joueur>() {
@@ -207,6 +210,7 @@ public class GameView extends ScreenAdapter {
         joueur = levelLoader.getPluton();
 
         map = new MiniMap(levelLoader.getMap());
+        shop = new Shop(1,1);
 
 
         camera = new OrthographicCamera();
@@ -216,7 +220,7 @@ public class GameView extends ScreenAdapter {
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
 
-        c = new PlayerControlListener(levelLoader.getPluton(), map, game);
+        c = new PlayerControlListener(levelLoader.getPluton(), map, shop, game);
         Gdx.input.setInputProcessor(c);
 
         PlayerContactListener contactListener = new PlayerContactListener();
@@ -286,7 +290,12 @@ public class GameView extends ScreenAdapter {
             levelLoader.getRenderer().render();
 
             levelLoader.getGameWorld().render(delta);
+
+            showStats();
+            shop.render();
+
         }
+
         Pluton.batch.end();
 
         showStats();
@@ -305,6 +314,7 @@ public class GameView extends ScreenAdapter {
 
         vp.update(width, height, false);
         map.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
+        shop.resize(width, height);
     }
 
     @Override

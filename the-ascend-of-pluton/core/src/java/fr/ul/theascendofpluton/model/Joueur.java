@@ -255,13 +255,32 @@ public class Joueur extends DamageableObject {
     public void receiveMoney(float money) {
         this.money += money;
     }
+    public void spendMoney(float money) {
+        this.money -= money;
+    }
 
     public float getMoney() {
         return this.money;
     }
 
-    public float[] getVertices() {
-        return vertices;
+    public float getStrength() {
+        return strength;
+    }
+
+    public float getMaxLife() {
+        return maxLife;
+    }
+
+    public void setStrength(float strength) {
+        this.strength = strength;
+    }
+
+    public void setMaxLife(float maxLife) {
+        this.maxLife = maxLife;
+    }
+
+    public void setLife(float life) {
+        this.life = life;
     }
 
     @Override
@@ -276,6 +295,29 @@ public class Joueur extends DamageableObject {
     
     public void removeDirection(int direction) {
         directions = (char) (~(0b1<<direction) & directions);
+    }
+
+    public void buyShop(String achat, float prix){
+        if (this.money >= prix){
+            switch(achat){
+                case "vie":
+                    //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
+                    Pluton.manager.get("sounds/heal.wav", Music.class).play();
+                    setMaxLife(this.maxLife+5);
+                    setLife(this.life+5);
+                    break;
+                case "strength":
+                    //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
+                    Pluton.manager.get("sounds/heal.wav", Music.class).play();
+                    setStrength(this.strength+2);
+                    break;
+            }
+            spendMoney(prix);
+        } else {
+            Pluton.manager.get("sounds/wrong.wav", Music.class).play();
+            System.out.println("Vous êtes trop pauvre...");
+
+        }
     }
 
     public float getRange() {

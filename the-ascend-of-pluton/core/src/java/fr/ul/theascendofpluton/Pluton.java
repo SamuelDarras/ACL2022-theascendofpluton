@@ -52,6 +52,7 @@ public class Pluton extends Game {
         manager.load("sounds/game_win.wav", Music.class);
         manager.load("sounds/death.ogg", Music.class);
         manager.load("sounds/heal.wav", Music.class);
+        manager.load("sounds/wrong.wav", Music.class);
         manager.finishLoading();
 
         levelIdx = 0;
