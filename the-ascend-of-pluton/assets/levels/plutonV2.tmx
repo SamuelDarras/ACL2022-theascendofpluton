@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="123">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="136">
  <editorsettings>
   <export format="json"/>
  </editorsettings>
@@ -8,6 +8,7 @@
  <tileset firstgid="182" source="../apple.tsx"/>
  <tileset firstgid="183" source="../zombies.tsx"/>
  <tileset firstgid="208" source="../player.tsx"/>
+ <tileset firstgid="448" source="../bat.tsx"/>
  <imagelayer id="4" name="Background" locked="1" offsetx="-703.788" offsety="-700.455">
   <image source="../galaxy-Z.png" width="2844" height="2844"/>
  </imagelayer>
@@ -180,6 +181,26 @@
    <property name="strength" type="float" value="10"/>
   </properties>
   <object id="41" name="Joueur" gid="208" x="792.75" y="163" width="24" height="24"/>
+ </objectgroup>
+ <objectgroup id="16" name="Bats">
+  <properties>
+   <property name="damage" type="float" value="2"/>
+   <property name="life" type="float" value="10"/>
+   <property name="monnaie" type="float" value="1"/>
+  </properties>
+  <object id="123" name="Bat" gid="448" x="876" y="915" width="16" height="16"/>
+  <object id="124" name="Bat" gid="448" x="950" y="817" width="16" height="16"/>
+  <object id="125" name="Bat" gid="448" x="1264" y="843" width="16" height="16"/>
+  <object id="126" name="Bat" gid="448" x="1323" y="734" width="16" height="16"/>
+  <object id="127" name="Bat" gid="448" x="1073" y="476" width="16" height="16"/>
+  <object id="128" name="Bat" gid="448" x="1406" y="533" width="16" height="16"/>
+  <object id="129" name="Bat" gid="448" x="1335" y="385" width="16" height="16"/>
+  <object id="130" name="Bat" gid="448" x="1134" y="166" width="16" height="16"/>
+  <object id="131" name="Bat" gid="448" x="1019" y="305" width="16" height="16"/>
+  <object id="132" name="Bat" gid="448" x="682" y="322" width="16" height="16"/>
+  <object id="133" name="Bat" gid="448" x="645" y="206" width="16" height="16"/>
+  <object id="134" name="Bat" gid="448" x="620" y="265" width="16" height="16"/>
+  <object id="135" name="Bat" gid="448" x="770" y="249" width="16" height="16"/>
  </objectgroup>
  <objectgroup id="4" name="Zombies">
   <properties>

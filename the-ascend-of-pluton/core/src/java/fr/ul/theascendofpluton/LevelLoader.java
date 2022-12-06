@@ -141,7 +141,7 @@ public class LevelLoader {
         List<float[]> arrayVerticies = new ArrayList<>();
         List<Vector2> arrayCentroid = new ArrayList<>();
         int countPlayer = 0 , countBosses = 0;
-        for (String layerName : new String[]{"Zombies", "Bosses", "Apples", "Joueur"}){
+        for (String layerName : new String[]{"Zombies", "Bats", "Bosses", "Apples", "Joueur"}){
             MapLayer mapLayer = tiledMap.getLayers().get(layerName);
             for (MapObject mapObject : mapLayer.getObjects()) {
                 TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
@@ -168,6 +168,14 @@ public class LevelLoader {
                         break;
                     case "Zombies":
                         gameWorld.add(new Zombie(world, coords, arrayVerticies.get(0)
+                                                 , (float) mapLayer.getProperties().get("life")
+                                                 , (float) mapLayer.getProperties().get("damage")
+                                                 , (float) mapLayer.getProperties().get("monnaie")
+                                                )
+                                     );
+                        break;
+                    case "Bats":
+                        gameWorld.add(new Bat(world, coords, arrayVerticies.get(0)
                                                  , (float) mapLayer.getProperties().get("life")
                                                  , (float) mapLayer.getProperties().get("damage")
                                                  , (float) mapLayer.getProperties().get("monnaie")
