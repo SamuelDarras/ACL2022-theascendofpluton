@@ -31,7 +31,9 @@ public class Bat extends DamageableObject{
         fixtureDef.restitution = .1f;
         fixtureDef.friction = .5f;
 
-        getBodyDef().type = BodyDef.BodyType.KinematicBody;
+        fixtureDef.isSensor = true;
+
+        getBodyDef().type = BodyDef.BodyType.DynamicBody;
         getBodyDef().position.set(coords);
         setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
 

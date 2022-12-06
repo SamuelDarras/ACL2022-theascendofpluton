@@ -1,6 +1,8 @@
 package fr.ul.theascendofpluton.listener;
 
 import com.badlogic.gdx.physics.box2d.*;
+
+import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.model.*;
 
 public class PlayerContactListener implements ContactListener {
@@ -47,6 +49,12 @@ public class PlayerContactListener implements ContactListener {
             }
             //System.out.println("Vie restante : " + joueur.getLife());
         }
+        if (contact.getFixtureA().getUserData().equals("attack") && !(contact.getFixtureB().getUserData().equals("player"))) {
+            ((DamageableObject) contact.getFixtureB().getBody().getUserData()).receiveDamage(LevelLoader.getInstance().getPluton().getDamage());
+        }
+        if (contact.getFixtureB().getUserData().equals("attack") && !(contact.getFixtureA().getUserData().equals("player"))) {
+            ((DamageableObject) contact.getFixtureA().getBody().getUserData()).receiveDamage(LevelLoader.getInstance().getPluton().getDamage());
+        }
     }
 
     @Override
@@ -68,7 +76,11 @@ public class PlayerContactListener implements ContactListener {
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-
+        String fixtureAData = (String) contact.getFixtureA().getUserData();
+        String fixtureBData = (String) contact.getFixtureB().getUserData();
+        if (fixtureAData == "bat" && fixtureBData != "player" && fixtureBData != "attack" || fixtureBData == "bat" && fixtureAData != "player" && fixtureAData != "attack" )
+            contact.setEnabled(false);
+        contact.setEnabled(true);
     }
 
     @Override

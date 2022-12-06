@@ -278,10 +278,10 @@ public class GameView extends ScreenAdapter {
             levelLoader.getGameWorld().renderDebug();
             debugRenderer.render(LevelLoader.getInstance().getGameWorld().getWorld(), camera.combined);
 
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(Color.CYAN);
-            shapeRenderer.circle(joueur.getPosition().x, joueur.getPosition().y, joueur.getRange());
-            shapeRenderer.end();
+            // shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            // shapeRenderer.setColor(Color.CYAN);
+            // shapeRenderer.circle(joueur.getPosition().x, joueur.getPosition().y, joueur.getRange());
+            // shapeRenderer.end();
         } else {
             levelLoader.getRenderer().render();
 
@@ -289,13 +289,7 @@ public class GameView extends ScreenAdapter {
         }
         Pluton.batch.end();
 
-        HUDBatch.begin();
-
-            Pluton.font.draw(HUDBatch, String.valueOf("Vie :"+joueur.getLife()), camera.viewportWidth/20f, camera.viewportHeight/2f);
-            Pluton.font.draw(HUDBatch, String.valueOf("Force :"+joueur.getDamage()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*2));
-            Pluton.font.draw(HUDBatch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*4));
-
-        HUDBatch.end();
+        showStats();
 
         map.render();
     }
@@ -338,12 +332,14 @@ public class GameView extends ScreenAdapter {
             }
         }, .5f);
     }
-    public void showStats(OrthographicCamera camera){
+    public void showStats(){
         // TODO: ajouter une autre caméra
-        Pluton.font.draw(Pluton.batch, String.valueOf("Vie :"+joueur.getLife()), camera.position.x-168f, camera.position.y-72f);
-        Pluton.font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getDamage()), camera.position.x-168f, camera.position.y-80f);
-        Pluton.font.draw(Pluton.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
+        HUDBatch.begin();
 
-        Pluton.font.getData().setScale(0.4f, 0.4f);
+            Pluton.font.draw(HUDBatch, String.valueOf("Vie :"+joueur.getLife()), camera.viewportWidth/20f, camera.viewportHeight/2f);
+            Pluton.font.draw(HUDBatch, String.valueOf("Force :"+joueur.getDamage()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*2));
+            Pluton.font.draw(HUDBatch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.viewportWidth/20f, camera.viewportHeight/2f - (Pluton.font.getCapHeight()*4));
+
+        HUDBatch.end();
     }
 }

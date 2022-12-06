@@ -1,6 +1,7 @@
 package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
@@ -38,8 +40,11 @@ public class Joueur extends DamageableObject {
     private Animation<TextureRegion> deathAnimation;
     private char directions;
     private boolean shouldAttack;
+    private boolean attacking = false;
     private boolean touchPortal = false;
     private float money = 0f;
+
+    private Body attack;
     
     public static final int LEFT  = 0;
     public static final int RIGHT = 1;
@@ -50,6 +55,7 @@ public class Joueur extends DamageableObject {
 
     public Joueur(World world, Vector2 coords, float[] verticies, float life, float strength, float range) {
         super(coords, life, strength, 0);
+
         this.range = range;
         maxLife = life;
 
@@ -58,6 +64,18 @@ public class Joueur extends DamageableObject {
         playerSprite = new Sprite();
         playerSprite.setSize(32, 32);
         initTextures();
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(this.getPosition().cpy());
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        attack = world.createBody(bodyDef);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = new CircleShape();
+        fixtureDef.shape.setRadius(range);
+        fixtureDef.isSensor = true;
+        attack.createFixture(fixtureDef).setUserData("attack");
+
+        attack.setActive(false);
     }
 
     /**
@@ -179,20 +197,20 @@ public class Joueur extends DamageableObject {
                 newVelocity = new Vector2();
         }
         getBody().setLinearVelocity(newVelocity.nor().scl(VELOCITY));
+        attack.setTransform(this.getPosition().cpy(), 0);
 
-        if (shouldAttack) {
-            Array<Body> bodies = new Array<>();
-            gameWorld.getWorld().getBodies(bodies);
+        if (shouldAttack && !attacking) {
+            attack.setActive(true);
+            attacking = true;
+            Timer.schedule(new Timer.Task() {
 
-            for (Body body : bodies) {
-                if (body.getUserData() instanceof DamageableObject && !(body.getUserData() instanceof Joueur)) {
-                    DamageableObject o = (DamageableObject) body.getUserData();
-                    if (o.getPosition().dst(getPosition()) < range) {
-                        inflictDamage(o);
-                    }
+                @Override
+                public void run() {
+                    attack.setActive(false);
+                    attacking = false;
+                    shouldAttack = false;
                 }
-            }
-            shouldAttack = false;
+            }, .2f);
         }
     }
 
