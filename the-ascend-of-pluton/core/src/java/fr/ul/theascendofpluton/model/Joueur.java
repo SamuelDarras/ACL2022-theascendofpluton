@@ -295,13 +295,13 @@ public class Joueur extends DamageableObject {
                 case "vie":
                     //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
                     Pluton.manager.get("sounds/heal.wav", Music.class).play();
-                    setMaxLife(this.maxLife+5);
-                    setLife(this.getLife()+5);
+                    setMaxLife(this.maxLife+10);
+                    setLife(this.getLife()+10);
                     break;
                 case "strength":
                     //System.out.println(achat + " richesse : " + this.money + " Prix : " + prix);
                     Pluton.manager.get("sounds/heal.wav", Music.class).play();
-                    setDamage(this.getDamage()+2);
+                    setDamage(this.getDamage()+1);
                     break;
             }
             spendMoney(prix);
