@@ -13,7 +13,7 @@
 
 
 + Le joueur récupère de l'argent lorsqu'il tue un ennemi.
-- Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis une interface ouverte en appuyant sur la touche "P",
++ Le joueur peut dépenser son argent pour améliorer son personnage (augmentation des dégâts, de points de vie) depuis une interface ouverte en appuyant sur la touche "P",
 - Les zombies se déplacent de manière intelligente en esquivant les obstacles,
 + Lorsque le personnage n'a plus de points de vie, la partie se termine et doit tout recommencer,
 + Le joueur peut se repérer dans le niveau,
@@ -21,9 +21,9 @@
 + Le joueur peut voir les statistiques de son personnage.
 
 
-- Le joueur peut passer au niveau suivant en tuant le boss du niveau courant,
++ Le joueur peut passer au niveau suivant en tuant le boss du niveau courant,
 - Le joueur peut utiliser de l'équipement récupéré en tuant des ennemis,
-- Le joueur peut quitter sa partie et la reprendre où il l'a laissée,
++ Le joueur peut quitter sa partie et la reprendre où il l'a laissée,
 
 ---
 
