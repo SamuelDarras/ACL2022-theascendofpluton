@@ -12,8 +12,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import fr.ul.theascendofpluton.Exceptions.LevelLoadException;
 import fr.ul.theascendofpluton.Pluton;
 import fr.ul.theascendofpluton.listener.PlayerContactListener;
 import fr.ul.theascendofpluton.listener.PlayerControlListener;
@@ -26,7 +28,6 @@ public class GameView extends ScreenAdapter {
     private final Viewport vp;
     private final OrthographicCamera camera;
     private final Box2DDebugRenderer debugRenderer;
-    private final World world;
     private final PlayerControlListener c;
     private final Joueur joueur;
     private boolean finished = false;
@@ -42,12 +43,15 @@ public class GameView extends ScreenAdapter {
         super();
         this.game = game;
         levelLoader = LevelLoader.getInstance();
-        levelLoader.load("plutonV2");
-        joueur = levelLoader.getGameWorld().getJoueur();
+        try {
+            levelLoader.load(game.getCurrentLevel());
+        } catch (LevelLoadException e) {
+            throw new RuntimeException(e);
+        }
+        joueur = levelLoader.getPluton();
 
         map = new MiniMap(levelLoader.getMap());
 
-        world = levelLoader.getGameWorld().getWorld();
 
         camera = new OrthographicCamera();
 
@@ -56,11 +60,11 @@ public class GameView extends ScreenAdapter {
         debugRenderer = new Box2DDebugRenderer();
         shapeRenderer = new ShapeRenderer();
 
-        c = new PlayerControlListener(levelLoader.getGameWorld().getJoueur(), map);
+        c = new PlayerControlListener(joueur, map);
         Gdx.input.setInputProcessor(c);
 
         PlayerContactListener contactListener = new PlayerContactListener();
-        world.setContactListener(contactListener);
+        levelLoader.getGameWorld().getWorld().setContactListener(contactListener);
 
         HUBLayout = new GlyphLayout();
 
@@ -84,9 +88,16 @@ public class GameView extends ScreenAdapter {
                 //world.setContactListener(null); au cas ou ça sigsegv plus tard
                 gameOver();
             }
+            if(joueur.touchPortal()){
+                finished = true;
+
+                gameWin();
+            }
         }
 
         levelLoader.getGameWorld().update();
+        levelLoader.getGameWorld().checkAllBossesDead();
+
 
         camera.update();
         map.update(joueur.getPosition().x, joueur.getPosition().y, camera.viewportWidth, camera.viewportHeight);
@@ -111,7 +122,7 @@ public class GameView extends ScreenAdapter {
 
         if (c.isDebugMode()) {
             levelLoader.getGameWorld().renderDebug();
-            debugRenderer.render(world, camera.combined);
+            debugRenderer.render(LevelLoader.getInstance().getGameWorld().getWorld(), camera.combined);
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.CYAN);
@@ -155,12 +166,22 @@ public class GameView extends ScreenAdapter {
 
 
     private void gameOver() {
-        Music gameOverMusic = Pluton.manager.get("sounds/death.ogg", Music.class);
-        gameOverMusic.setOnCompletionListener(music -> {
+        Music deathMusic = Pluton.manager.get("sounds/death.ogg", Music.class);
+        deathMusic.setOnCompletionListener(music -> {
             game.setScreen(new GameOverView(game));
             dispose();
         });
-        gameOverMusic.play();
+        deathMusic.play();
+    }
+
+    private void gameWin() {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                game.setScreen(new GameWinView(game));
+                dispose();
+            }
+        }, .5f);
     }
     public void showStats(OrthographicCamera camera){
         // TODO: ajouter une autre caméra
@@ -168,8 +189,6 @@ public class GameView extends ScreenAdapter {
         Pluton.font.draw(Pluton.batch, String.valueOf("Force :"+joueur.getDamage()), camera.position.x-168f, camera.position.y-80f);
         Pluton.font.draw(Pluton.batch, String.valueOf("Monnaie :"+joueur.getMoney()), camera.position.x-168f, camera.position.y-88f);
 
-        //batch = new SpriteBatch();
-        //
         Pluton.font.getData().setScale(0.4f, 0.4f);
     }
 }

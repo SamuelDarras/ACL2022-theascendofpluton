@@ -8,12 +8,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.LevelLoader;
 
 public class Zombie extends DamageableObject {
-    public float money;
 
     //x,y postion de l'ennemi dans le monde
     public Zombie(World world, Vector2 coords, float[] verticies, float life, float damage, float money){
-        super(coords, life, damage);
-        this.money = money;
+        super(coords, life, damage, money);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
@@ -38,26 +36,37 @@ public class Zombie extends DamageableObject {
     //x,y coordonnées à atteindre
     @Override
     public void update(GameWorld gameWorld) {
-         float target_x = getBody().getPosition().x - gameWorld.getJoueur().getPosition().x;
-         float target_y = getBody().getPosition().y - gameWorld.getJoueur().getPosition().y;
-         float force_x = 0;
-         float force_y = 0;
+        if(isTargetRange()){
+            float target_x = getBody().getPosition().x - LevelLoader.getInstance().getPluton().getPosition().x;
+            float target_y = getBody().getPosition().y - LevelLoader.getInstance().getPluton().getPosition().y;
+            float force_x = 0;
+            float force_y = 0;
 
-         if (target_x < 0) force_x = 10f;
-         if (target_x > 0) force_x = -10f;
-         if (target_y < 0) force_y = 10f;
-         if (target_y > 0) force_y = -10f;
+            if (target_x < 0) force_x = 15f;
+            if (target_x > 0) force_x = -15f;
+            if (target_y < 0) force_y = 15f;
+            if (target_y > 0) force_y = -15f;
 
-         getBody().setLinearVelocity(force_x, force_y);
+            getBody().setLinearVelocity(force_x, force_y);
+        }
 
-         if (getLife() <= 0f) {
-             LevelLoader.getInstance().getPluton().receiveMoney(money);
-             gameWorld.remove(this);
-         }
+        if (getLife() <= 0f) {
+            LevelLoader.getInstance().getPluton().receiveMoney(getMoney());
+            gameWorld.remove(this);
+        }
+    }
+
+    /**
+     *
+     * @return Vrai si le joueur est assez proche du zombie pour qu'il le pourchasse, faux sinon.
+     */
+    private boolean isTargetRange() {
+        return LevelLoader.getInstance().getPluton().getPosition().dst(getPosition()) <= 80;
     }
 
     @Override
     public void render(float delta) {
         super.render();
     }
+
 }

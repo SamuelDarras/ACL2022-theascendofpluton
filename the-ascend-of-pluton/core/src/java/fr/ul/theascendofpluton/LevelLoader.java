@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.GeometryUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import fr.ul.theascendofpluton.Exceptions.LevelLoadException;
 import fr.ul.theascendofpluton.model.*;
 
 import java.util.*;
@@ -23,10 +24,15 @@ public class LevelLoader {
     private TiledMap tiledMap;
     private TiledMapRenderer tiledMapRenderer;
     private Joueur joueur;
+<<<<<<< HEAD
 
     public Animation<TextureRegion> flyAnimation;
     public Map<String, Sprite> spriteHashMap;
     public Map<String, Vector2> spriteOffsets;
+=======
+    private Map<String, Sprite> spriteHashMap;
+    private Map<String, Vector2> spriteOffsets;
+>>>>>>> origin/next_level
 
     private GameWorld gameWorld;
 
@@ -36,15 +42,18 @@ public class LevelLoader {
 
         Texture zomTexture = new Texture(Gdx.files.internal("zombies.png"));
         Sprite zombieSprite = new Sprite(zomTexture, 0, 0, 64, 64);
-        zombieSprite.setSize(16,16);
+        zombieSprite.setSize(16, 16);
+
+        Sprite zombieBossSprite = new Sprite(zomTexture, 704, 0, 64, 64);
 
         Texture appleTexture = new Texture(Gdx.files.internal("apple.png"));
-        Sprite appleSprite = new Sprite(appleTexture,0,0,64,64);
-        appleSprite.setSize(16,16);
+        Sprite appleSprite = new Sprite(appleTexture, 0, 0, 64, 64);
+        appleSprite.setSize(16, 16);
 
         Sprite playerSprite = new Sprite();
         playerSprite.setSize(24, 24);
 
+<<<<<<< HEAD
         Texture batTexture = new Texture(Gdx.files.internal("bat.png"));
         TextureRegion[][] textureRegions = TextureRegion.split(batTexture, batTexture.getWidth() / 2,
                 batTexture.getHeight());
@@ -54,13 +63,23 @@ public class LevelLoader {
 
         Sprite batSprite = new Sprite();
         batSprite.setSize(16,16);
+=======
+        Texture portalTexture = new Texture(Gdx.files.internal("portal.png"));
+        Sprite portalSprite = new Sprite(portalTexture, 0, 0, 64, 64);
+        portalSprite.setSize(32, 32);
+>>>>>>> origin/next_level
 
         spriteOffsets = new HashMap<>();
         spriteHashMap = new HashMap<>();
         spriteHashMap.put(Zombie.class.getSimpleName(), zombieSprite);
         spriteHashMap.put(Apple.class.getSimpleName(), appleSprite);
         spriteHashMap.put(Joueur.class.getSimpleName(), playerSprite);
+<<<<<<< HEAD
         spriteHashMap.put(Bat.class.getSimpleName(), batSprite);
+=======
+        spriteHashMap.put("ZombieBoss", zombieBossSprite);
+        spriteHashMap.put("Portal", portalSprite);
+>>>>>>> origin/next_level
     }
 
     public static LevelLoader getInstance() {
@@ -69,9 +88,10 @@ public class LevelLoader {
 
     /**
      * Charge la TiledMap et créé le renderer
+     *
      * @param level_name
      */
-    public void load(String level_name){
+    public void load(String level_name) throws LevelLoadException {
         tiledMap = new TmxMapLoader().load("levels/" + level_name + ".tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
@@ -81,44 +101,63 @@ public class LevelLoader {
         addObstacles(world);
     }
 
-    public MapRenderer getRenderer() {
-        return tiledMapRenderer;
-    }
-
-    public Joueur getPluton() {
-        return joueur;
-    }
-
-    public Vector2 getCentroid (float[] vertices) {
+    /**
+     *
+     * @param vertices représentant un polygone
+     * @return le centre du polygone
+     */
+    private Vector2 getCentroid(float[] vertices) {
         Vector2 centroid = new Vector2();
         return GeometryUtils.polygonCentroid(vertices, 0, vertices.length, centroid);
     }
 
-    private Map<Vector2, List<float[]>> getPolygones(MapLayer mapLayer){
-        Map<Vector2, List<float[]>> map = new HashMap<>();
-        if(mapLayer instanceof TiledMapTileLayer){
-            TiledMapTileLayer tiledMapTileLayer = (TiledMapTileLayer) mapLayer;
+    /**
+     * Ajoute les différents obstacles dans le monde via la tiledMap
+     *
+     * @param world
+     */
+    public void addObstacles(World world) {
+        for (String layerName : new String[]{"sol", "vide", "puddles"}) {
+            TiledMapTileLayer tiledMapTileLayer = (TiledMapTileLayer) tiledMap.getLayers().get(layerName);
             for (int i = 0; i < tiledMapTileLayer.getWidth(); i++) {
                 for (int j = 0; j < tiledMapTileLayer.getHeight(); j++) {
                     TiledMapTileLayer.Cell cell = tiledMapTileLayer.getCell(i, j);
-                    if (cell != null){
-                        List<float[]> arrayVerticies = new ArrayList<>();
-                        for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)){
-                            arrayVerticies.add(polygonMapObject.getPolygon().getTransformedVertices());
+                    if (cell != null) {
+                        Vector2 coords = new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight());
+                        for (PolygonMapObject polygonMapObject : cell.getTile().getObjects().getByType(PolygonMapObject.class)) {
+                            float[] verticies = polygonMapObject.getPolygon().getTransformedVertices();
+                            switch (layerName) {
+                                case "sol":
+                                case "vide":
+                                    new Obstacle(world, coords, verticies);
+                                    break;
+                                case "puddles":
+                                    new AcidPuddle(world, coords, verticies, 5);
+                            }
                         }
-                        map.put(new Vector2(i * tiledMapTileLayer.getTileWidth(), j * tiledMapTileLayer.getTileHeight()), new ArrayList<>(arrayVerticies));
                     }
                 }
             }
         }
-        else {
-            List<float[]> arrayVerticies = new ArrayList<>();
-            List<Vector2> arrayCentroid = new ArrayList<>();
-            for(MapObject mapObject : mapLayer.getObjects()){
+
+    }
+
+    /**
+     *
+     * @param world
+     * @throws LevelLoadException lorsque le niveau ne remplis pas les critères voulus
+     */
+    public void addObjects(World world) throws LevelLoadException {
+        List<float[]> arrayVerticies = new ArrayList<>();
+        List<Vector2> arrayCentroid = new ArrayList<>();
+        int countPlayer = 0 , countBosses = 0;
+        for (String layerName : new String[]{"Zombies", "Bosses", "Apples", "Joueur"}){
+            MapLayer mapLayer = tiledMap.getLayers().get(layerName);
+            for (MapObject mapObject : mapLayer.getObjects()) {
                 TiledMapTileMapObject tiledMapTileMapObject = (TiledMapTileMapObject) mapObject;
-                for(PolygonMapObject polygonMapObject: tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class)){
+                for (PolygonMapObject polygonMapObject : tiledMapTileMapObject.getTile().getObjects().getByType(PolygonMapObject.class)) {
                     Polygon polygon = polygonMapObject.getPolygon();
-                    polygon.setPosition(0,(float)mapObject.getProperties().get("height"));
+                    polygon.setPosition(0, (float) mapObject.getProperties().get("height"));
                     polygon.setScale(tiledMapTileMapObject.getScaleX(), tiledMapTileMapObject.getScaleY());
                     Vector2 centroid = getCentroid(polygon.getTransformedVertices());
                     arrayCentroid.add(centroid.cpy());
@@ -127,16 +166,62 @@ public class LevelLoader {
 
                 }
                 Vector2 globalCentroid = arrayCentroid.stream().reduce(new Vector2(), Vector2::add);
-                globalCentroid.set(globalCentroid.x/arrayCentroid.size(), globalCentroid.y/arrayCentroid.size());
-                if(!spriteOffsets.containsKey(mapLayer.getName())){
-                    spriteOffsets.put(mapLayer.getName(), globalCentroid.cpy());
+                globalCentroid.set(globalCentroid.x / arrayCentroid.size(), globalCentroid.y / arrayCentroid.size());
+                if (!spriteOffsets.containsKey(mapObject.getName())) {
+                    spriteOffsets.put(mapObject.getName(), globalCentroid.cpy());
                 }
                 Vector2 coords = globalCentroid.cpy().add(tiledMapTileMapObject.getX(), tiledMapTileMapObject.getY());
-                map.put(coords, new ArrayList<>(arrayVerticies));
+                // A modifier si les objets ont plusieurs fixtures.
+                switch (layerName){
+                    case "Apples":
+                        gameWorld.add(new Apple(world, coords, arrayVerticies.get(0), (float)mapLayer.getProperties().get("heal")));
+                        break;
+                    case "Zombies":
+                        gameWorld.add(new Zombie(world, coords, arrayVerticies.get(0)
+                                                 , (float) mapLayer.getProperties().get("life")
+                                                 , (float) mapLayer.getProperties().get("damage")
+                                                 , (float) mapLayer.getProperties().get("monnaie")
+                                                )
+                                     );
+                        break;
+                    case "Bosses":
+                        switch (mapObject.getName()){
+                            case "ZombieBoss":
+                                gameWorld.addBoss(new Boss(new Zombie(world, coords, arrayVerticies.get(0)
+                                                                 , (float)mapObject.getProperties().get("life")
+                                                                 , (float)mapObject.getProperties().get("damage")
+                                                                 , (float)mapObject.getProperties().get("monnaie")
+                                                                )
+                                                          )
+                                                 );
+                                countBosses++;
+                                break;
+                            case "BatBoss": // plus tard
+                                break;
+                            default:
+                                throw new LevelLoadException("Objet inconnu: "+ mapObject.getName());
+                        }
+                        break;
+                    case "Joueur":
+                        if (joueur == null || joueur.isDead()) {
+                            joueur = new Joueur(world, coords, arrayVerticies.get(0)
+                                                , (float) mapLayer.getProperties().get("life")
+                                                , (float) mapLayer.getProperties().get("strength")
+                                                , (float) mapLayer.getProperties().get("range")
+                                               );
+                        } else {
+                            joueur.setTouchPortal(false);
+                            joueur.loadInNewWorld(world, coords, arrayVerticies.get(0));
+                        }
+                        countPlayer++;
+                        gameWorld.add(joueur);
+                        break;
+                }
                 arrayVerticies.clear();
                 arrayCentroid.clear();
             }
         }
+<<<<<<< HEAD
         return map;
     }
 
@@ -208,6 +293,14 @@ public class LevelLoader {
             gameWorld.setJoueur(joueur);
             gameWorld.add(joueur);
         });
+=======
+        if (countBosses == 0) {
+            throw new LevelLoadException("Le niveau doit contenir au moins un boss");
+        }
+        if(countPlayer != 1) {
+            throw new LevelLoadException("Le niveau doit contenir exactement un joueur");
+        }
+>>>>>>> origin/next_level
     }
 
     public int getLevelWidth() {
@@ -218,7 +311,7 @@ public class LevelLoader {
         return (int) tiledMap.getProperties().get("height");
     }
 
-    public void dispose(){
+    public void dispose() {
         tiledMap.dispose();
     }
 
@@ -229,4 +322,19 @@ public class LevelLoader {
     public GameWorld getGameWorld() {
         return gameWorld;
     }
+
+    public MapRenderer getRenderer() {
+        return tiledMapRenderer;
+    }
+
+    public Joueur getPluton() {
+        return joueur;
+    }
+    public Sprite getSprite(String name){
+        return spriteHashMap.get(name);
+    }
+    public Vector2 getSpriteOffset(String name){
+        return spriteOffsets.get(name);
+    }
+
 }

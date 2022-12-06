@@ -7,7 +7,6 @@ public class PlayerContactListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-
         Fixture maybePlayerFixture;
         Fixture otherFixture = contact.getFixtureB();
         if (otherFixture.getUserData() != null && (otherFixture.getUserData().equals("player"))) {
@@ -32,9 +31,18 @@ public class PlayerContactListener implements ContactListener {
                     Bat bat = (Bat) otherFixture.getBody().getUserData();
                     bat.inflictDamage(joueur);
                     break;
+                case "boss":
+                    Boss boss = (Boss) otherFixture.getBody().getUserData();
+                    joueur.receiveDamage(boss.getDamage());
+                    break;
                 case "apple":
                     Apple apple = (Apple) otherFixture.getBody().getUserData();
                     joueur.receiveLife(apple.getHeal());
+                    break;
+                case "portal":
+                    if(!joueur.touchPortal()){
+                        joueur.setTouchPortal(true);
+                    }
                     break;
             }
             //System.out.println("Vie restante : " + joueur.getLife());

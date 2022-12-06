@@ -10,7 +10,7 @@ import fr.ul.theascendofpluton.Pluton;
 
 public abstract class GameObject {
     private Body body;
-    private final BodyDef bodyDef;
+    private BodyDef bodyDef;
 
     public GameObject(Vector2 coords) {
         bodyDef = new BodyDef();
@@ -22,13 +22,13 @@ public abstract class GameObject {
     public abstract void render(float delta);
 
     void render(){
-        Sprite s = LevelLoader.getInstance().spriteHashMap.get(this.getClass().getSimpleName());
-        Vector2 offsetVec = LevelLoader.getInstance().spriteOffsets.get(this.getClass().getSimpleName());
+        Sprite s = LevelLoader.getInstance().getSprite(getName());
+        Vector2 offsetVec = LevelLoader.getInstance().getSpriteOffset(getName());
         s.setPosition(getPosition().x - offsetVec.x, getPosition().y - offsetVec.y);
         s.draw(Pluton.batch);
     }
     public void renderDebug(){
-        Pluton.font.draw(Pluton.batch, this.getClass().getSimpleName()+": "+getPosition(), getPosition().x, getPosition().y);
+        Pluton.font.draw(Pluton.batch, getName()+": "+getPosition(), getPosition().x, getPosition().y);
         Pluton.batch.draw(Pluton.positionPoint, getPosition().x, getPosition().y);
 
     }
@@ -46,5 +46,12 @@ public abstract class GameObject {
 
     public void setBody(Body body) {
         this.body = body;
+    }
+    public void setBodyDef(BodyDef bodyDef) {
+        this.bodyDef = bodyDef;
+    }
+
+    public String getName(){
+        return this.getClass().getSimpleName();
     }
 }

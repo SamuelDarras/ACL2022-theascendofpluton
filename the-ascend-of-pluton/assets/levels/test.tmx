@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="76">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="77">
  <editorsettings>
   <export format="json"/>
  </editorsettings>
@@ -174,33 +174,38 @@
 </data>
  </layer>
  <objectgroup id="3" name="Joueur">
-  <object id="41" name="Pluton" gid="208" x="768" y="832" width="32" height="32">
-   <properties>
-    <property name="life" type="float" value="100"/>
-   </properties>
-  </object>
+  <properties>
+   <property name="life" type="float" value="100"/>
+   <property name="range" type="float" value="100"/>
+   <property name="strength" type="float" value="10"/>
+  </properties>
+  <object id="41" name="Joueur" gid="208" x="768" y="832" width="24" height="24"/>
  </objectgroup>
- <objectgroup id="4" name="Zombie">
+ <objectgroup id="4" name="Zombies">
   <properties>
    <property name="damage" type="float" value="5"/>
    <property name="life" type="float" value="15"/>
    <property name="monnaie" type="float" value="2"/>
   </properties>
-  <object id="57" gid="183" x="833" y="784.667" width="16" height="16"/>
-  <object id="59" gid="183" x="833" y="799.667" width="16" height="16"/>
-  <object id="73" gid="183" x="833" y="768.333" width="16" height="16"/>
-  <object id="74" gid="183" x="832.667" y="753.333" width="16" height="16"/>
-  <object id="75" gid="183" x="833.667" y="736" width="16" height="16"/>
  </objectgroup>
- <objectgroup id="5" name="Apple">
+ <objectgroup id="5" name="Apples">
   <properties>
    <property name="heal" type="float" value="20"/>
   </properties>
-  <object id="30" gid="182" x="704" y="800" width="16" height="16"/>
-  <object id="52" gid="182" x="704.333" y="784.333" width="16" height="16"/>
-  <object id="69" gid="182" x="703.667" y="751.667" width="16" height="16"/>
-  <object id="70" gid="182" x="703.667" y="768.333" width="16" height="16"/>
-  <object id="71" gid="182" x="704.333" y="735.333" width="16" height="16"/>
-  <object id="72" gid="182" x="705" y="720" width="16" height="16"/>
+  <object id="30" name="Apple" gid="182" x="704" y="800" width="16" height="16"/>
+  <object id="52" name="Apple" gid="182" x="704.333" y="784.333" width="16" height="16"/>
+  <object id="69" name="Apple" gid="182" x="703.667" y="751.667" width="16" height="16"/>
+  <object id="70" name="Apple" gid="182" x="703.667" y="768.333" width="16" height="16"/>
+  <object id="71" name="Apple" gid="182" x="704.333" y="735.333" width="16" height="16"/>
+  <object id="72" name="Apple" gid="182" x="705" y="720" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup id="11" name="Bosses">
+  <object id="76" name="ZombieBoss" gid="194" x="769" y="712.333" width="64" height="64">
+   <properties>
+    <property name="damage" type="float" value="10"/>
+    <property name="life" type="float" value="15"/>
+    <property name="monnaie" type="float" value="20"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
