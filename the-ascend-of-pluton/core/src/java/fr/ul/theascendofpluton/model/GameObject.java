@@ -17,10 +17,6 @@ public abstract class GameObject {
         bodyDef.position.set(coords);
     }
 
-    // public Vector2 getOffsetVector() {
-    //     return offsetVector;
-    // }
-
     public abstract void update(GameWorld w);
 
     public abstract void render(float delta);

@@ -5,13 +5,10 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Timer;
@@ -55,7 +52,9 @@ public class GameView extends ScreenAdapter {
     public static final Kryo kryo = new Kryo();
 
     public GameView(Pluton game) {
-        super();
+
+
+        // ENREGISTREMENT DES DONNES A SERIALIZER
         kryo.register(Vector2.class);
         kryo.register(Joueur.class, new Serializer<Joueur>() {
             @Override
@@ -66,6 +65,9 @@ public class GameView extends ScreenAdapter {
                 output.writeFloat(joueur.getLife());
                 output.writeFloat(joueur.getDamage());
                 output.writeFloat(joueur.getRange());
+
+                output.writeFloat(joueur.getMaxLife());
+                output.writeFloat(joueur.getMoney());
 
                 output.writeInt(joueur.getVertices().length);
                 output.writeFloats(joueur.getVertices(), 0, joueur.getVertices().length);
@@ -79,11 +81,17 @@ public class GameView extends ScreenAdapter {
                 float life = input.readFloat();
                 float strength = input.readFloat();
                 float range = input.readFloat();
-                
+
+                float maxLife = input.readFloat();
+                float money = input.readFloat();
+
                 int verticesLength = input.readInt();
                 float[] vertices = input.readFloats(verticesLength);
 
-                return new Joueur(LevelLoader.getInstance().getGameWorld().getWorld(), new Vector2(x, y), vertices, life, strength, range);
+                Joueur j = new Joueur(new Vector2(x, y), vertices, life, strength, range, money);
+                j.setMaxLife(maxLife);
+
+                return j;
             }
         });
         kryo.register(Zombie.class, new Serializer<Zombie>() {
@@ -291,13 +299,12 @@ public class GameView extends ScreenAdapter {
 
             levelLoader.getGameWorld().render(delta);
 
-            showStats();
-            shop.render();
 
         }
 
         Pluton.batch.end();
 
+        shop.render();
         showStats();
 
         map.render();
@@ -306,15 +313,15 @@ public class GameView extends ScreenAdapter {
     @Override
     public void resize(int width, int height) {
         camera.setToOrtho(false, levelLoader.getLevelWidth(), levelLoader.getLevelHeight());
-        System.out.println(joueur.getPosition().toString());
-        camera.position.set(joueur.getPosition().x, joueur.getPosition().y, 0);
+        if(joueur != null){
+            camera.position.set(joueur.getPosition().x, joueur.getPosition().y, 0);
+        }
         camera.update();
 
         levelLoader.getRenderer().setView(camera);
 
         vp.update(width, height, false);
         map.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
-//        shop.resize();
     }
 
     @Override

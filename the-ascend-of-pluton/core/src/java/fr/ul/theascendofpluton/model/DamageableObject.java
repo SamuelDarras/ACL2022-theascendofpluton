@@ -2,8 +2,6 @@ package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.math.Vector2;
 
-import fr.ul.theascendofpluton.LevelLoader;
-
 public abstract class DamageableObject extends GameObject{
     private float life;
     private float damage;

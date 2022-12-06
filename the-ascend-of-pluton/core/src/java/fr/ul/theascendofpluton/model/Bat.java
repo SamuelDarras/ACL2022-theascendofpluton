@@ -1,15 +1,10 @@
 package fr.ul.theascendofpluton.model;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import fr.ul.theascendofpluton.LevelLoader;
 
 public class Bat extends DamageableObject{
@@ -42,7 +37,6 @@ public class Bat extends DamageableObject{
         getBody().setUserData(this);
         shape.dispose();
 
-        //initTextures();
     }
 
     @Override
@@ -74,7 +68,7 @@ public class Bat extends DamageableObject{
 
     /**
      *
-     * @return Vrai si le joueur est assez proche du bat pour qu'il le pourchasse, faux sinon.
+     * @return Vrai si le joueur est assez proche de la chauve-souris pour qu'il le pourchasse, faux sinon.
      */
     private boolean isTargetRange() {
         return LevelLoader.getInstance().getPluton().getPosition().dst(getPosition()) <= 160;

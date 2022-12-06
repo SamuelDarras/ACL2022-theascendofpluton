@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="77">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="left-up" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="77">
  <editorsettings>
   <export format="json"/>
  </editorsettings>
@@ -11,6 +11,7 @@
  <imagelayer id="4" name="Background" locked="1" offsetx="-703.788" offsety="-700.455">
   <image source="../galaxy-Z.png" width="2844" height="2844"/>
  </imagelayer>
+ <objectgroup id="12" name="Bats"/>
  <layer id="2" name="vide" width="50" height="50">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

@@ -21,7 +21,6 @@ import fr.ul.theascendofpluton.model.*;
 import fr.ul.theascendofpluton.view.GameView;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.Map;
 
@@ -142,6 +141,7 @@ public class LevelLoader {
     }
 
     /**
+     * Ajoute les différents objets dans le monde via la tiledMap
      *
      * @param world
      * @throws LevelLoadException lorsque le niveau ne remplis pas les critères
@@ -214,13 +214,14 @@ public class LevelLoader {
                             break;
                         case "Joueur":
                             if (joueur == null || joueur.isDead()) {
-                                joueur = new Joueur(world, coords, arrayVerticies.get(0),
+                                joueur = new Joueur(coords, arrayVerticies.get(0),
                                         (float) mapLayer.getProperties().get("life"),
                                         (float) mapLayer.getProperties().get("strength"),
-                                        (float) mapLayer.getProperties().get("range"));
+                                        (float) mapLayer.getProperties().get("range"),
+                                        0);
                             } else {
                                 joueur.setTouchPortal(false);
-                                joueur.loadInNewWorld(world, coords, arrayVerticies.get(0));
+                                joueur.loadInNewWorld(coords, arrayVerticies.get(0));
                             }
                             countPlayer++;
                             gameWorld.add(joueur);

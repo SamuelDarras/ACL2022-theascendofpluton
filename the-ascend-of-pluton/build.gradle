@@ -66,7 +66,8 @@ project(":core") {
 
         implementation("com.esotericsoftware:kryo:5.3.0")
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        testImplementation("junit:junit:4.13.2")
+        testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.8.2")
         testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         testImplementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         testImplementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"

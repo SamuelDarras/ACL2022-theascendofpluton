@@ -7,27 +7,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
+/**
+ * Elements du monde empêchant le joueur de sortir du niveau.
+ */
 public class Obstacle {
     public BodyDef bodyDef;
     public Body body;
 
-    //x,y postion de l'ennemi dans le monde
-    public Obstacle(World world, int x, int y){
-        bodyDef  = new BodyDef();
-        bodyDef.position.set(x, y);
-        body = world.createBody(bodyDef);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(1f,1f);
-
-        fixtureDef.shape = shape;
-
-        body.setFixedRotation(true);
-        body.createFixture(fixtureDef);
-        body.setUserData(this);
-        shape.dispose();
-    }
 
     public Obstacle(World world, Vector2 coords, float[] vertices){
         bodyDef  = new BodyDef();

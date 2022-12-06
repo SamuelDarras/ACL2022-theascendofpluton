@@ -2,7 +2,6 @@ package fr.ul.theascendofpluton.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -14,7 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import fr.ul.theascendofpluton.Pluton;
-
+/**
+ *  Ecran de selection de la sauvegarde
+ */
 public class TitleView extends ScreenAdapter {
     private Stage stage;
 

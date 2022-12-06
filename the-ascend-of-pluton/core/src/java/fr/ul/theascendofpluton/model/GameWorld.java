@@ -7,12 +7,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.GearJoint;
 
 import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
@@ -24,6 +22,9 @@ import com.esotericsoftware.kryo.io.Output;
 
 import fr.ul.theascendofpluton.view.GameView;
 
+/**
+ * Cette classe permet de connaitre les éléments essentiels du monde
+ */
 public class GameWorld {
     private World world;
     private Set<GameObject> gameObjects;
@@ -157,7 +158,6 @@ public class GameWorld {
     }
     public void addBoss(Boss b) {
         add(b);
-        System.out.println("azertyuiop");
         bossCount += 1;
     }
 
@@ -170,6 +170,10 @@ public class GameWorld {
         bossCount -= 1;
 
     }
+
+    /**
+     * Vérifie si tous les bosses sont mort, si c'est le cas génère un portail vers le niveau suivant.
+     */
     public void checkAllBossesDead(){
         if(bossCount == 0){
             BodyDef bodyDef = new BodyDef();

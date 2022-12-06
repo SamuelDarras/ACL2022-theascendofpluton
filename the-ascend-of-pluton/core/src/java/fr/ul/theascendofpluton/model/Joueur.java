@@ -1,7 +1,6 @@
 package fr.ul.theascendofpluton.model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -15,16 +14,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 
 import fr.ul.theascendofpluton.LevelLoader;
 import fr.ul.theascendofpluton.Pluton;
-import fr.ul.theascendofpluton.view.GameView;
 
 public class Joueur extends DamageableObject {
     private float range;
@@ -53,29 +46,21 @@ public class Joueur extends DamageableObject {
 
     private float[] vertices;
 
-    public Joueur(World world, Vector2 coords, float[] verticies, float life, float strength, float range) {
+    public Joueur(Vector2 coords, float[] verticies, float life, float strength, float range, float money) {
         super(coords, life, strength, 0);
+
+        this.money = money;
 
         this.range = range;
         maxLife = life;
 
-        generateBody(world, verticies);
+        generateBody(verticies);
 
         playerSprite = new Sprite();
         playerSprite.setSize(32, 32);
         initTextures();
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(this.getPosition().cpy());
-        bodyDef.type = BodyDef.BodyType.KinematicBody;
-        attack = world.createBody(bodyDef);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = new CircleShape();
-        fixtureDef.shape.setRadius(range);
-        fixtureDef.isSensor = true;
-        attack.createFixture(fixtureDef).setUserData("attack");
 
-        attack.setActive(false);
     }
 
     /**
@@ -84,14 +69,14 @@ public class Joueur extends DamageableObject {
      * @param coords
      * @param verticies
      */
-    public void loadInNewWorld(World world, Vector2 coords, float[] verticies){
+    public void loadInNewWorld( Vector2 coords, float[] verticies){
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(coords);
         setBodyDef(bodyDef);
-        generateBody(world, verticies);
+        generateBody(verticies);
     }
 
-    private void generateBody(World world, float[] verticies){
+    private void generateBody(float[] verticies){
         this.vertices = verticies;
         getBodyDef().type = BodyDef.BodyType.DynamicBody;
         setBody(LevelLoader.getInstance().getGameWorld().getWorld().createBody(getBodyDef()));
@@ -103,6 +88,18 @@ public class Joueur extends DamageableObject {
         p.dispose();
 
         getBody().setUserData(this);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(this.getPosition().cpy());
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        attack = LevelLoader.getInstance().getGameWorld().getWorld().createBody(bodyDef);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = new CircleShape();
+        fixtureDef.shape.setRadius(range);
+        fixtureDef.isSensor = true;
+        attack.createFixture(fixtureDef).setUserData("attack");
+
+        attack.setActive(false);
     }
 
     private void initTextures() {
@@ -197,7 +194,7 @@ public class Joueur extends DamageableObject {
                 newVelocity = new Vector2();
         }
         getBody().setLinearVelocity(newVelocity.nor().scl(VELOCITY));
-        attack.setTransform(this.getPosition().cpy(), 0);
+        if (!isDead() || !touchPortal()) attack.setTransform(this.getPosition().cpy(), 0);
 
         if (shouldAttack && !attacking) {
             attack.setActive(true);
@@ -251,7 +248,6 @@ public class Joueur extends DamageableObject {
         return getLife() <= 0f;
     }
 
-
     public void receiveMoney(float money) {
         this.money += money;
     }
@@ -259,20 +255,16 @@ public class Joueur extends DamageableObject {
         this.money -= money;
     }
 
-    public float getMoney() {
-        return this.money;
-    }
-
-    public float getStrength() {
-        return getDamage();
-    }
-
     public float getMaxLife() {
         return maxLife;
     }
-
     public void setMaxLife(float maxLife) {
         this.maxLife = maxLife;
+    }
+
+    @Override
+    public float getMoney() {
+        return money;
     }
 
     @Override
@@ -289,6 +281,11 @@ public class Joueur extends DamageableObject {
         directions = (char) (~(0b1<<direction) & directions);
     }
 
+    /**
+     * Le joueur s'achète des statistiques
+     * @param achat
+     * @param prix
+     */
     public void buyShop(String achat, float prix){
         if (this.money >= prix){
             switch(achat){

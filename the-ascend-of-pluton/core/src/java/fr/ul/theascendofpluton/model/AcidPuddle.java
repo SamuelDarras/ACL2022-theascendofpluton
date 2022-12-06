@@ -12,7 +12,6 @@ public class AcidPuddle {
         return damage;
     }
 
-    //x,y postion de l'acide dans le monde avec son nombre de dégâts infligé au entité
     public AcidPuddle(World world, Vector2 coords, float[] verticies, float damage){
         bodyDef = new BodyDef();
         bodyDef.position.set(coords);

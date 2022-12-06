@@ -76,6 +76,9 @@ public class Pluton extends Game {
         return levelNameList[levelIdx];
     }
 
+    /**
+     * change l'index du niveau de façon cyclique
+     */
     public void nextLevel(){
         levelIdx = levelIdx + 1 == levelNameList.length ? 0 : levelIdx + 1;
     }
