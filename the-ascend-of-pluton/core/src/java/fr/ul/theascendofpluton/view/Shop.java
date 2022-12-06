@@ -34,7 +34,6 @@ public class Shop {
     public static SpriteBatch batch;
     public static BitmapFont font;
     private OrthographicCamera camera;
-    private Viewport viewport;
 
     private boolean show = false;
     private final Texture textureVie;
@@ -42,10 +41,17 @@ public class Shop {
     private final Texture textureStrength;
     private final Texture textureShop;
 
+    private float MENU_WIDTH;
+    private float MENU_HEIGHT;
+
     public Shop(float screenWidth, float screenHeight) {
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, screenWidth, screenHeight);
         camera.position.set(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight()/2f, 0);
+
+        MENU_WIDTH = Gdx.graphics.getWidth()/2f;
+        MENU_HEIGHT = Gdx.graphics.getHeight()/2f;
 
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -53,8 +59,6 @@ public class Shop {
         textureCoin = new Texture(Gdx.files.internal("coin.png"));
         textureStrength = new Texture(Gdx.files.internal("sword.png"));
         textureShop = new Texture(Gdx.files.internal("shop.png"));
-
-        // camera.position.set(200, 200, 0);
     }
 
     public void toggle() {
@@ -64,28 +68,22 @@ public class Shop {
     public void render() {
         if (show) {
             batch.begin();
-                batch.draw(textureShop, camera.position.x-96, camera.position.y-24,1280/5,720/8);
-                batch.draw(textureVie, camera.position.x-72, camera.position.y+8,1280/20,720/20);
-                batch.draw(textureCoin, camera.position.x-48, camera.position.y-12,1280/96,720/96);
-                batch.draw(textureCoin, camera.position.x+96, camera.position.y-12,1280/96,720/96);
-                batch.draw(textureStrength, camera.position.x+72, camera.position.y+8,1280/20,720/20);
+                batch.draw(textureShop    , camera.position.x - MENU_WIDTH/2f, camera.position.y - MENU_HEIGHT/2f, MENU_WIDTH, MENU_HEIGHT);
+                batch.draw(textureVie     , camera.position.x - MENU_WIDTH/2f + textureVie.getWidth()/4f     , camera.position.y - MENU_HEIGHT/2f + (1.5f * textureVie.getHeight()/4f)     ,textureVie.getWidth()/4f     ,textureVie.getHeight()/4f);
+                batch.draw(textureStrength, camera.position.x + MENU_WIDTH/2f - textureStrength.getWidth()/4f, camera.position.y - MENU_HEIGHT/2f + (1.3f * textureStrength.getHeight()/6f),textureStrength.getWidth()/6f,textureStrength.getHeight()/6f);
 
-                Pluton.font.draw(batch, "Magasin", camera.position.x+20, camera.position.y+48);
-                Pluton.font.draw(batch, "+ 10 Vies max", camera.position.x-72, camera.position.y+2);
-                Pluton.font.draw(batch, "[ I ]", camera.position.x-48, camera.position.y-14);
-                Pluton.font.draw(batch, "[ O ]", camera.position.x+88, camera.position.y-14);
-                Pluton.font.draw(batch, "Prix : 5", camera.position.x-72, camera.position.y-6);
-                Pluton.font.draw(batch, "Prix : 10", camera.position.x+72, camera.position.y-6);
-                Pluton.font.draw(batch, "+ 1 Strengh", camera.position.x+72, camera.position.y+2);
+                Pluton.font.draw(batch, "Magasin", camera.position.x - 20, camera.position.y + MENU_HEIGHT/3f);
+
+                Pluton.font.draw(batch, "+ 10 Vies max", camera.position.x - MENU_WIDTH/2 + textureVie.getWidth()/4f      , camera.position.y - MENU_HEIGHT/2f + textureVie.getHeight()/3f);
+                Pluton.font.draw(batch, "Prix : 5"     , camera.position.x - MENU_WIDTH/2 + textureVie.getWidth()/4f      , camera.position.y - MENU_HEIGHT/2f + textureVie.getHeight()/3f - (Pluton.font.getCapHeight()*2));
+                Pluton.font.draw(batch, "[ I ]"        , camera.position.x - MENU_WIDTH/2 + textureVie.getWidth()/4f + 30 , camera.position.y - MENU_HEIGHT/2f + textureVie.getHeight()/3f - (Pluton.font.getCapHeight()*4));
+
+                Pluton.font.draw(batch, "+ 1 Strengh", camera.position.x + MENU_WIDTH/2 - textureStrength.getWidth()/4f     , camera.position.y - MENU_HEIGHT/2f + textureStrength.getHeight()/5f);
+                Pluton.font.draw(batch, "Prix : 10"  , camera.position.x + MENU_WIDTH/2 - textureStrength.getWidth()/4f     , camera.position.y - MENU_HEIGHT/2f + textureStrength.getHeight()/5f - (Pluton.font.getCapHeight()*2));
+                Pluton.font.draw(batch, "[ O ]"      , camera.position.x + MENU_WIDTH/2 - textureStrength.getWidth()/4f + 30, camera.position.y - MENU_HEIGHT/2f + textureStrength.getHeight()/5f - (Pluton.font.getCapHeight()*4));
             batch.end();
         }
 
-    }
-
-    public void resize(int width, int height) {
-        // camera.viewportWidth = width;
-        // camera.viewportHeight = height;
-        // camera.update();
     }
 
 }

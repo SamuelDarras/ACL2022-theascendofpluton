@@ -314,7 +314,7 @@ public class GameView extends ScreenAdapter {
 
         vp.update(width, height, false);
         map.resize(vp.getScreenWidth(), vp.getBottomGutterHeight()+vp.getScreenHeight());
-        shop.resize(width, height);
+//        shop.resize();
     }
 
     @Override
